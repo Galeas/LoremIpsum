@@ -1,0 +1,327 @@
+//
+//  TAPreferences.m
+//  TextArtist
+//
+//  Created by Akki on 5/17/12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//
+
+#import "LIPreferences.h"
+#import "NSColor+Hex.h"
+#import "LIDocWindowController.h"
+
+#define standardDocType @"LIInitSettings.docType"
+#define standardTextFont @"LIInitSettings.textFont"
+#define standardTextWidth @"LIInitSettings.textWidth"
+
+@interface LIPreferences ()
+{
+    NSTextField *cssLabel;
+    NSButton *cssOpenPanelButton;
+}
+@end
+
+@implementation LIPreferences
+@synthesize customCSSCheck;
+@synthesize lightDarkTheme;
+@synthesize onLine;
+@synthesize onParagraph;
+@synthesize bTextWback;
+@synthesize wTextBback;
+
+@synthesize textFont;
+@synthesize textWidth;
+@synthesize docType;
+@synthesize controller;
+@synthesize fontDescr;
+@synthesize hexTextColor, hexBackColor;
+@synthesize whiteBlack;
+@synthesize autoshowFormatter;
+@synthesize previewAutoupdate;
+
++ (LIPreferences *)preferencesController
+{
+    static LIPreferences *controller = nil;
+    static dispatch_once_t predicate;
+    dispatch_once( &predicate, ^{
+        controller = [[LIPreferences alloc] initWithWindowNibName:@"LIPreferences"];
+        
+    } );
+    return controller;
+}
+
+- (id)init
+{
+    self = [LIPreferences preferencesController];
+    if (self) {
+        //Init code
+        [self addObserver:self forKeyPath:@"fontDescr" options:0 context:NULL];
+        [self addObserver:self forKeyPath:@"docType" options:0 context:NULL];
+        [SharedDefaultsController addObserver:self forKeyPath:@"values.focusOn" options:NSKeyValueObservingOptionNew context:@"changeFocusType"];
+        
+        [[NSFontManager sharedFontManager] setAction:@selector(anotherFont:)];
+    }
+    return self;
+}
+
+
+- (void)windowDidLoad
+{
+    [super windowDidLoad];
+    [self.window setMaxSize:NSMakeSize(320, 254)];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+    NSString *fontName = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.docFont.fontName"];
+    
+    if ([fontName isEqualToString:@"HelveticaNeue"])
+        fontName = @"Helvetica Neue";
+    if ([fontName isEqualToString:@"CourierNewPSMT"])
+        fontName = @"Courier New";
+    
+    NSString *fontSize = [NSString stringWithFormat:@"%1.0f", [[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.docFont.fontSize"] floatValue]];
+    
+    [self setFontDescr:[fontName stringByAppendingString:[NSString stringWithFormat:@" %@pt", fontSize]]];
+    [self setDocType:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.docType"]];
+    [self setHexBackColor:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.backgroundColor"]];
+    [self setHexTextColor:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.textColor"]];
+    [self setWhiteBlack:[[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.whiteBlack"] boolValue]];
+    
+    if ([[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.markdownAutoupdate"] intValue] == 1)
+        [self setPreviewAutoupdate:[NSString stringWithFormat:@"%@ second", [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.markdownAutoupdate"]]];
+    else
+        [self setPreviewAutoupdate:[NSString stringWithFormat:@"%@ seconds", [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.markdownAutoupdate"]]];
+    
+    switch (self.whiteBlack) {
+        case YES: {
+            [lightDarkTheme setSelectedSegment:0];
+            break;
+        }
+        case NO: {
+            [lightDarkTheme setSelectedSegment:1];
+        }
+    }
+    
+    if ([[SharedDefaultsController valueForKeyPath:@"values.useCustomCSS"] boolValue] && ![(NSString*)[SharedDefaultsController valueForKeyPath:@"values.customCSS"] isEqualToString:@""]) {
+        [self useCustomCSS:customCSSCheck];
+        NSString *path = [SharedDefaultsController valueForKeyPath:@"values.customCSS"];
+        [cssLabel setStringValue:[path lastPathComponent]];
+    }
+    else {
+        [SharedDefaultsController setValue:[NSNumber numberWithBool:NO] forKeyPath:@"values.useCustomCSS"];
+        [SharedDefaultsController setValue:@"" forKeyPath:@"values.customCSS"];
+        if (cssLabel && cssOpenPanelButton)
+            [self useCustomCSS:customCSSCheck];
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"fontDescr"]) {
+        
+        NSArray *fComponents = [[NSArray alloc] initWithArray:[self.fontDescr componentsSeparatedByString:@" "]];
+        NSString *fontName = [[NSString alloc] initWithFormat:@"%@", [fComponents objectAtIndex:0]];
+        CGFloat fontSize = [[[fComponents objectAtIndex:1] stringByReplacingOccurrencesOfString:@"pt" withString:@""] floatValue];
+        
+        [self setTextFont:[NSFont fontWithName:fontName size:fontSize]];
+    }
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+    [self removeObserver:self forKeyPath:@"fontDescr"];
+    [self removeObserver:self forKeyPath:@"docType"];
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+    if ([menuItem action] == @selector(focusOnParagraph:)) {
+        switch ([[SharedDefaultsController valueForKeyPath:@"values.focusOn"] intValue]) {
+            case 1:
+            case 0: {
+                [menuItem setState:0];
+                return YES;
+            }
+            case 2: {
+                [menuItem setState:1];
+                return YES;
+            }
+        }
+    }
+    
+    if ([menuItem action] == @selector(focusOnLine:)) {
+        switch ([[SharedDefaultsController valueForKeyPath:@"values.focusOn"] intValue]) {
+            case 2:
+            case 0: {
+                [menuItem setState:0];
+                return YES;
+            }
+            case 1: {
+                [menuItem setState:1];
+                return YES;
+            }
+        }
+    }
+    
+    return YES;
+}
+
+- (void)anotherFont:(id)sender
+{
+    NSFont *otherFont = [sender convertFont:[sender selectedFont]];
+    [self setFontDescr:[[NSString stringWithFormat:@"%@", [otherFont fontName]] stringByAppendingString:[NSString stringWithFormat:@" %1.0fpt", [otherFont pointSize]]]];
+    [self updateWithNewSettings:self];
+}
+
+#pragma mark
+#pragma IBActions
+
+- (IBAction)updateWithNewSettings:(id)sender
+{
+    NSArray *arr = [self.previewAutoupdate componentsSeparatedByString:@" "];
+    NSInteger updateDelay = [[arr objectAtIndex:0] intValue];
+    
+    NSDictionary *fontDict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textFont fontName], @"fontName", [NSNumber numberWithFloat:[self.textFont pointSize]], @"fontSize", nil];
+    NSDictionary *settingsDict = [[NSDictionary alloc] initWithObjectsAndKeys:self.docType, @"docType", fontDict, @"docFont", self.hexTextColor, @"textColor", self.hexBackColor, @"backgroundColor", [[SharedDefaultsController values] valueForKey:@"textWidth"], @"textWidth", [NSNumber numberWithBool:self.whiteBlack], @"whiteBlack", [NSNumber numberWithInteger:updateDelay], @"markdownAutoupdate", nil];
+    
+    NSMutableDictionary *usDef = [[NSMutableDictionary alloc] initWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"LIInitSettings"]];
+    for (NSString *key in settingsDict) {
+        [usDef setValue:[settingsDict valueForKey:key] forKey:key];
+    }
+    
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LIInitSettings"];
+    [[NSUserDefaults standardUserDefaults] setObject:usDef forKey:@"LIInitSettings"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"newSettingsArrived" object:nil userInfo:settingsDict];
+}
+
+- (IBAction)switchColorTheme:(id)sender
+{    
+    switch ([sender selectedSegment]) {
+        case 0: {
+            NSColor *aColorBack = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.backgroundColor"]];
+            NSColor *aColorText = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.textColor"]];
+            
+            [self setWhiteBlack:YES];
+            
+            NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:aColorBack, @"backColor", aColorText, @"textColor", [NSNumber numberWithBool:self.whiteBlack], @"whiteBlack", nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"colorScheme" object:nil userInfo:dict];
+            
+            [SharedDefaultsController setValue:[NSNumber numberWithBool:YES] forKeyPath:@"values.whiteBlack"];
+                      
+            break;
+        }
+        case 1: {
+            NSColor *invBack = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.backgroundColorDark"]];
+            NSColor *invText = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.textColorDark"]];
+            [self setWhiteBlack:NO];
+            
+            NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:invBack, @"backColor", invText, @"textColor", self.textFont, @"textFont", [NSNumber numberWithBool:self.whiteBlack], @"whiteBlack", nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"colorScheme" object:nil userInfo:dict];
+            
+            [SharedDefaultsController setValue:[NSNumber numberWithBool:NO] forKeyPath:@"values.whiteBlack"];
+    
+        }
+    }
+    
+    NSMutableDictionary *usDef = [[NSMutableDictionary alloc] initWithDictionary:[[NSUserDefaults standardUserDefaults] valueForKey:@"LIInitSettings"]];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LIInitSettings"];
+    [usDef setValue:[NSNumber numberWithBool:self.whiteBlack] forKey:@"whiteBlack"];
+    [[NSUserDefaults standardUserDefaults] setObject:usDef forKey:@"LIInitSettings"];
+}
+
+- (IBAction)focusOnParagraph:(id)sender
+{
+    if ([sender state] == 0)
+        [SharedDefaultsController setValue:[NSNumber numberWithInt:2] forKeyPath:@"values.focusOn"];
+    else
+        [SharedDefaultsController setValue:[NSNumber numberWithInt:0] forKeyPath:@"values.focusOn"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:NSTextViewDidChangeSelectionNotification object:nil];
+}
+
+- (IBAction)focusOnLine:(id)sender
+{
+    if ([sender state] == 0)
+        [SharedDefaultsController setValue:[NSNumber numberWithInt:1] forKeyPath:@"values.focusOn"];
+    else
+        [SharedDefaultsController setValue:[NSNumber numberWithInt:0] forKeyPath:@"values.focusOn"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:NSTextViewDidChangeSelectionNotification object:nil];
+}
+
+- (IBAction)useCustomCSS:(id)sender
+{
+    BOOL useCustomCSS = [sender state];
+    
+    if (useCustomCSS) {
+        if (self.window.frame.size.height < self.window.maxSize.height)
+            [self.window setFrame:NSMakeRect(self.window.frame.origin.x, self.window.frame.origin.y - 30, self.window.frame.size.width, self.window.frame.size.height + 30) display:YES animate:YES];
+        
+        if (!cssLabel) {
+            cssLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(128, 24, 175, 17)];
+            [cssLabel setBezeled:NO];
+            [cssLabel setDrawsBackground:NO];
+            [cssLabel setEditable:NO];
+            [cssLabel setSelectable:NO];
+            [cssLabel setFocusRingType:NSFocusRingTypeNone];
+            [self.window.contentView addSubview:cssLabel];
+        }
+        
+        if (!cssOpenPanelButton) {
+            cssOpenPanelButton = [[NSButton alloc] initWithFrame:NSMakeRect(14, 14, 97, 32)];
+            [cssOpenPanelButton setButtonType:NSMomentaryPushInButton];
+            [cssOpenPanelButton setBezelStyle:NSRoundedBezelStyle];
+            [cssOpenPanelButton setTitle:@"Browse..."];
+            [cssOpenPanelButton setTarget:self];
+            [cssOpenPanelButton setAction:@selector(openCssOpenPanel:)];
+            [self.window.contentView addSubview:cssOpenPanelButton];
+        }
+    }
+    
+    else {
+        [cssLabel removeFromSuperview];
+        cssLabel = nil;
+        
+        [cssOpenPanelButton removeFromSuperview];
+        cssOpenPanelButton = nil;
+        
+        [self.window setFrame:NSMakeRect(self.window.frame.origin.x, self.window.frame.origin.y + 30, self.window.frame.size.width, self.window.frame.size.height - 30) display:YES animate:YES];
+        [SharedDefaultsController setValue:@"" forKeyPath:@"values.customCSS"];
+    }
+}
+
+- (IBAction)openCssOpenPanel:(id)sender {
+    
+    NSOpenPanel *cssOpenPanel = [NSOpenPanel openPanel];
+    
+    [cssOpenPanel setAllowsMultipleSelection:NO];
+    [cssOpenPanel setAllowedFileTypes:[NSArray arrayWithObjects:@"css", @"CSS", nil]];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES); 
+    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents directory
+    [cssOpenPanel setDirectoryURL:[NSURL fileURLWithPath:documentsDirectory]];
+    
+    [cssOpenPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger returnCode) {
+        if (returnCode == 1) {
+            
+            NSString *path = [[cssOpenPanel URL] path];
+            
+            [SharedDefaultsController setValue:path forKeyPath:@"values.customCSS"];
+                        
+            if ([(NSString*)[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.customCSS"] isEqualToString:path] || [(NSString*)[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.customCSS"] isEqualToString:@""]) {
+                NSDictionary *settingsDict = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings"];
+                NSMutableDictionary *usDef = [[NSMutableDictionary alloc] initWithDictionary:settingsDict];
+                for (NSString *key in settingsDict) {
+                    [usDef setValue:[settingsDict valueForKey:key] forKey:key];
+                }
+                [usDef setValue:path forKey:@"customCSS"];
+                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LIInitSettings"];
+                [[NSUserDefaults standardUserDefaults] setObject:usDef forKey:@"LIInitSettings"];
+                                
+                [cssLabel setStringValue:[path lastPathComponent]];
+            }
+                
+        }
+    }];
+}
+@end

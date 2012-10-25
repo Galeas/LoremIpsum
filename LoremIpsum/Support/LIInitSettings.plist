@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>textColor</key>
+	<string>#444444</string>
+	<key>textWidth</key>
+	<integer>1</integer>
+	<key>docType</key>
+	<string>Markdown (Plain Text)</string>
+	<key>docFont</key>
+	<dict>
+		<key>fontSize</key>
+		<integer>17</integer>
+		<key>fontName</key>
+		<string>Baskerville</string>
+	</dict>
+	<key>backgroundColor</key>
+	<string>#F2F2F2</string>
+	<key>whiteBlack</key>
+	<true/>
+	<key>focusOn</key>
+	<integer>0</integer>
+	<key>markdownShowed</key>
+	<true/>
+	<key>markdownAutoupdate</key>
+	<integer>1</integer>
+	<key>textColorDark</key>
+	<string>#DFDFDF</string>
+	<key>backgroundColorDark</key>
+	<string>#0D0D0D</string>
+	<key>showCounts</key>
+	<true/>
+	<key>customCSS</key>
+	<string></string>
+	<key>useCustomCSS</key>
+	<false/>
+</dict>
+</plist>
