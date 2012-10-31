@@ -40,6 +40,9 @@ typedef NSUInteger LIFontStyle;
 @class LITextView;
 @class LISplitView;
 @class LIWebView;
+@class LIScalingScrollView;
+@class LIGradientOverlayVew;
+
 @interface LIDocWindowController : NSWindowController <NSTextViewDelegate, NSLayoutManagerDelegate, NSWindowDelegate, NSPopoverDelegate, NSSplitViewDelegate>
 {
     LITextView *aTextView;
@@ -47,7 +50,7 @@ typedef NSUInteger LIFontStyle;
     
     __weak NSLayoutConstraint *textViewRightSpace;
     __weak NSLayoutConstraint *textViewLeftSpace;
-    __weak NSScrollView *scrollContainer;
+    __weak LIScalingScrollView *scrollContainer;
     __weak LISplitView *splitContainer;
     __weak NSSegmentedControl *fontStylesControl;
     __weak NSView *editorView;
@@ -58,6 +61,7 @@ typedef NSUInteger LIFontStyle;
     __weak NSTimer *markdownTimer;
     __weak NSSegmentedControl *listSegment;
     __weak NSSegmentedControl *highlightSegment;
+    __weak LIGradientOverlayVew *_gradientView;
 }
 
 - (IBAction)showPopover:(id)sender;
@@ -80,6 +84,8 @@ typedef NSUInteger LIFontStyle;
 - (IBAction)setFontStyle:(id)sender;
 - (IBAction)toggleSelection:(id)sender;
 - (IBAction)makeBulletList:(id)sender;
+
+- (IBAction)scaleText:(id)sender;
 
 - (NSFont*)fontWithTrait:(NSString*)trait onStyle:(LIFontStyle)style;
 
@@ -128,7 +134,7 @@ typedef NSUInteger LIFontStyle;
 @property BOOL bigTextAlertShown;
 @property BOOL mazochisticMode;
 
-@property (weak) IBOutlet NSScrollView *scrollContainer;
+@property (weak) IBOutlet LIScalingScrollView *scrollContainer;
 @property (strong) IBOutlet NSPopover *textPopover;
 @property (strong) IBOutlet LITextView *aTextView;
 @property (weak) IBOutlet NSSegmentedControl *fontStylesControl;
@@ -142,4 +148,5 @@ typedef NSUInteger LIFontStyle;
 
 @property NSLayoutManager *layoutMgr;
 
+@property (weak) IBOutlet LIGradientOverlayVew *gradientView;
 @end

@@ -16,6 +16,9 @@
 #import "LITextAttachmentCell.h"
 #import "ESSImageCategory.h"
 #import "LIWebView.h"
+#import "LIBackColoredView.h"
+#import "LIScalingScrollView.h"
+#import "LIGradientOverlayVew.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import <ORCDiscount/ORCDiscount.h>
@@ -81,7 +84,7 @@ static NSString *cssDragType = @"cssDragType";
 
 - (id)initWithWindow:(NSWindow *)window
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    //NSLog(@"%s", __PRETTY_FUNCTION__);
     self = [super initWithWindow:window];
     if (self) {
         // Initialization code here.
@@ -107,13 +110,13 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)window:(NSWindow *)window didDecodeRestorableState:(NSCoder *)state
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if (state)
         [self arrangeTextInView];
 }
 
 - (void)windowDidLoad
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     [super windowDidLoad];
     
     if ([[SharedDefaultsController valueForKeyPath:@"values.showCounts"] boolValue])
@@ -186,60 +189,13 @@ static NSString *cssDragType = @"cssDragType";
     [[layoutMgr firstTextView] setNeedsDisplay:YES];
     [self.window setMinSize:NSMakeSize(400.0f, 300.0f)];
     
-    [self.window.contentView setWantsLayer:YES];
-    [aTextView setWantsLayer:YES];
-    
-    // Альфа-градиент сверху и снизу скролла
-    NSColor *backColor = [aTextView backgroundColor];
-    
-    gLayer1 = [CAGradientLayer layer];
-    gLayer2 = [CAGradientLayer layer];
-    
-    NSArray *gColors1 = [[NSArray alloc] initWithObjects:(__bridge id)[backColor coreGraphicsColorWithAlfa:1], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.75], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.5], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.25], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.05], nil];
-    NSArray *gColors2 = [[NSArray alloc] initWithArray:[[gColors1 reverseObjectEnumerator] allObjects]];
-    
-    NSArray *gLocations1 = [[NSArray alloc] initWithObjects:[NSNumber numberWithFloat:0.4], [NSNumber numberWithFloat:0.65], [NSNumber numberWithFloat:0.75], [NSNumber numberWithFloat:0.85], [NSNumber numberWithFloat:1], nil];
-    NSArray *gLocations2 = [[NSArray alloc] initWithObjects:[NSNumber numberWithFloat:0.2], [NSNumber numberWithFloat:0.4], [NSNumber numberWithFloat:0.45], [NSNumber numberWithFloat:0.6], [NSNumber numberWithFloat:1], nil];
-    
-    // Нижний градиент
-    [gLayer1 setColors:gColors1];
-    [gLayer1 setName:@"gLayer1"];
-    [gLayer1 setLocations:gLocations1];
-    [gLayer1 setFrame:NSRectToCGRect(NSMakeRect(0, 0, aTextView.bounds.size.width, 35))];
-    [gLayer1 setAutoresizingMask:kCALayerWidthSizable];
-    [[self.window.contentView layer] addSublayer:gLayer1];
-    
-    NSRect frame = NSMakeRect (0, 0, 100, 100);
-    NSRect contentRect;
-    contentRect = [NSWindow contentRectForFrameRect:frame styleMask:NSTitledWindowMask];    
-    CGFloat titleBarHeight = (frame.size.height - contentRect.size.height);
-    
-    // Верхний градиент
-    [gLayer2 setColors:gColors2];
-    [gLayer2 setLocations:gLocations2];
-    [gLayer2 setFrame:NSRectToCGRect(NSMakeRect(0, self.window.frame.size.height-titleBarHeight - 30, aTextView.bounds.size.width, 30))];
-    //[gLayer2 setFrame:NSRectToCGRect(NSMakeRect(0, 30, aTextView.bounds.size.width, 30))];
-    [gLayer2 setAutoresizingMask:kCALayerWidthSizable];
-    [[self.window.contentView layer] addSublayer:gLayer2];
-    //[[aTextView layer] addSublayer:gLayer2];
-    // ----------------*/
-    
-    // Слой с информацией о тексте
-    infoLayer = [CATextLayer layer];
-    [infoLayer bind:@"string" toObject:self withKeyPath:@"infoString" options:nil];
-    [infoLayer setFont:@"Futura"];
-    [infoLayer setFontSize:12.0f];
-    [infoLayer setForegroundColor:[[NSColor colorWithHex:@"#9E9E9E"] coreGraphicsColorWithAlfa:1]];
-    [infoLayer setFrame:NSRectToCGRect(NSMakeRect(0.0, 0.0, aTextView.bounds.size.width, 20))];
-    [infoLayer setPosition:NSPointToCGPoint(NSMakePoint(aTextView.frame.size.width/2, 10))];
-    [infoLayer setAutoresizingMask:kCALayerWidthSizable];
-    [infoLayer setAlignmentMode:kCAAlignmentCenter];
-    [[self.window.contentView layer] addSublayer:infoLayer];    
-    //--------------------
+    NSColor *backColor = [(LIBackColoredView*)[[self.splitContainer subviews] objectAtIndex:0] background];
+    //NSColor *backColor = [[NSColor greenColor] colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    [self.gradientView setGradientColor:backColor];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{    NSLog(@"%s", __PRETTY_FUNCTION__);
+{    //NSLog(@"%s", __PRETTY_FUNCTION__);
     if ([(__bridge_transfer NSString*)context isEqualToString:@"windowSizeChanged"]) {        
         [self arrangeTextInView];
     }
@@ -268,7 +224,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)setDocument:(LIDocument *)document
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if (document) {
         [[document textStorage] addLayoutManager:layoutMgr];
     }
@@ -276,7 +232,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if ([menuItem action] == @selector(showHideCounters:)) {
         if ([infoLayer isHidden]) {
             [menuItem setTitle:@"Show counters"];
@@ -323,10 +279,10 @@ static NSString *cssDragType = @"cssDragType";
     }
     
     if ([menuItem action] == @selector(richTextPlainText:)) {
-        if ([[self.document fileType] compare:(NSString*)kUTTypePlainText] == NSOrderedSame)
-            [menuItem setTitle:@"Convert to Rich Format Text"];
-        else
+        if ([[self.document fileType] isEqualToString:(NSString*)kUTTypeRTF] || [[self.document fileType] isEqualToString:(NSString*)kUTTypeRTFD])
             [menuItem setTitle:@"Convert to Markdown (Plain Text)"];
+        else
+            [menuItem setTitle:@"Convert to Rich Format Text"];
         return  YES;
     }
     
@@ -429,7 +385,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)windowDidExitVersionBrowser:(NSNotification *)notification
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     [[self.document textStorage] addLayoutManager:layoutMgr];
 }
 
@@ -437,7 +393,7 @@ static NSString *cssDragType = @"cssDragType";
 #pragma mark ---- Custom Methods ----
 
 - (void)updateSettings:(NSNotification *)notification
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSDictionary *settings;
     NSColor *textColor, *backColor;
     NSFont *aNewFont;
@@ -507,13 +463,9 @@ static NSString *cssDragType = @"cssDragType";
             [[self document] saveDocument:self];
     }
     
-    [activeStorage addAttribute:NSBackgroundColorAttributeName value:backColor range:NSMakeRange(0, [aTextView textStorage].length)];
     [activeStorage addAttribute:NSForegroundColorAttributeName value:textColor range:NSMakeRange(0, [aTextView textStorage].length)];
-    
-    [aTextView setBackgroundColor:backColor];
-    [self.window setBackgroundColor:backColor];
-    [scrollContainer setBackgroundColor:backColor];
-    [aTextView setInsertionPointColor:textColor];
+    [(LIBackColoredView*)[[self.splitContainer subviews] objectAtIndex:0] setBackground:backColor];
+    [self.gradientView setGradientColor:backColor];
     
     switch ([[settings valueForKey:@"textWidth"] intValue]) {
         case LIStraitText: {
@@ -548,7 +500,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)colorScheme:(NSNotification *)notification
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSColor *backColor = [[notification userInfo] valueForKey:@"backColor"];
     NSColor *textColor = [[notification userInfo] valueForKey:@"textColor"];
     NSInteger txtLength = [[aTextView textStorage] length];
@@ -557,7 +509,7 @@ static NSString *cssDragType = @"cssDragType";
     
     [[aTextView textStorage] beginEditing];
     
-    [[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:backColor range:NSMakeRange(0, txtLength)];
+    //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:backColor range:NSMakeRange(0, txtLength)];
     [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:textColor range:NSMakeRange(0, txtLength)];
     
     if ([selections count] > 0) {
@@ -565,20 +517,20 @@ static NSString *cssDragType = @"cssDragType";
         for (NSValue *rValue in selections) {
             if (![[notification.userInfo valueForKey:@"whiteBlack"] boolValue]) {
                 [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:backColor range:[rValue rangeValue]];
-                [[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:@"#FFFB41"] range:[rValue rangeValue]];
+                //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:@"#FFFB41"] range:[rValue rangeValue]];
             }
             else {
                 [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:textColor range:[rValue rangeValue]];
-                [[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:@"#FFFB41"] range:[rValue rangeValue]];
+                //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:@"#FFFB41"] range:[rValue rangeValue]];
             }
         }
     }
     
     [[aTextView textStorage] endEditing];
-    
-    [self.window setBackgroundColor:backColor];
-    [scrollContainer setBackgroundColor:backColor];
-    [aTextView setBackgroundColor:backColor];
+    [(LIBackColoredView*)[[self.splitContainer subviews] objectAtIndex:0] setBackground:backColor];
+    //[self.window setBackgroundColor:backColor];
+    //[scrollContainer setBackgroundColor:backColor];
+    //[aTextView setBackgroundColor:backColor];
     
     NSArray *gColorsNew1 = [[NSArray alloc] initWithObjects:(__bridge id)[backColor coreGraphicsColorWithAlfa:1], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.75], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.5], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.25], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.05], nil];
     NSArray *gColorsNew2 = [[NSArray alloc] initWithArray:[[gColorsNew1 reverseObjectEnumerator] allObjects]];
@@ -599,7 +551,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (LIFontStyle)fontStyleForFont:(NSFont *)aFont atRange:(NSRange)aRange
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSRange effectiveRange;
     
     if (aRange.location == [[aTextView textStorage] length])
@@ -632,7 +584,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)arrangeTextInView
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if ([editorView bounds].size.width - self.textContainerWidth > 40) {
         if (aTextView.frame.size.width < editorView.bounds.size.width)
             [aTextView setFrameSize:NSMakeSize(editorView.bounds.size.width, aTextView.frame.size.height)];
@@ -642,7 +594,7 @@ static NSString *cssDragType = @"cssDragType";
             [aTextView setFrameSize:NSMakeSize(editorView.bounds.size.width, aTextView.frame.size.height)];
         [aTextView setTextContainerInset:NSMakeSize(20, 20)];
     }
-    
+    /*
     [CATransaction flush];
     [CATransaction begin];
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
@@ -658,11 +610,11 @@ static NSString *cssDragType = @"cssDragType";
         [gLayer2 setFrame:NSRectToCGRect(NSMakeRect(0, self.window.frame.size.height-titleBarHeight - 30, aTextView.frame.size.width, 30))];
     [infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, aTextView.bounds.size.width, 20))];
     
-    [CATransaction commit];
+    [CATransaction commit];*/
 }
 
 - (NSString *)yarlyTimer:(NSNotification *)notification
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
 #pragma unused (notification)
     LITimedWritingController *orlyTimer = [LITimedWritingController timedWritingController];
     NSString *yarlyTimerValue = [orlyTimer showedCountdown];
@@ -681,12 +633,12 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)timerStopped
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     [self setInfoString:[self simpleInfoStringWithTimerValue:nil bigText:NO]];
 }
 
 - (NSString *)simpleInfoStringWithTimerValue:(NSString *)timerString bigText:(BOOL)bigText
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSString *bullet = [NSString stringWithUTF8String:"\u2022"];
     
     if (!bigText) {
@@ -721,7 +673,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (NSString *)infoStringwithDocType:(NSString *)doucmentType wordsSelected:(NSUInteger)wSelected charsSelected:(NSUInteger)cSelected timerStringValue:(NSString *)timerString
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSString *bullet = [NSString stringWithUTF8String:"\u2022"];
     
     LITimedWritingController *aTimer = [LITimedWritingController timedWritingController];
@@ -778,7 +730,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)updateMarkdownPreviewInstantly:(BOOL)updateNow
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSError *error = nil;
     if ((([NSDate timeIntervalSinceReferenceDate] >= whenToUpdate) || updateNow) && [[aTextView textStorage] length] != 0) {
 		whenToUpdate = [[NSDate distantFuture] timeIntervalSinceReferenceDate];
@@ -839,7 +791,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)moveFocusToRange:(NSDictionary*)maskRects
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     [CATransaction flush];
     [CATransaction begin];
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
@@ -857,7 +809,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)focusOnText
-{      NSLog(@"%s", __PRETTY_FUNCTION__);
+{      //NSLog(@"%s", __PRETTY_FUNCTION__);
     NSInteger caretLocation = [aTextView selectedRange].location;
     
     if (!topMaskLayer) {
@@ -888,13 +840,13 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)performDropFocusWhenScrolled:(NSNotification *)notification
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     [topMaskLayer removeFromSuperlayer];
     [bottomMaskLayer removeFromSuperlayer];
 }
 
 - (void)insertMarkerWithIdentifier:(NSString *)identifier
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSRange effectiveRange;
     NSRange activeRange = [aTextView selectedRange];
     
@@ -936,7 +888,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)gotoLine:(int)lineNumber
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if (lineNumber == 0)
         return;
     
@@ -952,7 +904,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)updateCounters
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     LITimedWritingController *orlyTimer = [LITimedWritingController timedWritingController];
     NSTextStorage *activeStorage = [aTextView textStorage];
     if ([activeStorage length] == 0) {
@@ -997,7 +949,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (NSFont *)fontWithTrait:(NSString *)trait onStyle:(LIFontStyle)style
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSFont *defaultFont = [self.document docFont:[SharedDefaultsController valueForKeyPath:@"values.docFont"]];
     NSString *currentFamilyName = [[NSString alloc] initWithString:[defaultFont familyName]];
     CGFloat currentSize = [defaultFont pointSize];
@@ -1149,7 +1101,7 @@ static NSString *cssDragType = @"cssDragType";
 #pragma mark ---- Some Animations ----
 
 - (void)animatedAppearingBookmark:(NSNumber *)position
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSUInteger aPosition = [position intValue];
     NSImage *bookmark = [NSImage imageNamed:@"bookmark"];
     CALayer *bookmarkLayer = [CALayer layer];
@@ -1192,7 +1144,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
-{    NSLog(@"%s", __PRETTY_FUNCTION__);
+{    //NSLog(@"%s", __PRETTY_FUNCTION__);
     NSUInteger positionForBookmark = [aTextView selectedRange].location-1;
     
         // Вставляем настоящий аттачмент
@@ -1228,7 +1180,7 @@ static NSString *cssDragType = @"cssDragType";
 #pragma mark Window Delegate
 
 - (void)windowWillClose:(NSNotification *)notification
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     [self removeObserver:self forKeyPath:@"windowContentWidth"];
     [self removeObserver:self forKeyPath:@"masked"];
     
@@ -1269,14 +1221,14 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)windowWillStartLiveResize:(NSNotification *)notification
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if ([textPopover isShown]) {
         isPopoverShown = YES;
     }
 }
 
 - (void)windowDidEndLiveResize:(NSNotification *)notification
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if (isPopoverShown) {
         [textPopover showRelativeToRect:popoverRelativeRect ofView:aTextView preferredEdge:NSMaxYEdge];
         isPopoverShown = NO;
@@ -1284,13 +1236,13 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)windowWillMove:(NSNotification *)notification
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if ([textPopover isShown])
         isPopoverShown = YES;
 }
 
 - (void)windowDidMove:(NSNotification *)notification
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if (isPopoverShown) {
         [textPopover showRelativeToRect:popoverRelativeRect ofView:aTextView preferredEdge:NSMaxYEdge];
         isPopoverShown = NO;
@@ -1298,13 +1250,13 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     [self.window makeFirstResponder:aTextView];
 }
 
 #pragma mark TextView Delegate
 - (NSRange)textView:(NSTextView *)textView willChangeSelectionFromCharacterRange:(NSRange)oldSelectedCharRange toCharacterRange:(NSRange)newSelectedCharRange
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSTextStorage *activeStorage = [aTextView textStorage];
     if ([activeStorage length] == 0) {
         activeStorage = [self.document textStorage];
@@ -1334,7 +1286,7 @@ static NSString *cssDragType = @"cssDragType";
 #pragma mark SplitView Delegate
 
 - (void)splitView:(NSSplitView *)sender resizeSubviewsWithOldSize:(NSSize)oldSize
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if ([[sender subviews] count] > 1) {
         NSSize splitViewSize = [sender frame].size;
     
@@ -1360,7 +1312,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (BOOL)splitView:(NSSplitView *)splitView shouldHideDividerAtIndex:(NSInteger)dividerIndex
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     switch (self.markdownShowed) {
         case NO:
             return YES;
@@ -1372,11 +1324,19 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (BOOL)splitView:(NSSplitView *)splitView canCollapseSubview:(NSView *)subview
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSView* rightView = [[splitView subviews] objectAtIndex:1];
     return ([subview isEqual:rightView]);
 }
 
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMaximumPosition ofSubviewAt:(NSInteger)dividerIndex
+{
+    CGFloat result = 0;
+    if (splitView == self.splitContainer) {
+        result = self.splitContainer.frame.size.width / 2;
+    }
+    return result;
+}
 /*- (BOOL)splitView:(NSSplitView *)splitView shouldCollapseSubview:(NSView *)subview forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
 {
     NSView* rightView = [[splitView subviews] objectAtIndex:1];
@@ -1386,19 +1346,19 @@ static NSString *cssDragType = @"cssDragType";
 #pragma mark WebView Delegate
 
 - (NSArray*)webView:(WebView *)sender contextMenuItemsForElement:(NSDictionary *)element defaultMenuItems:(NSArray *)defaultMenuItems
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     return nil;
 }
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSScrollView *mdScrollView = [[[[markdownPreview mainFrame] frameView] documentView] enclosingScrollView];
     [[mdScrollView contentView] scrollPoint:previewPosition];
 }
 
 #pragma mark Dragging Support
 - (NSUInteger)webView:(WebView *)webView dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if ([[[draggingInfo draggingPasteboard] types] containsObject:NSURLPboardType]) {
         NSURL *cssURL = [NSURL URLFromPasteboard:[draggingInfo draggingPasteboard]];
         if ([[cssURL pathExtension] isEqualToString:@"css"] || [[cssURL pathExtension] isEqualToString:@"CSS"]) 
@@ -1663,7 +1623,7 @@ static NSString *cssDragType = @"cssDragType";
     
     if ([attributeBackColor isEqualToString:defaultBackColor] ||  ([txtViewBackColor isEqualToString:defaultBackColor] && [attributeBackColor isEqualToString:txtViewBackColor]) || attributeBackColor == nil) {
         [[aTextView textStorage] beginEditing];
-        [[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:@"#FFFB41"] range:[aTextView selectedRange]];
+        //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:@"#FFFB41"] range:[aTextView selectedRange]];
         
         if (![[SharedDefaultsController valueForKeyPath:@"values.whiteBlack"] boolValue])
             [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:[NSColor colorWithHex:defaultBackColor] range:[aTextView selectedRange]];
@@ -1674,7 +1634,7 @@ static NSString *cssDragType = @"cssDragType";
     }
     else {
         [[aTextView textStorage] beginEditing];
-        [[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[aTextView backgroundColor] range:[aTextView selectedRange]];
+        //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[aTextView backgroundColor] range:[aTextView selectedRange]];
         if (![[SharedDefaultsController valueForKeyPath:@"values.whiteBlack"] boolValue])
             [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:[NSColor colorWithHex:[SharedDefaultsController valueForKeyPath:@"values.textColor"]] range:[aTextView selectedRange]];
         [[aTextView textStorage] endEditing];
@@ -1688,8 +1648,8 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (IBAction)showHTML:(id)sender
-{ 
-    if ([[splitContainer subviews] count] == 1 || [markdownViewContainer isHidden]) {
+{
+    if ([[self.splitContainer subviews] count] == 1 || [self.markdownViewContainer isHidden]) {
         if (!markdownPreview) {
             markdownPreview = [[LIWebView alloc] initWithFrame:NSMakeRect(0, 0, editorView.frame.size.width/3, editorView.frame.size.height)];
             [markdownPreview setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
@@ -1703,9 +1663,10 @@ static NSString *cssDragType = @"cssDragType";
         }
         
         if (!markdownViewContainer) {
-            markdownViewContainer = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, editorView.frame.size.width/3, editorView.frame.size.height)];
+            markdownViewContainer = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, editorView.frame.size.height)];
             [markdownViewContainer addSubview:markdownPreview];
-            [splitContainer addSubview:markdownViewContainer];
+            [markdownViewContainer setHidden:YES];
+            [self.splitContainer addSubview:markdownViewContainer];
             
             // Подготовка Invocation
             SEL selector = @selector(updateMarkdownPreviewInstantly:);
@@ -1718,41 +1679,18 @@ static NSString *cssDragType = @"cssDragType";
             [invocation setArgument:&updateNow atIndex:2];
             
             [self updateMarkdownPreviewInstantly:YES];
+            [self.splitContainer animateSubviewAtIndex:1 collapse:NO];
             
             self.markdownTimer = [NSTimer scheduledTimerWithTimeInterval:[[SharedDefaultsController valueForKeyPath:@"values.markdownAutoupdate"] floatValue] invocation:invocation repeats:YES];
         }
+        
         else {
-            [markdownViewContainer setHidden:NO];  
-            CGFloat dividerThickness = [splitContainer dividerThickness];  
-            // get the different frames
-            NSRect leftFrame = [editorView frame];
-            NSRect rightFrame = [markdownViewContainer frame];
-            // Adjust left frame size
-            leftFrame.size.width = splitContainer.bounds.size.width * dividerPosition;
-            rightFrame.origin.x = leftFrame.size.width + dividerThickness;
-            [editorView setFrameSize:leftFrame.size];
-            [markdownViewContainer setFrame:rightFrame];
-            [splitContainer display];
-            
-            [self.window setFrame:NSMakeRect(self.window.frame.origin.x, self.window.frame.origin.y, self.window.frame.size.width+1, self.window.frame.size.height) display:YES];
+            [self.splitContainer animateSubviewAtIndex:1 collapse:NO];
         }
         
-        [splitContainer adjustSubviews];
     }
-    else {        
-        NSView *right = [[splitContainer subviews] objectAtIndex:1];
-        NSView *left  = [[splitContainer subviews] objectAtIndex:0];
-        
-        dividerPosition = left.frame.size.width/splitContainer.bounds.size.width;
-        
-        NSRect leftFrame = [left frame];
-        NSRect overallFrame = [splitContainer frame]; //???
-        [right setHidden:YES];
-        [left setFrameSize:NSMakeSize(overallFrame.size.width,leftFrame.size.height)];
-        [splitContainer display];
-        
-        [self.window setFrame:NSMakeRect(self.window.frame.origin.x, self.window.frame.origin.y, self.window.frame.size.width-1, self.window.frame.size.height) display:YES];
-    }
+    else
+        [self.splitContainer animateSubviewAtIndex:1 collapse:YES];
 }
 
 - (IBAction)copyHTML:(id)sender
@@ -1911,5 +1849,12 @@ static NSString *cssDragType = @"cssDragType";
     }
     
     [self updateCountersManually:self];
+}
+
+- (IBAction)scaleText:(id)sender
+{
+    CGFloat scaleFactor = [sender tag];
+    scaleFactor = scaleFactor/100;    
+    [self.scrollContainer setScaleFactor:scaleFactor];
 }
 @end

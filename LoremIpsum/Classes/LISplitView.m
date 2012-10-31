@@ -1,81 +1,135 @@
 //
-//  LISplitView.m
-//  LoremIpsum
+//  PESplitView.m
+//  PHPEdit
 //
-//  Created by Akki on 05.06.12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by Akki on 9/26/12.
+//  Copyright (c) 2012 Akki. All rights reserved.
 //
 
 #import "LISplitView.h"
-#import "NSColor+Hex.h"
-#import <QuartzCore/QuartzCore.h>
 
 @implementation LISplitView
-@synthesize customAnimatableProperty;
-@synthesize divColor;
+@synthesize lastDividerPosition;
 
-- (void)anAnimation
+static CGFloat dividerThickness;
+
+- (void)setDividerThickness:(CGFloat)thickness
 {
-    // Add a custom animation to the animations dictionary
-    CABasicAnimation* animation = [CABasicAnimation animation];
-    NSMutableDictionary* newAnimations = [NSMutableDictionary dictionary];
-    [newAnimations addEntriesFromDictionary:[self animations]];
-    [newAnimations setObject:animation forKey:@"customAnimatableProperty"];
-    [self setAnimations:newAnimations];
-    
-    // initiate the animation
-    [[self animator] setCustomAnimatableProperty:10.0f];
+    dividerThickness = thickness;
 }
 
-- (void)setPosition:(CGFloat)position ofDividerAtIndex:(NSInteger)dividerIndex animate:(BOOL)animate
+- (CGFloat)dividerThickness
 {
-    if (!animate) {
-        [super setPosition:position ofDividerAtIndex:dividerIndex];
+    CGFloat result = [super dividerThickness];
+    if (dividerThickness)
+        result = dividerThickness;
+    return result;
+}
+
+- (void)animateSubviewAtIndex:(NSInteger)index collapse:(BOOL)collapse
+{
+    NSMutableDictionary *firstAnimationDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    NSMutableDictionary *secondAnimationDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    
+    NSView *first = [self.subviews objectAtIndex:0];
+    NSView *second = [self.subviews objectAtIndex:1];
+    
+    [firstAnimationDict setObject:first forKey:NSViewAnimationTargetKey];
+    [secondAnimationDict setObject:second forKey:NSViewAnimationTargetKey];
+    
+    NSRect newFirstFrame = first.frame;
+    NSRect newSecondFrame = second.frame;
+    
+    if ([self isVertical]) {
+        switch (index) {
+            case 0: {
+                if (collapse) {
+                    [self setLastDividerPosition:newFirstFrame.size.width];
+                    newFirstFrame.size.width = 0.0f;
+                    newSecondFrame.origin.x = 0.0f;
+                    newSecondFrame.size.width = self.frame.size.width;
+                }
+                else {
+                    if (self.lastDividerPosition == NSNotFound || self.lastDividerPosition == 0)
+                        [self setLastDividerPosition:self.frame.size.width/2];
+                    
+                    newFirstFrame.size.width = self.lastDividerPosition;
+                    newSecondFrame.origin.x = self.lastDividerPosition + self.dividerThickness;
+                    newSecondFrame.size.width = self.frame.size.width - newSecondFrame.origin.x;
+                    [first setHidden:NO];
+                }
+                break;
+            }
+            case 1: {
+                if (collapse) {
+                    [self setLastDividerPosition:newFirstFrame.size.width];
+                    newFirstFrame.size.width = self.frame.size.width;
+                    newSecondFrame.origin.x = self.frame.size.width;
+                    newSecondFrame.size.width = 0.0f;
+                }
+                else {
+                    if (self.lastDividerPosition == NSNotFound || self.lastDividerPosition == 0)
+                        [self setLastDividerPosition:self.frame.size.width/2];
+                    
+                    newFirstFrame.size.width = self.lastDividerPosition;
+                    newSecondFrame.origin.x = self.lastDividerPosition + self.dividerThickness;
+                    newSecondFrame.size.width = self.frame.size.width - newSecondFrame.origin.x;
+                    [second setHidden:NO];
+                }
+                break;
+            }
+            default:break;
+        }
     }
+    
     else {
-        [[self animator] setValue:[NSNumber numberWithFloat:position] forKey:@"dividerPosition"];
-    }
-}
-
-- (CGFloat)positionForDividerAtIndex:(NSInteger)idx
-{
-    NSRect frame = [[[self subviews] objectAtIndex:idx] frame];
-    if (self.isVertical) {
-        return NSMaxX(frame) + ([self dividerThickness] * idx);
-    }
-    else {
-        return NSMaxY(frame) + ([self dividerThickness] * idx);
-    }
-}
-
-- (id)animationForKey:(NSString *)key
-{
-    id animation = [super animationForKey:key];
-    //NSInteger idx;
-    if (animation == nil) {
-        animation = [super animationForKey:@"dividerPosition"];
+        switch (index) {
+            case 0: {
+                if (collapse) {
+                    [self setLastDividerPosition:newFirstFrame.size.height];
+                    newFirstFrame.size.height = 0.0f;
+                    newSecondFrame.origin.y = 0.0f;
+                    newSecondFrame.size.height = self.frame.size.height;
+                }
+                else {
+                    if (self.lastDividerPosition == NSNotFound || self.lastDividerPosition == 0)
+                        [self setLastDividerPosition:self.frame.size.height/2];
+                    
+                    newFirstFrame.size.height = self.lastDividerPosition;
+                    newSecondFrame.origin.y = self.lastDividerPosition + self.dividerThickness;
+                    newSecondFrame.size.height = self.frame.size.height - newSecondFrame.origin.y;
+                    
+                    [first setHidden:NO];
+                }
+                break;
+            }
+            case 1: {
+                if (collapse) {
+                    [self setLastDividerPosition:newFirstFrame.size.height];
+                    newFirstFrame.size.height = self.frame.size.height;
+                    newSecondFrame.origin.y = self.frame.size.height;
+                    newSecondFrame.size.height = 0.0f;
+                }
+                else {
+                    if (self.lastDividerPosition == NSNotFound || self.lastDividerPosition == 0)
+                        [self setLastDividerPosition:self.frame.size.height/2];
+                    
+                    newFirstFrame.size.height = self.lastDividerPosition;
+                    newSecondFrame.origin.y = self.lastDividerPosition + self.dividerThickness;
+                    newSecondFrame.size.height = self.frame.size.height - newSecondFrame.origin.y;
+                    [second setHidden: NO];
+                }
+                break;
+            }
+            default:break;
+        }
     }
     
-    return animation;
-}
-
-- (id)valueForUndefinedKey:(NSString *)key
-{
-   // NSInteger idx;
-    //if ([self _tryParsingDividerPositionIndex:&idx fromKey:key]) {
-        CGFloat position = [self positionForDividerAtIndex:0];
-        return [NSNumber numberWithFloat:position];
-   // }
+    [firstAnimationDict setObject:[NSValue valueWithRect:newFirstFrame] forKey:NSViewAnimationEndFrameKey];
+    [secondAnimationDict setObject:[NSValue valueWithRect:newSecondFrame] forKey:NSViewAnimationEndFrameKey];
     
-    //return nil;
+    NSViewAnimation *animation = [[NSViewAnimation alloc] initWithViewAnimations:@[ firstAnimationDict, secondAnimationDict ]];
+    [animation setDuration:0.25f];
+    [animation startAnimation];
 }
-
-- (void)setValue:(id)value forUndefinedKey:(NSString *)key
-{
-    //NSInteger idx;
-    if ([value isKindOfClass:[NSNumber class]]) {
-        [super setPosition:[value floatValue] ofDividerAtIndex:0];
-    }
-}
-
 @end

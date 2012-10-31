@@ -12,7 +12,8 @@
 		6D786CFD157DB18900190625 /* text_align_left.png in Resources */ = {isa = PBXBuildFile; fileRef = 6D786CF5157DB18900190625 /* text_align_left.png */; };
 		6D786CFE157DB18900190625 /* text_align_right.png in Resources */ = {isa = PBXBuildFile; fileRef = 6D786CF6157DB18900190625 /* text_align_right.png */; };
 		6D786D01157DB18900190625 /* text_list_bullets.png in Resources */ = {isa = PBXBuildFile; fileRef = 6D786CF9157DB18900190625 /* text_list_bullets.png */; };
-		6DF2EA22157DCDA1003A80FB /* LISplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DF2EA21157DCDA1003A80FB /* LISplitView.m */; };
+		6DB2800B163DF2AA00A9D802 /* LIBackColoredView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DB2800A163DF2AA00A9D802 /* LIBackColoredView.m */; };
+		6DB28014163E00F900A9D802 /* LIScalingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DB28013163E00F900A9D802 /* LIScalingScrollView.m */; };
 		8414AFE0157F4454007AA580 /* LIDocumentCOntroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 8414AFDF157F4454007AA580 /* LIDocumentCOntroller.m */; };
 		8414AFE5157F4FB2007AA580 /* LITimedWritingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8414AFE3157F4FB2007AA580 /* LITimedWritingController.m */; };
 		8414AFE6157F4FB2007AA580 /* LITimedWritingController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8414AFE4157F4FB2007AA580 /* LITimedWritingController.xib */; };
@@ -49,8 +50,10 @@
 		8490CA07158094F3004C6DFB /* font-size-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 8490CA01158094F3004C6DFB /* font-size-small.png */; };
 		8490CA08158094F3004C6DFB /* italic.png in Resources */ = {isa = PBXBuildFile; fileRef = 8490CA02158094F3004C6DFB /* italic.png */; };
 		8490CA09158094F3004C6DFB /* underline.png in Resources */ = {isa = PBXBuildFile; fileRef = 8490CA03158094F3004C6DFB /* underline.png */; };
+		84B13F8C16413929000C022B /* LIGradientOverlayVew.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B13F8B16413929000C022B /* LIGradientOverlayVew.m */; };
 		84BBB4CE15B82ABB00BB99E2 /* dark.css in Resources */ = {isa = PBXBuildFile; fileRef = 84BBB4CC15B82ABB00BB99E2 /* dark.css */; };
 		84BBB4CF15B82ABB00BB99E2 /* light.css in Resources */ = {isa = PBXBuildFile; fileRef = 84BBB4CD15B82ABB00BB99E2 /* light.css */; };
+		84C74E2A163E987C00B782C0 /* LISplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84C74E29163E987B00B782C0 /* LISplitView.m */; };
 		84CDE6971588DAB100EC1A05 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 84CDE6961588DAB100EC1A05 /* icon.icns */; };
 		84CDE69A1588ECDB00EC1A05 /* NSString+Trimming.m in Sources */ = {isa = PBXBuildFile; fileRef = 84CDE6991588ECDB00EC1A05 /* NSString+Trimming.m */; };
 		84D3BBDB1580DED600AE8927 /* LIBookmarxController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84D3BBD91580DED600AE8927 /* LIBookmarxController.m */; };
@@ -79,8 +82,10 @@
 		6D786CF5157DB18900190625 /* text_align_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = text_align_left.png; path = Support/Graphics/text_align_left.png; sourceTree = "<group>"; };
 		6D786CF6157DB18900190625 /* text_align_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = text_align_right.png; path = Support/Graphics/text_align_right.png; sourceTree = "<group>"; };
 		6D786CF9157DB18900190625 /* text_list_bullets.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = text_list_bullets.png; path = Support/Graphics/text_list_bullets.png; sourceTree = "<group>"; };
-		6DF2EA20157DCDA1003A80FB /* LISplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LISplitView.h; path = Classes/LISplitView.h; sourceTree = "<group>"; };
-		6DF2EA21157DCDA1003A80FB /* LISplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LISplitView.m; path = Classes/LISplitView.m; sourceTree = "<group>"; };
+		6DB28009163DF2AA00A9D802 /* LIBackColoredView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LIBackColoredView.h; path = Classes/LIBackColoredView.h; sourceTree = "<group>"; };
+		6DB2800A163DF2AA00A9D802 /* LIBackColoredView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LIBackColoredView.m; path = Classes/LIBackColoredView.m; sourceTree = "<group>"; };
+		6DB28012163E00F900A9D802 /* LIScalingScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LIScalingScrollView.h; path = Classes/LIScalingScrollView.h; sourceTree = "<group>"; };
+		6DB28013163E00F900A9D802 /* LIScalingScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LIScalingScrollView.m; path = Classes/LIScalingScrollView.m; sourceTree = "<group>"; };
 		8414AFDE157F4454007AA580 /* LIDocumentCOntroller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LIDocumentCOntroller.h; path = Classes/LIDocumentCOntroller.h; sourceTree = "<group>"; };
 		8414AFDF157F4454007AA580 /* LIDocumentCOntroller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LIDocumentCOntroller.m; path = Classes/LIDocumentCOntroller.m; sourceTree = "<group>"; };
 		8414AFE2157F4FB2007AA580 /* LITimedWritingController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LITimedWritingController.h; path = Classes/LITimedWritingController.h; sourceTree = "<group>"; };
@@ -135,8 +140,12 @@
 		8490CA01158094F3004C6DFB /* font-size-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "font-size-small.png"; path = "Support/Graphics/font-size-small.png"; sourceTree = "<group>"; };
 		8490CA02158094F3004C6DFB /* italic.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = italic.png; path = Support/Graphics/italic.png; sourceTree = "<group>"; };
 		8490CA03158094F3004C6DFB /* underline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = underline.png; path = Support/Graphics/underline.png; sourceTree = "<group>"; };
+		84B13F8A16413929000C022B /* LIGradientOverlayVew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LIGradientOverlayVew.h; path = Classes/LIGradientOverlayVew.h; sourceTree = "<group>"; };
+		84B13F8B16413929000C022B /* LIGradientOverlayVew.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LIGradientOverlayVew.m; path = Classes/LIGradientOverlayVew.m; sourceTree = "<group>"; };
 		84BBB4CC15B82ABB00BB99E2 /* dark.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = dark.css; sourceTree = "<group>"; };
 		84BBB4CD15B82ABB00BB99E2 /* light.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = light.css; sourceTree = "<group>"; };
+		84C74E28163E987B00B782C0 /* LISplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LISplitView.h; path = Classes/LISplitView.h; sourceTree = "<group>"; };
+		84C74E29163E987B00B782C0 /* LISplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LISplitView.m; path = Classes/LISplitView.m; sourceTree = "<group>"; };
 		84CDE6961588DAB100EC1A05 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = icon.icns; path = Support/Graphics/icon.icns; sourceTree = "<group>"; };
 		84CDE6981588ECDB00EC1A05 /* NSString+Trimming.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Trimming.h"; path = "Categories/NSString+Trimming.h"; sourceTree = "<group>"; };
 		84CDE6991588ECDB00EC1A05 /* NSString+Trimming.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+Trimming.m"; path = "Categories/NSString+Trimming.m"; sourceTree = "<group>"; };
@@ -242,10 +251,14 @@
 		8424C89B157C9E5A0049F90C /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				84C74E28163E987B00B782C0 /* LISplitView.h */,
+				84C74E29163E987B00B782C0 /* LISplitView.m */,
+				6DB28012163E00F900A9D802 /* LIScalingScrollView.h */,
+				6DB28013163E00F900A9D802 /* LIScalingScrollView.m */,
+				6DB28009163DF2AA00A9D802 /* LIBackColoredView.h */,
+				6DB2800A163DF2AA00A9D802 /* LIBackColoredView.m */,
 				8424C892157C9E3F0049F90C /* LIDocWindowController.h */,
 				8424C893157C9E3F0049F90C /* LIDocWindowController.m */,
-				6DF2EA20157DCDA1003A80FB /* LISplitView.h */,
-				6DF2EA21157DCDA1003A80FB /* LISplitView.m */,
 				8424C894157C9E3F0049F90C /* LIPreferences.h */,
 				8424C895157C9E3F0049F90C /* LIPreferences.m */,
 				8424C896157C9E400049F90C /* LITextView.h */,
@@ -272,6 +285,8 @@
 				84782D8E1599D4A3004E59ED /* LITextAttachmentCell.m */,
 				846F5EE015AF163900926F49 /* LIWebView.h */,
 				846F5EE115AF163900926F49 /* LIWebView.m */,
+				84B13F8A16413929000C022B /* LIGradientOverlayVew.h */,
+				84B13F8B16413929000C022B /* LIGradientOverlayVew.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -426,7 +441,6 @@
 				8424C899157C9E400049F90C /* LIPreferences.m in Sources */,
 				8424C89A157C9E400049F90C /* LITextView.m in Sources */,
 				8424C8C2157CA02C0049F90C /* NSColor+Hex.m in Sources */,
-				6DF2EA22157DCDA1003A80FB /* LISplitView.m in Sources */,
 				8414AFE0157F4454007AA580 /* LIDocumentCOntroller.m in Sources */,
 				8414AFE5157F4FB2007AA580 /* LITimedWritingController.m in Sources */,
 				84621CD41580D59200C99495 /* LIPopoverView.m in Sources */,
@@ -439,6 +453,10 @@
 				84782D8F1599D4A4004E59ED /* LITextAttachmentCell.m in Sources */,
 				84782D931599D6DB004E59ED /* ESSImageCategory.m in Sources */,
 				846F5EE215AF163900926F49 /* LIWebView.m in Sources */,
+				6DB2800B163DF2AA00A9D802 /* LIBackColoredView.m in Sources */,
+				6DB28014163E00F900A9D802 /* LIScalingScrollView.m in Sources */,
+				84C74E2A163E987C00B782C0 /* LISplitView.m in Sources */,
+				84B13F8C16413929000C022B /* LIGradientOverlayVew.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -533,7 +551,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../.Trash\"",
 					"\"$(SRCROOT)/LoremIpsum/Frameworks\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -555,7 +572,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../.Trash\"",
 					"\"$(SRCROOT)/LoremIpsum/Frameworks\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

@@ -1,22 +1,20 @@
 //
-//  LISplitView.h
-//  LoremIpsum
+//  PESplitView.h
+//  PHPEdit
 //
-//  Created by Akki on 05.06.12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by Akki on 9/26/12.
+//  Copyright (c) 2012 Akki. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>
 
-@interface LISplitView : NSSplitView {
-    CALayer *colorLayer;
+@interface LISplitView : NSSplitView
+{
+    CGFloat lastDividerPosition;
 }
 
-- (void)setPosition:(CGFloat)position ofDividerAtIndex:(NSInteger)dividerIndex animate:(BOOL)animate;
-- (CGFloat)positionForDividerAtIndex:(NSInteger)idx;
-- (void)anAnimation;
+@property (assign) CGFloat lastDividerPosition;
 
-@property (assign) float customAnimatableProperty;
-@property NSColor *divColor;
-
+- (void)animateSubviewAtIndex:(NSInteger)index collapse:(BOOL)collapse;
+- (void)setDividerThickness:(CGFloat)thickness;
 @end

@@ -23,7 +23,7 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 @synthesize typingAttribs;
 
 - (id)init
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     self = [super init];
     if (self) {
         // Add your subclass-specific initialization here.
@@ -54,7 +54,7 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 }
 
 - (void)makeWindowControllers
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if ([[self windowControllers] count] == 0) {
         LIDocWindowController *controller = [[LIDocWindowController alloc] initWithWindowNibName:@"LIDocWindowController"];
         [self addWindowController:controller];
@@ -62,7 +62,7 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 }
 
 - (void)makeWindowControllersManual:(BOOL)manual
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     if (!manual)
         [self makeWindowControllers];
     else {
@@ -74,12 +74,12 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 }
 
 + (BOOL)autosavesInPlace
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     return YES;
 }
 
 - (BOOL)readFromFileWrapper:(NSFileWrapper *)fileWrapper ofType:(NSString *)typeName error:(NSError *__autoreleasing *)outError
-{    NSLog(@"%s", __PRETTY_FUNCTION__);
+{    //NSLog(@"%s", __PRETTY_FUNCTION__);
     NSTextStorage *aStorage;
     
     if ([fileWrapper isRegularFile] && ([typeName compare:@"public.rtf"] == NSOrderedSame)) {
@@ -107,9 +107,12 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 }
 
 - (NSFileWrapper *)fileWrapperOfType:(NSString *)typeName error:(NSError *__autoreleasing *)outError
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSRange documentRange = NSMakeRange(0, [[[WindowController aTextView] textStorage] length]);
-    NSTextStorage *text = [[WindowController aTextView] textStorage];
+    NSMutableAttributedString *maString = [[[WindowController aTextView] attributedString] mutableCopy];
+    [maString addAttributes:@{ NSBackgroundColorAttributeName : [NSColor whiteColor] , NSForegroundColorAttributeName : [NSColor blackColor] } range:documentRange];
+    NSTextStorage *text = [[NSTextStorage alloc] initWithAttributedString:maString];
+    //NSTextStorage *text = [[[WindowController aTextView] textStorage] copy];
     
     NSFileWrapper *resultWrapper = nil;
     if ([typeName compare:@"public.rtf"] == NSOrderedSame) {
@@ -155,7 +158,7 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{NSLog(@"%s", __PRETTY_FUNCTION__);
+{//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSString *fileType = [change valueForKey:@"new"];
     [fileType isEqualToString:@"public.plain-text"] ? [self setDocType:TXT] : [self setDocType:RTF];
 }

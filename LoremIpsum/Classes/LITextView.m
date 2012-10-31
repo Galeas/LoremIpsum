@@ -18,28 +18,6 @@
 
 @implementation LITextView
 
-/*
-- (id)initWithFrame:(NSRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code here.
-        [self setUsesFindBar:YES];
-        [self setIncrementalSearchingEnabled:YES];
-        [self setAllowsUndo:YES];
-        [self setAllowsDocumentBackgroundColorChange:YES];
-        [self setBackgroundColor:[NSColor colorWithHex:@"#F2F2F2"]];
-    }
-    
-    return self;
-}*/
-
-/*- (void)drawRect:(NSRect)dirtyRectr
-{
-    // Drawing code here.
-    [super drawRect:dirtyRectr];
-}*/
-
 - (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard type:(NSString *)type
 {
     NSData *data;

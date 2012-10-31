@@ -20,6 +20,9 @@
     CATextLayer *selectionOverlay;
 }
 
+@property (copy) NSColor *startColor;
+@property (copy) NSColor *endColor;
+
 - (NSRect)rectForPopover;
 - (NSDictionary*)maskForRange:(NSRange)aRange;
 - (NSRect)overlayRectForRange:(NSRange)aRange;
