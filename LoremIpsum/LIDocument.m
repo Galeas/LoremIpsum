@@ -12,12 +12,16 @@
 #import "LIDocumentCOntroller.h"
 #import "LITextAttachmentCell.h"
 #import "ESSImageCategory.h"
+#import "LISettingsProxy.h"
 
 
 #define WindowController [[self windowControllers] lastObject]
 static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 
 @implementation LIDocument
+{
+    LISettingsProxy *settingsProxy;
+}
 @synthesize textStorage = _textStorage;
 @synthesize docType;
 @synthesize typingAttribs;
@@ -28,6 +32,7 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
     if (self) {
         // Add your subclass-specific initialization here.
         _textStorage = [[NSTextStorage alloc] init];
+        settingsProxy = [LISettingsProxy proxy];
         
         // Исходные настройки приложения
         NSMutableDictionary *initialSettings;
@@ -38,7 +43,8 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
         } else
             initialSettings = [[NSUserDefaults standardUserDefaults] objectForKey:@"LIInitSettings"];
         
-        [SharedDefaultsController setInitialValues:initialSettings];
+        [settingsProxy setSettings:initialSettings];
+        //[SharedDefaultsController setInitialValues:initialSettings];
         
         [self setTypingAttribs:[NSDictionary dictionaryWithObjectsAndKeys:[self docFont:[initialSettings valueForKey:@"docFont"]], NSFontAttributeName, [NSColor colorWithHex:[initialSettings valueForKey:@"textColor"]], NSForegroundColorAttributeName, nil]];
         
@@ -205,9 +211,10 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 
 - (NSFont *)textFont
 {    
-    NSString *fontName = [[SharedDefaultsController valueForKeyPath:@"values.docFont"] valueForKey:@"fontName"];
-    CGFloat fontSize = [[[SharedDefaultsController valueForKeyPath:@"values.docFont"] valueForKey:@"fontSize"] floatValue];
-    
+    //NSString *fontName = [[SharedDefaultsController valueForKeyPath:@"values.docFont"] valueForKey:@"fontName"];
+    //CGFloat fontSize = [[[SharedDefaultsController valueForKeyPath:@"values.docFont"] valueForKey:@"fontSize"] floatValue];
+    NSString *fontName = [[settingsProxy valueForSetting:@"docFont"] valueForKey:@"fontName"];
+    CGFloat fontSize = [[[settingsProxy valueForSetting:@"docFont"] valueForKey:@"fontSize"] floatValue];
     NSFont *aFont = [NSFont fontWithName:fontName size:fontSize];
     return aFont;
 }

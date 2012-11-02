@@ -9,24 +9,9 @@
 #import "LIWebView.h"
 #import "LIDocWindowController.h"
 #import "LIDocument.h"
+#import "LISettingsProxy.h"
 
 @implementation LIWebView
-
-/*- (id)initWithFrame:(NSRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code here.
-    }
-    
-    return self;
-}
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-    // Drawing code here.
-}
-*/
 
 - (void)draggingEnded:(id<NSDraggingInfo>)sender
 {
@@ -34,8 +19,10 @@
         NSURL *cssURL = [NSURL URLFromPasteboard:[sender draggingPasteboard]];
         if ([[cssURL pathExtension] isEqualToString:@"css"] || [[cssURL pathExtension] isEqualToString:@"CSS"]) {
             
-            [SharedDefaultsController setValue:[cssURL path] forKeyPath:@"values.customCSS"];
-            [SharedDefaultsController setValue:[NSNumber numberWithBool:YES] forKeyPath:@"values.useCustomCSS"];
+            //[SharedDefaultsController setValue:[cssURL path] forKeyPath:@"values.customCSS"];
+            //[SharedDefaultsController setValue:[NSNumber numberWithBool:YES] forKeyPath:@"values.useCustomCSS"];
+            [[LISettingsProxy proxy] setValue:[cssURL path] forSettingName:@"customCSS"];
+            [[LISettingsProxy proxy] setValue:[NSNumber numberWithBool:YES] forSettingName:@"useCustomCSS"];
         }
     }
 }

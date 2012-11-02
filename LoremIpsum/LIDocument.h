@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#define SharedDefaultsController [NSUserDefaultsController sharedUserDefaultsController]
+//#define SharedDefaultsController [NSUserDefaultsController sharedUserDefaultsController]
 #define RTF @"Rich Format Text"
 #define TXT @"Markdown (Plain Text)"
 

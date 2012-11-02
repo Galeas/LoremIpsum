@@ -19,6 +19,7 @@
 #import "LIBackColoredView.h"
 #import "LIScalingScrollView.h"
 #import "LIGradientOverlayVew.h"
+#import "LISettingsProxy.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import <ORCDiscount/ORCDiscount.h>
@@ -46,6 +47,8 @@ static NSString *cssDragType = @"cssDragType";
     NSString *_cssHTML;
     NSPoint previewPosition;
     CGFloat dividerPosition;
+    
+    LISettingsProxy *settingsProxy;
 }
 @end
 
@@ -103,6 +106,7 @@ static NSString *cssDragType = @"cssDragType";
         [self setBigTextAlertShown:NO];
         
         whenToUpdate = [[NSDate distantFuture] timeIntervalSinceReferenceDate];
+        settingsProxy = [LISettingsProxy proxy];
         
     }
     
@@ -119,10 +123,10 @@ static NSString *cssDragType = @"cssDragType";
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
     [super windowDidLoad];
     
-    if ([[SharedDefaultsController valueForKeyPath:@"values.showCounts"] boolValue])
+    if ([[settingsProxy valueForSetting:@"showCounts"] boolValue])
         [self setInfoString:[self simpleInfoStringWithTimerValue:nil bigText:self.iAmBigText]];
     
-    if ([[SharedDefaultsController valueForKeyPath:@"values.focusOn"] intValue] > 0)
+    if ([[settingsProxy valueForSetting:@"focusOn"] intValue] > 0)
         [self setMasked:YES];
     else
         [self setMasked:NO];
@@ -130,7 +134,7 @@ static NSString *cssDragType = @"cssDragType";
     [[NSNotificationCenter defaultCenter] addObserverForName:NSTextViewDidChangeSelectionNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note)
      {
          clock_t start = clock();
-         BOOL countersShown = [[SharedDefaultsController valueForKeyPath:@"values.showCounts"] boolValue];
+         BOOL countersShown = [[settingsProxy valueForSetting:@"showCounts"] boolValue];
          
          if (countersShown) {
              [self updateCounters];
@@ -166,9 +170,9 @@ static NSString *cssDragType = @"cssDragType";
     [self addObserver:self forKeyPath:@"windowContentWidth" options:0 context:@"windowSizeChanged"];
     [self addObserver:self forKeyPath:@"masked" options:0 context:@"removeMask"];
     
-    [SharedDefaultsController addObserver:self forKeyPath:@"values.focusOn" options:0 context:@"focusModeChanged"];
-    [SharedDefaultsController addObserver:self forKeyPath:@"values.useCustomCSS" options:0 context:@"useCSS"];
-    [SharedDefaultsController addObserver:self forKeyPath:@"values.whiteBlack" options:0 context:@"mdPreviewColor"];
+    [settingsProxy addObserver:self forKeyPath:@"focusOn" options:0 context:@"focusModeChanged"];
+    [settingsProxy addObserver:self forKeyPath:@"useCustomCSS" options:0 context:@"useCSS"];
+    [settingsProxy addObserver:self forKeyPath:@"whiteBlack" options:0 context:@"mdPreviewColor"];
     
     [[aTextView textContainer] setWidthTracksTextView:YES];
     [aTextView setUsesFindBar:YES];
@@ -201,7 +205,7 @@ static NSString *cssDragType = @"cssDragType";
     }
     
     else if ([(__bridge_transfer NSString*)context isEqualToString:@"focusModeChanged"]) {
-        NSUInteger focusMode = [[SharedDefaultsController valueForKeyPath:@"values.focusOn"] intValue];
+        NSUInteger focusMode = [[settingsProxy valueForSetting:@"focusOn"] intValue]; //[[SharedDefaultsController valueForKeyPath:@"values.focusOn"] intValue];
         if (focusMode > 0)
             [self setMasked:YES];
         else
@@ -401,7 +405,7 @@ static NSString *cssDragType = @"cssDragType";
     NSTextStorage *activeStorage = [aTextView textStorage];
     
     if (notification == nil) {
-        settings = [[NSDictionary alloc] initWithDictionary:[SharedDefaultsController initialValues]];
+        settings = [settingsProxy settings];
         aNewFont = [self.document docFont:[settings valueForKey:@"docFont"]];
         
         switch ([[settings valueForKey:@"whiteBlack"] boolValue]) {
@@ -424,9 +428,9 @@ static NSString *cssDragType = @"cssDragType";
             [activeStorage setFont:aNewFont];
         [activeStorage endEditing];
         
-        [SharedDefaultsController setValue:[backColor hexColor] forKeyPath:@"values.backgroundColor"];
-        [SharedDefaultsController setValue:[textColor hexColor] forKeyPath:@"values.textColor"];
-        [SharedDefaultsController setValue:[settings valueForKey:@"docFont"] forKeyPath:@"values.docFont"];
+        [settingsProxy setValue:[backColor hexColor] forSettingName:@"backgroundColor"];
+        [settingsProxy setValue:[textColor hexColor] forSettingName:@"textColor"];
+        [settingsProxy setValue:[settings valueForKey:@"docFont"] forSettingName:@"docFont"];
     }
     else {        
         NSFont *settedFont = [self.document docFont:(NSDictionary*)[[notification userInfo] objectForKey:@"docFont"]];
@@ -455,9 +459,9 @@ static NSString *cssDragType = @"cssDragType";
         [activeStorage setForegroundColor:textColor];
         [activeStorage endEditing];
         
-        [SharedDefaultsController setValue:[backColor hexColor] forKeyPath:@"values.backgroundColor"];
-        [SharedDefaultsController setValue:[textColor hexColor] forKeyPath:@"values.textColor"];
-        [SharedDefaultsController setValue:[settings valueForKey:@"docFont"] forKeyPath:@"values.docFont"];
+        [settingsProxy setValue:[backColor hexColor] forSettingName:@"backgroundColor"];
+        [settingsProxy setValue:[textColor hexColor] forSettingName:@"textColor"];
+        [settingsProxy setValue:[settings valueForKey:@"docFont"] forSettingName:@"docFont"];
         
         if ([self.document fileURL])
             [[self document] saveDocument:self];
@@ -470,19 +474,20 @@ static NSString *cssDragType = @"cssDragType";
     switch ([[settings valueForKey:@"textWidth"] intValue]) {
         case LIStraitText: {
             [self setTextContainerWidth:400.0f];
-            [SharedDefaultsController setValue:[NSNumber numberWithInt:LIStraitText] forKeyPath:@"values.textWidth"];
+            //[SharedDefaultsController setValue:[NSNumber numberWithInt:LIStraitText] forKeyPath:@"values.textWidth"];
+            [settingsProxy setValue:[NSNumber numberWithInteger:LIStraitText] forSettingName:@"textWidth"];
             break;
         }
             
         case LIMediumText: {
             [self setTextContainerWidth:650.0f];
-            [SharedDefaultsController setValue:[NSNumber numberWithInt:LIMediumText] forKeyPath:@"values.textWidth"];
+            [settingsProxy setValue:[NSNumber numberWithInteger:LIMediumText] forSettingName:@"textWidth"];
             break;
         }
             
         case LIWideText: {
             [self setTextContainerWidth:900.0f];
-            [SharedDefaultsController setValue:[NSNumber numberWithInt:LIWideText] forKeyPath:@"values.textWidth"];
+            [settingsProxy setValue:[NSNumber numberWithInteger:LIWideText] forSettingName:@"textWidth"];
             break;
         }
     }
@@ -540,8 +545,8 @@ static NSString *cssDragType = @"cssDragType";
     
     [aTextView setInsertionPointColor:textColor];
     
-    [SharedDefaultsController setValue:[textColor hexColor] forKeyPath:@"values.textColor"];
-    [SharedDefaultsController setValue:[backColor hexColor] forKeyPath:@"values.backgroundColor"];
+    [settingsProxy setValue:[textColor hexColor] forSettingName:@"textColor"];
+    [settingsProxy setValue:[backColor hexColor] forSettingName:@"backgroundColor"];
     
     if ([[[aTextView layer] sublayers] containsObject:bottomMaskLayer] || [[[aTextView layer] sublayers] containsObject:topMaskLayer] || (bottomMaskLayer && topMaskLayer)) {
         [topMaskLayer setBackgroundColor:[[aTextView backgroundColor] coreGraphicsColorWithAlfa:0.75]];
@@ -738,8 +743,8 @@ static NSString *cssDragType = @"cssDragType";
         NSString *defaultCSSLight = [NSString stringWithFormat:@"<style>%@</style>", [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"light" ofType:@"css"] encoding:NSUTF8StringEncoding error:&error]];
         NSString *defaultCSSDark = [NSString stringWithFormat:@"<style>%@</style>", [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"dark" ofType:@"css"] encoding:NSUTF8StringEncoding error:&error]];
         
-        if ([[SharedDefaultsController valueForKeyPath:@"values.useCustomCSS"] boolValue]) {
-            NSString *aPath = [SharedDefaultsController valueForKeyPath:@"values.customCSS"];
+        if ([[settingsProxy valueForSetting:@"useCustomCSS"] boolValue]) {
+            NSString *aPath = [settingsProxy valueForSetting:@"customCSS"];
             if (_cssPath.length == 0 || ![_cssPath isEqualToString:aPath] || [_cssHTML isEqualToString:defaultCSSLight] || [_cssHTML isEqualToString:defaultCSSDark]) {
                 _cssPath = aPath;
                 if ([[NSFileManager defaultManager] fileExistsAtPath:_cssPath]) {
@@ -747,7 +752,7 @@ static NSString *cssDragType = @"cssDragType";
                     _cssHTML = [NSString stringWithFormat:@"<style>%@</style>", [NSString stringWithContentsOfFile:_cssPath encoding:NSUTF8StringEncoding error:&error]];
                 }
                 else {
-                    if ([[SharedDefaultsController valueForKeyPath:@"values.whiteBlack"] boolValue])
+                    if ([[settingsProxy valueForSetting:@"whiteBlack"] boolValue])
                         _cssHTML = defaultCSSLight;
                     else
                         _cssHTML = defaultCSSDark;
@@ -755,7 +760,7 @@ static NSString *cssDragType = @"cssDragType";
             }
         }
         else {
-            if ([[SharedDefaultsController valueForKeyPath:@"values.whiteBlack"] boolValue])
+            if ([[settingsProxy valueForSetting:@"whiteBlack"] boolValue])
                 _cssHTML = defaultCSSLight;
             else
                 _cssHTML = defaultCSSDark;
@@ -821,7 +826,7 @@ static NSString *cssDragType = @"cssDragType";
         [bottomMaskLayer setBackgroundColor:[[aTextView backgroundColor] coreGraphicsColorWithAlfa:0.75]];
     }
     NSDictionary *rects = [[NSDictionary alloc] init];
-    switch ([[SharedDefaultsController valueForKeyPath:@"values.focusOn"] intValue]) {
+    switch ([[settingsProxy valueForSetting:@"focusOn"] intValue]) {
         case 1: {
             NSRange neededRange;
             if (caretLocation == [aTextView.textStorage length])
@@ -950,7 +955,7 @@ static NSString *cssDragType = @"cssDragType";
 
 - (NSFont *)fontWithTrait:(NSString *)trait onStyle:(LIFontStyle)style
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
-    NSFont *defaultFont = [self.document docFont:[SharedDefaultsController valueForKeyPath:@"values.docFont"]];
+    NSFont *defaultFont = [self.document docFont:[settingsProxy valueForSetting:@"docFont"]];
     NSString *currentFamilyName = [[NSString alloc] initWithString:[defaultFont familyName]];
     CGFloat currentSize = [defaultFont pointSize];
     
@@ -1186,9 +1191,9 @@ static NSString *cssDragType = @"cssDragType";
     
     [self.document removeObserver:self.document forKeyPath:@"fileType"];
     
-    [SharedDefaultsController removeObserver:self forKeyPath:@"values.focusOn"];
-    [SharedDefaultsController removeObserver:self forKeyPath:@"values.useCustomCSS"];
-    [SharedDefaultsController removeObserver:self forKeyPath:@"values.whiteBlack"];
+    [settingsProxy removeObserver:self forKeyPath:@"values.focusOn"];
+    [settingsProxy removeObserver:self forKeyPath:@"values.useCustomCSS"];
+    [settingsProxy removeObserver:self forKeyPath:@"values.whiteBlack"];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"newSettingsArrived" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"colorScheme" object:nil];
@@ -1404,13 +1409,13 @@ static NSString *cssDragType = @"cssDragType";
             }
         }
     
-        NSFont *defaultFont = [self.document docFont:[SharedDefaultsController valueForKeyPath:@"values.docFont"]];
+        NSFont *defaultFont = [self.document docFont:[settingsProxy valueForSetting:@"docFont"]];
         NSFont *currentFont = [aTextView currentFont];
         
             // Определяем, подсвечен ли текст
         NSRange effectiveRange;
         NSColor *backHighlight = [[[aTextView textStorage] attributesAtIndex:activeRange.location effectiveRange:&effectiveRange] valueForKey:NSBackgroundColorAttributeName];
-        if (!backHighlight || [[backHighlight hexColor] isEqualToString:[SharedDefaultsController valueForKeyPath:@"values.backgroundColor"]])
+        if (!backHighlight || [[backHighlight hexColor] isEqualToString:[settingsProxy valueForSetting:@"backgroundColor"]])
             [highlightSegment setSelectedSegment:-1];
         else
             [highlightSegment setSelectedSegment:0];
@@ -1506,7 +1511,7 @@ static NSString *cssDragType = @"cssDragType";
 
 - (IBAction)setFontSize:(id)sender
 {
-    NSFont *defaultFont = [self.document docFont:[SharedDefaultsController valueForKeyPath:@"values.docFont"]];
+    NSFont *defaultFont = [self.document docFont:[settingsProxy valueForSetting:@"docFont"]];
     NSFont *aNewFont;
     
     NSRange activeRange = [[[aTextView selectedRanges] objectAtIndex:0] rangeValue];
@@ -1619,24 +1624,24 @@ static NSString *cssDragType = @"cssDragType";
     
     NSString *attributeBackColor = [[[[aTextView textStorage] attributesAtIndex:[aTextView selectedRange].location effectiveRange:&effectiveRange] valueForKey:NSBackgroundColorAttributeName] hexColor];
     NSString *txtViewBackColor = [[aTextView backgroundColor] hexColor];
-    NSString *defaultBackColor = [SharedDefaultsController valueForKeyPath:@"values.backgroundColor"];
+    NSString *defaultBackColor = [settingsProxy valueForSetting:@"backgroundColor"];
     
     if ([attributeBackColor isEqualToString:defaultBackColor] ||  ([txtViewBackColor isEqualToString:defaultBackColor] && [attributeBackColor isEqualToString:txtViewBackColor]) || attributeBackColor == nil) {
         [[aTextView textStorage] beginEditing];
         //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:@"#FFFB41"] range:[aTextView selectedRange]];
         
-        if (![[SharedDefaultsController valueForKeyPath:@"values.whiteBlack"] boolValue])
+        if (![[settingsProxy valueForSetting:@"whiteBlack"] boolValue])
             [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:[NSColor colorWithHex:defaultBackColor] range:[aTextView selectedRange]];
         else
-            [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:[NSColor colorWithHex:[SharedDefaultsController valueForKeyPath:@"values.textColor"]] range:[aTextView selectedRange]];
+            [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:[NSColor colorWithHex:[settingsProxy valueForSetting:@"textColor"]] range:[aTextView selectedRange]];
             
         [[aTextView textStorage] endEditing];
     }
     else {
         [[aTextView textStorage] beginEditing];
         //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[aTextView backgroundColor] range:[aTextView selectedRange]];
-        if (![[SharedDefaultsController valueForKeyPath:@"values.whiteBlack"] boolValue])
-            [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:[NSColor colorWithHex:[SharedDefaultsController valueForKeyPath:@"values.textColor"]] range:[aTextView selectedRange]];
+        if (![[settingsProxy valueForSetting:@"whiteBlack"] boolValue])
+            [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:[NSColor colorWithHex:[settingsProxy valueForSetting:@"textColor"]] range:[aTextView selectedRange]];
         [[aTextView textStorage] endEditing];
         [highlightSegment setSelectedSegment:-1];
     }
@@ -1681,7 +1686,7 @@ static NSString *cssDragType = @"cssDragType";
             [self updateMarkdownPreviewInstantly:YES];
             [self.splitContainer animateSubviewAtIndex:1 collapse:NO];
             
-            self.markdownTimer = [NSTimer scheduledTimerWithTimeInterval:[[SharedDefaultsController valueForKeyPath:@"values.markdownAutoupdate"] floatValue] invocation:invocation repeats:YES];
+            self.markdownTimer = [NSTimer scheduledTimerWithTimeInterval:[[settingsProxy valueForSetting:@"markdownAutoupdate"] floatValue] invocation:invocation repeats:YES];
         }
         
         else {
@@ -1711,15 +1716,15 @@ static NSString *cssDragType = @"cssDragType";
 {
     if ([infoLayer isHidden]) {
         [infoLayer setHidden:NO];
-        [SharedDefaultsController setValue:[NSNumber numberWithBool:YES] forKeyPath:@"values.showCounts"];
+        [settingsProxy setValue:[NSNumber numberWithBool:YES] forSettingName:@"showCounts"];
     }
     else {
         [infoLayer setHidden:YES];
-        [SharedDefaultsController setValue:[NSNumber numberWithBool:NO] forKeyPath:@"values.showCounts"];
+        [settingsProxy setValue:[NSNumber numberWithBool:NO] forSettingName:@"showCounts"];
     }
     
     NSMutableDictionary *buffer = [[[NSUserDefaults standardUserDefaults] objectForKey:@"LIInitSettings"] mutableCopy];
-    [buffer setValue:[SharedDefaultsController valueForKeyPath:@"values.showCounts"] forKey:@"showCounts"];
+    [buffer setValue:[settingsProxy valueForSetting:@"showCounts"] forKey:@"showCounts"];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LIInitSettings"];
     [[NSUserDefaults standardUserDefaults] setObject:buffer forKey:@"LIInitSettings"];
 }

@@ -9,6 +9,7 @@
 #import "LIPreferences.h"
 #import "NSColor+Hex.h"
 #import "LIDocWindowController.h"
+#import "LISettingsProxy.h"
 
 #define standardDocType @"LIInitSettings.docType"
 #define standardTextFont @"LIInitSettings.textFont"
@@ -18,6 +19,7 @@
 {
     NSTextField *cssLabel;
     NSButton *cssOpenPanelButton;
+    LISettingsProxy *settingsProxy;
 }
 @end
 
@@ -57,7 +59,8 @@
         //Init code
         [self addObserver:self forKeyPath:@"fontDescr" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"docType" options:0 context:NULL];
-        [SharedDefaultsController addObserver:self forKeyPath:@"values.focusOn" options:NSKeyValueObservingOptionNew context:@"changeFocusType"];
+        settingsProxy = [LISettingsProxy proxy];
+        [settingsProxy addObserver:self forKeyPath:@"focusOn" options:NSKeyValueObservingOptionNew context:@"changedFocusType"];
         
         [[NSFontManager sharedFontManager] setAction:@selector(anotherFont:)];
     }
@@ -103,14 +106,15 @@
         }
     }
     
-    if ([[SharedDefaultsController valueForKeyPath:@"values.useCustomCSS"] boolValue] && ![(NSString*)[SharedDefaultsController valueForKeyPath:@"values.customCSS"] isEqualToString:@""]) {
+    //if ([[NSUserDeSharedDefaultsControllerrKeyPath:@"values.useCustomCSS"] boolValue] && ![(NSString*)[settingsProxy valueForSetting:@"customCSS"] isEqualToString:@""]) {
+    if ([[settingsProxy valueForSetting:@"useCustomCSS"] boolValue] && ![(NSString*)[settingsProxy valueForSetting:@"customCSS"] isEqualToString:@""]) {
         [self useCustomCSS:customCSSCheck];
-        NSString *path = [SharedDefaultsController valueForKeyPath:@"values.customCSS"];
+        NSString *path = [settingsProxy valueForSetting:@"customCSS"];
         [cssLabel setStringValue:[path lastPathComponent]];
     }
     else {
-        [SharedDefaultsController setValue:[NSNumber numberWithBool:NO] forKeyPath:@"values.useCustomCSS"];
-        [SharedDefaultsController setValue:@"" forKeyPath:@"values.customCSS"];
+        [settingsProxy setValue:[NSNumber numberWithBool:NO] forSettingName:@"useCustomCSS"];
+        [settingsProxy setValue:@"" forSettingName:@"customCSS"];
         if (cssLabel && cssOpenPanelButton)
             [self useCustomCSS:customCSSCheck];
     }
@@ -137,7 +141,7 @@
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
     if ([menuItem action] == @selector(focusOnParagraph:)) {
-        switch ([[SharedDefaultsController valueForKeyPath:@"values.focusOn"] intValue]) {
+        switch ([[settingsProxy valueForSetting:@"focusOn"] intValue]) {
             case 1:
             case 0: {
                 [menuItem setState:0];
@@ -151,7 +155,7 @@
     }
     
     if ([menuItem action] == @selector(focusOnLine:)) {
-        switch ([[SharedDefaultsController valueForKeyPath:@"values.focusOn"] intValue]) {
+        switch ([[settingsProxy valueForSetting:@"focusOn"] intValue]) {
             case 2:
             case 0: {
                 [menuItem setState:0];
@@ -183,7 +187,7 @@
     NSInteger updateDelay = [[arr objectAtIndex:0] intValue];
     
     NSDictionary *fontDict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textFont fontName], @"fontName", [NSNumber numberWithFloat:[self.textFont pointSize]], @"fontSize", nil];
-    NSDictionary *settingsDict = [[NSDictionary alloc] initWithObjectsAndKeys:self.docType, @"docType", fontDict, @"docFont", self.hexTextColor, @"textColor", self.hexBackColor, @"backgroundColor", [[SharedDefaultsController values] valueForKey:@"textWidth"], @"textWidth", [NSNumber numberWithBool:self.whiteBlack], @"whiteBlack", [NSNumber numberWithInteger:updateDelay], @"markdownAutoupdate", nil];
+    NSDictionary *settingsDict = @{ @"docType":self.docType , @"docFont":fontDict , @"textColor":self.hexTextColor , @"backgroundColor":self.hexBackColor , @"textWidth":[settingsProxy valueForSetting:@"textWidth"] , @"whiteBlack":[NSNumber numberWithBool:self.whiteBlack] , @"markdownAutoupdate":[NSNumber numberWithInteger:updateDelay] };
     
     NSMutableDictionary *usDef = [[NSMutableDictionary alloc] initWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"LIInitSettings"]];
     for (NSString *key in settingsDict) {
@@ -207,8 +211,7 @@
             
             NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:aColorBack, @"backColor", aColorText, @"textColor", [NSNumber numberWithBool:self.whiteBlack], @"whiteBlack", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"colorScheme" object:nil userInfo:dict];
-            
-            [SharedDefaultsController setValue:[NSNumber numberWithBool:YES] forKeyPath:@"values.whiteBlack"];
+            [settingsProxy setValue:[NSNumber numberWithBool:YES] forSettingName:@"whiteBlack"];
                       
             break;
         }
@@ -219,9 +222,7 @@
             
             NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:invBack, @"backColor", invText, @"textColor", self.textFont, @"textFont", [NSNumber numberWithBool:self.whiteBlack], @"whiteBlack", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"colorScheme" object:nil userInfo:dict];
-            
-            [SharedDefaultsController setValue:[NSNumber numberWithBool:NO] forKeyPath:@"values.whiteBlack"];
-    
+            [settingsProxy setValue:[NSNumber numberWithBool:NO] forSettingName:@"whiteBlack"];    
         }
     }
     
@@ -234,18 +235,18 @@
 - (IBAction)focusOnParagraph:(id)sender
 {
     if ([sender state] == 0)
-        [SharedDefaultsController setValue:[NSNumber numberWithInt:2] forKeyPath:@"values.focusOn"];
+        [settingsProxy setValue:[NSNumber numberWithInt:2] forSettingName:@"focusOn"];
     else
-        [SharedDefaultsController setValue:[NSNumber numberWithInt:0] forKeyPath:@"values.focusOn"];
+        [settingsProxy setValue:[NSNumber numberWithInt:0] forSettingName:@"focuOn"];
     [[NSNotificationCenter defaultCenter] postNotificationName:NSTextViewDidChangeSelectionNotification object:nil];
 }
 
 - (IBAction)focusOnLine:(id)sender
 {
     if ([sender state] == 0)
-        [SharedDefaultsController setValue:[NSNumber numberWithInt:1] forKeyPath:@"values.focusOn"];
+        [settingsProxy setValue:[NSNumber numberWithInt:1] forSettingName:@"focusOn"];
     else
-        [SharedDefaultsController setValue:[NSNumber numberWithInt:0] forKeyPath:@"values.focusOn"];
+        [settingsProxy setValue:[NSNumber numberWithInt:0] forSettingName:@"focusOn"];
     [[NSNotificationCenter defaultCenter] postNotificationName:NSTextViewDidChangeSelectionNotification object:nil];
 }
 
@@ -286,7 +287,7 @@
         cssOpenPanelButton = nil;
         
         [self.window setFrame:NSMakeRect(self.window.frame.origin.x, self.window.frame.origin.y + 30, self.window.frame.size.width, self.window.frame.size.height - 30) display:YES animate:YES];
-        [SharedDefaultsController setValue:@"" forKeyPath:@"values.customCSS"];
+        [settingsProxy setValue:@"" forSettingName:@"customCSS"];
     }
 }
 
@@ -305,8 +306,7 @@
         if (returnCode == 1) {
             
             NSString *path = [[cssOpenPanel URL] path];
-            
-            [SharedDefaultsController setValue:path forKeyPath:@"values.customCSS"];
+            [settingsProxy setValue:path forSettingName:@"customCSS"];
                         
             if ([(NSString*)[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.customCSS"] isEqualToString:path] || [(NSString*)[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.customCSS"] isEqualToString:@""]) {
                 NSDictionary *settingsDict = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings"];
