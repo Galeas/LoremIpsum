@@ -130,7 +130,7 @@ static NSString *cssDragType = @"cssDragType";
         [self setMasked:YES];
     else
         [self setMasked:NO];
-    
+
     [[NSNotificationCenter defaultCenter] addObserverForName:NSTextViewDidChangeSelectionNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note)
      {
          clock_t start = clock();
@@ -194,8 +194,26 @@ static NSString *cssDragType = @"cssDragType";
     [self.window setMinSize:NSMakeSize(400.0f, 300.0f)];
     
     NSColor *backColor = [(LIBackColoredView*)[[self.splitContainer subviews] objectAtIndex:0] background];
-    //NSColor *backColor = [[NSColor greenColor] colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
     [self.gradientView setGradientColor:backColor];
+    
+    NSMenu *substMenu = [[[self.aTextView menu] itemWithTitle:@"Substitutions"] submenu];
+    BOOL needAddMenuItem = YES;
+    NSInteger foundIndex = 0;
+    for (NSMenuItem *item in substMenu.itemArray) {
+        if ([item.title isEqualToString:@"Smart Pares"]) {
+            needAddMenuItem = NO;
+            foundIndex = [substMenu indexOfItem:item];
+            break;
+        }
+    }
+    if (needAddMenuItem) {
+        NSMenuItem *smartParesItem = [[NSMenuItem alloc] initWithTitle:@"Smart Pares" action:@selector(toggleSmartPares:) keyEquivalent:@""];
+        [substMenu insertItem:smartParesItem atIndex:substMenu.itemArray.count-5];
+        [smartParesItem setState:[[settingsProxy valueForSetting:@"useSmartPares"] boolValue]];
+    }
+    else
+        [[substMenu itemAtIndex:foundIndex] setState:[[settingsProxy valueForSetting:@"useSmartPares"] boolValue]];
+    
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -382,6 +400,12 @@ static NSString *cssDragType = @"cssDragType";
             return YES;
         else
             return NO;
+    }
+    
+    if ([menuItem action] == @selector(toggleSmartPares:)) {
+        BOOL needState = [[settingsProxy valueForSetting:@"useSmartPares"] boolValue];
+        [menuItem setState:needState];
+        return YES;
     }
     
     return YES;
@@ -1191,9 +1215,9 @@ static NSString *cssDragType = @"cssDragType";
     
     [self.document removeObserver:self.document forKeyPath:@"fileType"];
     
-    [settingsProxy removeObserver:self forKeyPath:@"values.focusOn"];
-    [settingsProxy removeObserver:self forKeyPath:@"values.useCustomCSS"];
-    [settingsProxy removeObserver:self forKeyPath:@"values.whiteBlack"];
+    [settingsProxy removeObserver:self forKeyPath:@"focusOn"];
+    [settingsProxy removeObserver:self forKeyPath:@"useCustomCSS"];
+    [settingsProxy removeObserver:self forKeyPath:@"whiteBlack"];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"newSettingsArrived" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"colorScheme" object:nil];
@@ -1861,5 +1885,10 @@ static NSString *cssDragType = @"cssDragType";
     CGFloat scaleFactor = [sender tag];
     scaleFactor = scaleFactor/100;    
     [self.scrollContainer setScaleFactor:scaleFactor];
+}
+
+- (IBAction)toggleSmartPares:(id)sender
+{
+    [settingsProxy setValue:[NSNumber numberWithBool:![sender state]] forSettingName:@"useSmartPares"];
 }
 @end

@@ -111,6 +111,8 @@ typedef NSUInteger LIFontStyle;
 - (void)gotoLine:(int)lineNumber;
 - (void)updateCounters;
 
+- (IBAction)toggleSmartPares:(id)sender;
+
 @property NSUInteger wordsCount;
 @property NSUInteger charCount;
 

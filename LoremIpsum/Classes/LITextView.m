@@ -12,6 +12,7 @@
 #import "NSString+Trimming.h"
 #import "LITextAttachmentCell.h"
 #import "LIDocWindowController.h"
+#import "LISettingsProxy.h"
 #import <QuartzCore/QuartzCore.h>
 
 #define UndoManager [[[[self window] windowController] document] undoManager]
@@ -299,6 +300,58 @@
 
 - (void)keyDown:(NSEvent *)theEvent
 {
+    if ([[[LISettingsProxy proxy] valueForSetting:@"useSmartPares"] boolValue]) {
+        NSString *keyPressed = [theEvent charactersIgnoringModifiers];
+        NSCharacterSet *enteredSet = [NSCharacterSet characterSetWithCharactersInString:@"({[<'\""];
+        NSCharacterSet *paredSet = [NSCharacterSet characterSetWithCharactersInString:@")}]>'\""];
+        unichar insertedCode = [keyPressed characterAtIndex:0];
+        NSInteger currentPos = self.selectedRange.location;
+        
+        if ([keyPressed rangeOfCharacterFromSet:enteredSet].location != NSNotFound) {
+            switch (insertedCode) {
+                case 40: {
+                    keyPressed = @")";
+                    break;
+                }
+                case 91: {
+                    keyPressed = @"]";
+                    break;
+                }
+                case 123: {
+                    keyPressed = @"}";
+                    break;
+                }
+                case 60: {
+                    keyPressed = @">";
+                    break;
+                }
+                default:break;
+            }
+            [self insertText:keyPressed replacementRange:NSMakeRange(currentPos, 0)];
+            [self setSelectedRange:NSMakeRange(currentPos, 0)];
+        }
+        
+        else {
+            switch (insertedCode) {
+                case 127: {
+                    NSRange hitRange = NSMakeRange(currentPos, 1);
+                    NSString *nextSymbol = [self.string substringWithRange:hitRange];
+                    if ([nextSymbol rangeOfCharacterFromSet:paredSet].location != NSNotFound) {
+                        [self insertText:@"" replacementRange:hitRange];
+                    }
+                    break;
+                }
+                case 63272: {
+                    NSRange hitRange = NSMakeRange(currentPos-1, 1);
+                    NSString *prevSymbol = [self.string substringWithRange:hitRange];
+                    if ([prevSymbol rangeOfCharacterFromSet:enteredSet].location != NSNotFound) {
+                        [self insertText:@"" replacementRange:hitRange];
+                    }
+                }
+            }
+        }
+    }
+    
     if ([[[[self.window windowController] document] docType] isEqualToString:TXT] && self.selectedRange.length == 0) {
         NSError *error;
         NSRange paragraphRange;
@@ -419,6 +472,7 @@
             }
         }
     }
+    
     [super keyDown:theEvent];
 }
 

@@ -35,5 +35,7 @@
 	<string></string>
 	<key>useCustomCSS</key>
 	<false/>
+	<key>useSmartPares</key>
+	<false/>
 </dict>
 </plist>
