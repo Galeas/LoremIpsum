@@ -238,7 +238,8 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 
 - (void)parseTextOfType:(NSString *)type forBookmarks:(NSTextStorage *)aStorage
 {    
-    if ([type compare:(NSString*)kUTTypePlainText] == NSOrderedSame) {
+    //if ([type compare:(NSString*)kUTTypePlainText] == NSOrderedSame) {
+    if (![type isEqualToString:(NSString*)kUTTypeRTFD]) {
         NSUInteger location = 0, end = [aStorage length];
         
         NSImage *bMark = [NSImage imageNamed:@"bookmark"];

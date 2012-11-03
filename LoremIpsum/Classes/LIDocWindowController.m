@@ -587,6 +587,7 @@ static NSString *cssDragType = @"cssDragType";
 
 - (void)arrangeTextInView
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
+#warning Неправильный инсет после скрытия маркдаун превью
     if ([editorView bounds].size.width - self.textContainerWidth > 40) {
         if (aTextView.frame.size.width < editorView.bounds.size.width)
             [aTextView setFrameSize:NSMakeSize(editorView.bounds.size.width, aTextView.frame.size.height)];
@@ -818,8 +819,6 @@ static NSString *cssDragType = @"cssDragType";
             return;
     }
     
-    /*if (![identifier isMemberOfClass:[NSString class]])
-        identifier = @"bookmark";*/
     NSUInteger positionForBookmark = activeRange.location;
         
         // Вставляем фейковую картинку
@@ -841,7 +840,7 @@ static NSString *cssDragType = @"cssDragType";
     [[aTextView textStorage] endEditing];
         
         // Let's animation begin!
-    [self animatedAppearingBookmark:[NSNumber numberWithInteger:positionForBookmark]];
+    [self.gradientView animateAppearingBookmarkAtPosition:positionForBookmark];
 }
 
 - (void)gotoLine:(int)lineNumber
@@ -1057,8 +1056,9 @@ static NSString *cssDragType = @"cssDragType";
 #pragma mark
 #pragma mark ---- Some Animations ----
 
-- (void)animatedAppearingBookmark:(NSNumber *)position
+/*- (void)animatedAppearingBookmark:(NSNumber *)position
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
+
     NSUInteger aPosition = [position intValue];
     NSImage *bookmark = [NSImage imageNamed:@"bookmark"];
     CALayer *bookmarkLayer = [CALayer layer];
@@ -1097,8 +1097,8 @@ static NSString *cssDragType = @"cssDragType";
     
     [bookmarkLayer addAnimation:anim forKey:@"position"];
     
-    [bookmarkLayer performSelector:@selector(removeFromSuperlayer) withObject:nil afterDelay:anim.duration-0.175];
-}
+    [bookmarkLayer performSelector:@selector(removeFromSuperlayer) withObject:nil afterDelay:anim.duration];
+}*/
 
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
 {    //NSLog(@"%s", __PRETTY_FUNCTION__);
@@ -1130,6 +1130,7 @@ static NSString *cssDragType = @"cssDragType";
     else if ([[self.document docType] isEqualToString:TXT]) {
         [self.document setFileType:@"public.plain-text"];
     }
+    
 }
 
 #pragma mark

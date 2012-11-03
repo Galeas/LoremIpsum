@@ -13,6 +13,7 @@
 
 - (void)moveFocus:(NSDictionary*)rects;
 - (void)removeFocus;
+- (void)animateAppearingBookmarkAtPosition:(NSInteger)position;
 
 @property (copy) NSColor *gradientColor;
 @property (copy) CATextLayer *infoLayer;

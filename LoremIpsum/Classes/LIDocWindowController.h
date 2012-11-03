@@ -105,7 +105,6 @@ typedef NSUInteger LIFontStyle;
 - (NSString*)simpleInfoStringWithTimerValue:(NSString*)timerString bigText:(BOOL)bigText;
 
 - (void)insertMarkerWithIdentifier:(NSString*)identifier;
-- (void)animatedAppearingBookmark:(NSNumber*)position;
 
 - (void)gotoLine:(int)lineNumber;
 - (void)updateCounters;

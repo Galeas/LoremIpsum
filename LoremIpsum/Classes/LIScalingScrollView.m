@@ -55,32 +55,6 @@ static CGFloat scaleFactor;
 //    NSGradient *topGradient, *bottomGradient;
 //}
 
-+ (void)initialize
-{
-    scaleFactor = 1.0f;
-}
-
-/*- (void)drawRect:(NSRect)rect {
-    
-    if (!topGradient && self.startColor && self.endColor)
-        topGradient = [[NSGradient alloc] initWithStartingColor:self.startColor endingColor:self.endColor];
-    if (!bottomGradient && self.startColor && self.endColor)
-        bottomGradient = [[NSGradient alloc] initWithStartingColor:self.startColor endingColor:self.endColor];
-    
-    if (topGradient && bottomGradient) {
-        NSTextView *textView = self.documentView;
-        NSSize gradientSize = textView.textContainer.containerSize;
-        gradientSize.height = 50.0f;
-        
-        NSBezierPath *topPath = [NSBezierPath bezierPathWithRect:NSMakeRect(textView.textContainerOrigin.x, rect.size.height-gradientSize.height, gradientSize.width, gradientSize.height)];
-        NSBezierPath *bottomPath = [NSBezierPath bezierPathWithRect:NSMakeRect(textView.textContainerOrigin.x, 0, gradientSize.width, gradientSize.height)];
-        [topGradient drawInBezierPath:topPath angle:270];
-        [bottomGradient drawInBezierPath:bottomPath angle:90];
-    }
-    
-    [super drawRect:rect];
-}*/
-
 - (CGFloat)scaleFactor {
     return scaleFactor;
 }

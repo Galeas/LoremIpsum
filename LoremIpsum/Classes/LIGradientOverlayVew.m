@@ -9,6 +9,9 @@
 #import "LIGradientOverlayVew.h"
 #import "LIDocWindowController.h"
 #import "LISettingsProxy.h"
+#import "ESSImageCategory.h"
+#import "LITextView.h"
+#import "LIScalingScrollView.h"
 #import <QuartzCore/QuartzCore.h>
 
 @implementation LIGradientOverlayVew
@@ -146,6 +149,53 @@
 {
     [topMask removeFromSuperlayer];
     [bottomMask removeFromSuperlayer];
+}
+
+- (void)animateAppearingBookmarkAtPosition:(NSInteger)position
+{
+    LITextView *textView = [self.window.windowController aTextView];
+    NSImage *bookmark = [NSImage imageNamed:@"bookmark"];
+    CALayer *bookmarkLayer = [CALayer layer];
+    CGImageRef imageRef = nil;
+    
+    NSData *imageData = [bookmark PNGRepresentation];
+    
+    if (imageData) {
+        CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)imageData,  NULL);
+        imageRef = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
+        CFRelease(imageSource);
+    }
+    
+    [bookmarkLayer setContents:(__bridge id)imageRef];
+    CGFloat scaleFactor = [[[self.window windowController] scrollContainer] scaleFactor];
+    if (scaleFactor == 0) scaleFactor = 1;
+    
+    [bookmarkLayer setBounds:NSRectToCGRect(NSMakeRect(0, 0, bookmark.size.width*scaleFactor, bookmark.size.height*scaleFactor))];
+    CGImageRelease(imageRef);
+    
+    NSRect rectForImageLayer = [textView rectForBookmarkAnimation:NSMakeRange(position, 0)];
+    rectForImageLayer = [self convertRect:rectForImageLayer fromView:(NSView*)textView];
+    rectForImageLayer.origin.y += _infoLayer.frame.size.height + [textView textContainerInset].height*2;
+    [bookmarkLayer setName:@"bookmarkLayer"];
+    [bookmarkLayer setPosition:rectForImageLayer.origin];
+    
+    [self.layer addSublayer:bookmarkLayer];
+    
+    NSPoint startPoint = bookmarkLayer.position;
+    NSPoint endPoint = NSMakePoint(startPoint.x, startPoint.y - 18*scaleFactor);
+    
+    CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"position"];
+    anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+    anim.fromValue = [NSValue valueWithPoint:startPoint];
+    anim.toValue = [NSValue valueWithPoint:endPoint];
+    anim.repeatCount = 1.0;
+    anim.duration = 0.2;
+    anim.removedOnCompletion = YES;
+    [anim setDelegate:[self.window windowController]];
+    
+    [bookmarkLayer addAnimation:anim forKey:@"position"];
+    
+    [bookmarkLayer performSelector:@selector(removeFromSuperlayer) withObject:nil afterDelay:anim.duration - .15f];
 }
 
 @end
