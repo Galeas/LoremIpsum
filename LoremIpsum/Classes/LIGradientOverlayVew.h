@@ -7,7 +7,13 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <QuartzCore/QuartzCore.h>
 
 @interface LIGradientOverlayVew : NSView
+
+- (void)moveFocus:(NSDictionary*)rects;
+- (void)removeFocus;
+
 @property (copy) NSColor *gradientColor;
+@property (copy) CATextLayer *infoLayer;
 @end

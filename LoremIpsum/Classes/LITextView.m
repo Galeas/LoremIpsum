@@ -46,7 +46,8 @@
     layoutRect.origin.x += containerOrigin.x;
     layoutRect.origin.y += containerOrigin.y;
     layoutRect = [self convertRectToLayer:layoutRect];
-    
+    if (![self wantsLayer])
+        [self setWantsLayer:YES];
     if (!selectionOverlay)
         selectionOverlay = [CATextLayer layer];
     [selectionOverlay setBackgroundColor:[(NSColor*)[[self selectedTextAttributes] valueForKey:NSBackgroundColorAttributeName] coreGraphicsColorWithAlfa:1]];
@@ -68,6 +69,8 @@
 - (void)draggingEnded:(id<NSDraggingInfo>)sender
 {
     [selectionOverlay removeFromSuperlayer];
+    if (self.wantsLayer)
+        [self setWantsLayer:NO];
 }
 
 - (NSUInteger)characterIndexForPoint:(NSPoint)aPoint
@@ -303,7 +306,6 @@
     if ([[[LISettingsProxy proxy] valueForSetting:@"useSmartPares"] boolValue]) {
         NSString *keyPressed = [theEvent charactersIgnoringModifiers];
         NSCharacterSet *enteredSet = [NSCharacterSet characterSetWithCharactersInString:@"({[<'\""];
-        NSCharacterSet *paredSet = [NSCharacterSet characterSetWithCharactersInString:@")}]>'\""];
         unichar insertedCode = [keyPressed characterAtIndex:0];
         NSInteger currentPos = self.selectedRange.location;
         
@@ -334,19 +336,31 @@
         else {
             switch (insertedCode) {
                 case 127: {
-                    NSRange hitRange = NSMakeRange(currentPos, 1);
-                    NSString *nextSymbol = [self.string substringWithRange:hitRange];
-                    if ([nextSymbol rangeOfCharacterFromSet:paredSet].location != NSNotFound) {
-                        [self insertText:@"" replacementRange:hitRange];
+                    if (self.string.length > 0 && self.selectedRange.location > 0) {
+                        NSRange hitRange = NSMakeRange(currentPos, 1);
+                        NSString *nextSymbol = [self.string substringWithRange:hitRange];
+                        NSString *currentSymbol = [self.string substringWithRange:NSMakeRange(hitRange.location-1, 1)];
+                        unichar next = [nextSymbol characterAtIndex:0];
+                        unichar curr = [currentSymbol characterAtIndex:0];
+                        
+                        if ((curr == 40 && next == 41) || (curr == 91 && next == 93) || (curr == 123 && next == 125) || (curr == 60 && next == 62) || (curr == 39 && next == 39) || (curr == 34 && next == 34))
+                            [self insertText:@"" replacementRange:hitRange];
                     }
+
                     break;
                 }
                 case 63272: {
-                    NSRange hitRange = NSMakeRange(currentPos-1, 1);
-                    NSString *prevSymbol = [self.string substringWithRange:hitRange];
-                    if ([prevSymbol rangeOfCharacterFromSet:enteredSet].location != NSNotFound) {
-                        [self insertText:@"" replacementRange:hitRange];
+                    if (self.string.length > 0 && [self selectedRange].location < self.string.length) {
+                        NSRange hitRange = NSMakeRange(currentPos-1, 1);
+                        NSString *prevSymbol = [self.string substringWithRange:hitRange];
+                        NSString *currentSymbol = [self.string substringWithRange:NSMakeRange(hitRange.location+1, 1)];
+                        unichar prev = [prevSymbol characterAtIndex:0];
+                        unichar curr = [currentSymbol characterAtIndex:0];
+                        
+                        if ((prev == 40 && curr == 41) || (prev == 91 && curr == 93) || (prev == 123 && curr == 125) || (prev == 60 && curr == 62) || (prev == 39 && curr == 39) || (prev == 34 && curr == 34))
+                            [self insertText:@"" replacementRange:hitRange];
                     }
+                    break;
                 }
             }
         }

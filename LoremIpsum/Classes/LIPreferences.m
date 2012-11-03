@@ -237,7 +237,7 @@
     if ([sender state] == 0)
         [settingsProxy setValue:[NSNumber numberWithInt:2] forSettingName:@"focusOn"];
     else
-        [settingsProxy setValue:[NSNumber numberWithInt:0] forSettingName:@"focuOn"];
+        [settingsProxy setValue:[NSNumber numberWithInt:0] forSettingName:@"focusOn"];
     [[NSNotificationCenter defaultCenter] postNotificationName:NSTextViewDidChangeSelectionNotification object:nil];
 }
 

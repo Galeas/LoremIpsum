@@ -30,10 +30,6 @@ static NSString *cssDragType = @"cssDragType";
 {
     BOOL isPopoverShown;
     NSRect popoverRelativeRect;
-
-    CAGradientLayer *gLayer1, *gLayer2;
-    CATextLayer *infoLayer;
-    CALayer *topMaskLayer, *bottomMaskLayer;
     
     CGFloat splitviewSizeBefore, splitviewSizeAfter;
     
@@ -231,10 +227,8 @@ static NSString *cssDragType = @"cssDragType";
     }
     
     else if ([(__bridge_transfer NSString*)context isEqualToString:@"removeMask"]) {
-        if (!self.masked) {
-            [topMaskLayer removeFromSuperlayer];
-            [bottomMaskLayer removeFromSuperlayer];
-        }
+        if (!self.masked)
+            [self.gradientView removeFocus];
     }
     
     else if ([(__bridge_transfer NSString*)context isEqualToString:@"useCSS"] || [(__bridge_transfer NSString*)context isEqualToString:@"mdPreviewColor"]) {
@@ -256,7 +250,7 @@ static NSString *cssDragType = @"cssDragType";
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
     if ([menuItem action] == @selector(showHideCounters:)) {
-        if ([infoLayer isHidden]) {
+        if ([[self.gradientView infoLayer]  isHidden]) {
             [menuItem setTitle:@"Show counters"];
             return YES;
         } else {
@@ -455,6 +449,7 @@ static NSString *cssDragType = @"cssDragType";
         [settingsProxy setValue:[backColor hexColor] forSettingName:@"backgroundColor"];
         [settingsProxy setValue:[textColor hexColor] forSettingName:@"textColor"];
         [settingsProxy setValue:[settings valueForKey:@"docFont"] forSettingName:@"docFont"];
+        [self.gradientView setGradientColor:backColor];
     }
     else {        
         NSFont *settedFont = [self.document docFont:(NSDictionary*)[[notification userInfo] objectForKey:@"docFont"]];
@@ -489,6 +484,7 @@ static NSString *cssDragType = @"cssDragType";
         
         if ([self.document fileURL])
             [[self document] saveDocument:self];
+        [self.gradientView setGradientColor:backColor];
     }
     
     [activeStorage addAttribute:NSForegroundColorAttributeName value:textColor range:NSMakeRange(0, [aTextView textStorage].length)];
@@ -498,7 +494,6 @@ static NSString *cssDragType = @"cssDragType";
     switch ([[settings valueForKey:@"textWidth"] intValue]) {
         case LIStraitText: {
             [self setTextContainerWidth:400.0f];
-            //[SharedDefaultsController setValue:[NSNumber numberWithInt:LIStraitText] forKeyPath:@"values.textWidth"];
             [settingsProxy setValue:[NSNumber numberWithInteger:LIStraitText] forSettingName:@"textWidth"];
             break;
         }
@@ -537,8 +532,6 @@ static NSString *cssDragType = @"cssDragType";
     NSArray *selections = [[NSArray alloc] initWithArray:[aTextView selectionFinder]];
     
     [[aTextView textStorage] beginEditing];
-    
-    //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:backColor range:NSMakeRange(0, txtLength)];
     [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:textColor range:NSMakeRange(0, txtLength)];
     
     if ([selections count] > 0) {
@@ -546,37 +539,17 @@ static NSString *cssDragType = @"cssDragType";
         for (NSValue *rValue in selections) {
             if (![[notification.userInfo valueForKey:@"whiteBlack"] boolValue]) {
                 [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:backColor range:[rValue rangeValue]];
-                //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:@"#FFFB41"] range:[rValue rangeValue]];
             }
             else {
                 [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:textColor range:[rValue rangeValue]];
-                //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:@"#FFFB41"] range:[rValue rangeValue]];
             }
         }
     }
     
     [[aTextView textStorage] endEditing];
     [(LIBackColoredView*)[[self.splitContainer subviews] objectAtIndex:0] setBackground:backColor];
-    //[self.window setBackgroundColor:backColor];
-    //[scrollContainer setBackgroundColor:backColor];
-    //[aTextView setBackgroundColor:backColor];
-    
-    NSArray *gColorsNew1 = [[NSArray alloc] initWithObjects:(__bridge id)[backColor coreGraphicsColorWithAlfa:1], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.75], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.5], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.25], (__bridge id)[backColor coreGraphicsColorWithAlfa:0.05], nil];
-    NSArray *gColorsNew2 = [[NSArray alloc] initWithArray:[[gColorsNew1 reverseObjectEnumerator] allObjects]];
-    
-    [gLayer1 setColors:gColorsNew1];
-    [gLayer2 setColors:gColorsNew2];
-    
-    [aTextView setInsertionPointColor:textColor];
-    
-    [settingsProxy setValue:[textColor hexColor] forSettingName:@"textColor"];
-    [settingsProxy setValue:[backColor hexColor] forSettingName:@"backgroundColor"];
-    
-    if ([[[aTextView layer] sublayers] containsObject:bottomMaskLayer] || [[[aTextView layer] sublayers] containsObject:topMaskLayer] || (bottomMaskLayer && topMaskLayer)) {
-        [topMaskLayer setBackgroundColor:[[aTextView backgroundColor] coreGraphicsColorWithAlfa:0.75]];
-        [bottomMaskLayer setBackgroundColor:[[aTextView backgroundColor] coreGraphicsColorWithAlfa:0.75]];
-    }
-    
+    [self.gradientView setGradientColor:backColor];
+    [self.gradientView setNeedsDisplay:YES];
 }
 
 - (LIFontStyle)fontStyleForFont:(NSFont *)aFont atRange:(NSRange)aRange
@@ -623,23 +596,6 @@ static NSString *cssDragType = @"cssDragType";
             [aTextView setFrameSize:NSMakeSize(editorView.bounds.size.width, aTextView.frame.size.height)];
         [aTextView setTextContainerInset:NSMakeSize(20, 20)];
     }
-    /*
-    [CATransaction flush];
-    [CATransaction begin];
-    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-    NSRect frame = NSMakeRect (0, 0, 100, 100);
-    NSRect contentRect;
-    contentRect = [NSWindow contentRectForFrameRect:frame styleMask:NSTitledWindowMask];    
-    CGFloat titleBarHeight = (frame.size.height - contentRect.size.height);
-    [gLayer1 setFrame:NSRectToCGRect(NSMakeRect(0, 0, editorView.bounds.size.width, 35))];
-    
-    if (([self.window styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask)
-        [gLayer2 setFrame:NSRectToCGRect(NSMakeRect(0, self.window.frame.size.height - 30, aTextView.frame.size.width, 30))];
-    else
-        [gLayer2 setFrame:NSRectToCGRect(NSMakeRect(0, self.window.frame.size.height-titleBarHeight - 30, aTextView.frame.size.width, 30))];
-    [infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, aTextView.bounds.size.width, 20))];
-    
-    [CATransaction commit];*/
 }
 
 - (NSString *)yarlyTimer:(NSNotification *)notification
@@ -819,36 +775,9 @@ static NSString *cssDragType = @"cssDragType";
 	}
 }
 
-- (void)moveFocusToRange:(NSDictionary*)maskRects
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
-    [CATransaction flush];
-    [CATransaction begin];
-    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-    
-    [bottomMaskLayer setFrame:NSRectToCGRect([[maskRects valueForKey:@"bottomMask"] rectValue])];
-    [bottomMaskLayer setAutoresizingMask:kCALayerWidthSizable];
-    
-    [topMaskLayer setFrame:NSRectToCGRect([[maskRects valueForKey:@"topMask"] rectValue])];
-    [topMaskLayer setAutoresizingMask:kCALayerWidthSizable];
-    
-    [[aTextView layer] addSublayer:topMaskLayer];
-    [[aTextView layer] addSublayer:bottomMaskLayer];
-    
-    [CATransaction commit];
-}
-
 - (void)focusOnText
 {      //NSLog(@"%s", __PRETTY_FUNCTION__);
     NSInteger caretLocation = [aTextView selectedRange].location;
-    
-    if (!topMaskLayer) {
-        topMaskLayer = [CALayer layer];
-        [topMaskLayer setBackgroundColor:[[aTextView backgroundColor] coreGraphicsColorWithAlfa:0.75]];
-    }
-    if (!bottomMaskLayer) {
-        bottomMaskLayer = [CALayer layer];
-        [bottomMaskLayer setBackgroundColor:[[aTextView backgroundColor] coreGraphicsColorWithAlfa:0.75]];
-    }
     NSDictionary *rects = [[NSDictionary alloc] init];
     switch ([[settingsProxy valueForSetting:@"focusOn"] intValue]) {
         case 1: {
@@ -865,13 +794,12 @@ static NSString *cssDragType = @"cssDragType";
             break;
         }
     }
-    [self moveFocusToRange:rects];
+    [self.gradientView moveFocus:rects];
 }
 
 - (void)performDropFocusWhenScrolled:(NSNotification *)notification
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
-    [topMaskLayer removeFromSuperlayer];
-    [bottomMaskLayer removeFromSuperlayer];
+    [self.gradientView removeFocus];
 }
 
 - (void)insertMarkerWithIdentifier:(NSString *)identifier
@@ -1738,12 +1666,12 @@ static NSString *cssDragType = @"cssDragType";
 
 - (IBAction)showHideCounters:(id)sender
 {
-    if ([infoLayer isHidden]) {
-        [infoLayer setHidden:NO];
+    if ([[self.gradientView infoLayer] isHidden]) {
+        [[self.gradientView infoLayer] setHidden:NO];
         [settingsProxy setValue:[NSNumber numberWithBool:YES] forSettingName:@"showCounts"];
     }
     else {
-        [infoLayer setHidden:YES];
+        [[self.gradientView infoLayer] setHidden:YES];
         [settingsProxy setValue:[NSNumber numberWithBool:NO] forSettingName:@"showCounts"];
     }
     
@@ -1885,6 +1813,7 @@ static NSString *cssDragType = @"cssDragType";
     CGFloat scaleFactor = [sender tag];
     scaleFactor = scaleFactor/100;    
     [self.scrollContainer setScaleFactor:scaleFactor];
+    [self arrangeTextInView];
 }
 
 - (IBAction)toggleSmartPares:(id)sender

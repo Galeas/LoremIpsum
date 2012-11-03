@@ -8,6 +8,7 @@
 
 #import "LIGradientOverlayVew.h"
 #import "LIDocWindowController.h"
+#import "LISettingsProxy.h"
 #import <QuartzCore/QuartzCore.h>
 
 @implementation LIGradientOverlayVew
@@ -15,31 +16,13 @@
     //NSGradient *topGradient, *bottomGradient;
     NSColor *currentColor;
     CAGradientLayer *topLayer, *bottomLayer;
-    CATextLayer *infoLayer;
+    CALayer *topMask, *bottomMask;
 }
 
 - (void)drawRect:(NSRect)dirtyRect
 {
     // Drawing code here.
-    /*if (self.gradientColor) {
-        if (!topGradient)
-            topGradient = [[NSGradient alloc] initWithStartingColor:[self.gradientColor colorWithAlphaComponent:1] endingColor:[self.gradientColor colorWithAlphaComponent:0]];
-        if (!bottomGradient)
-            bottomGradient = [[NSGradient alloc] initWithStartingColor:[self.gradientColor colorWithAlphaComponent:1] endingColor:[self.gradientColor colorWithAlphaComponent:0]];
-        
-        if ((!currentColor && ![currentColor isEqualTo:self.gradientColor]) && (topGradient && bottomGradient)) {
-            NSTextView *textView = (NSTextView*)[[self.window windowController] aTextView];
-            NSSize gradientSize = textView.textContainer.containerSize;
-            gradientSize.height = 100;
-            
-            NSBezierPath *topPath = [NSBezierPath bezierPathWithRect:NSMakeRect(textView.textContainerOrigin.x, dirtyRect.size.height-gradientSize.height, gradientSize.width, gradientSize.height)];
-            NSBezierPath *bottomPath = [NSBezierPath bezierPathWithRect:NSMakeRect(textView.textContainerOrigin.x, 0, gradientSize.width, gradientSize.height)];
-            [topGradient drawInBezierPath:topPath angle:270];
-            [bottomGradient drawInBezierPath:bottomPath angle:90];
-        }
-        
-    }*/
-    if (![self wantsLayer] && !topLayer && !bottomLayer && !infoLayer)
+    if (![self wantsLayer] && !topLayer && !bottomLayer && !_infoLayer)
         [self setWantsLayer:YES];
     
     if (self.gradientColor) {
@@ -87,27 +70,82 @@
         [CATransaction commit];
     }
     
-    if (!infoLayer) {
-        infoLayer = [CATextLayer layer];
-        [infoLayer bind:@"string" toObject:[self.window windowController] withKeyPath:@"infoString" options:nil];
-        [infoLayer setFont:@"Futura"];
-        [infoLayer setFontSize:12.0f];
-        [infoLayer setForegroundColor:[NSColor colorWithHex:@"#9E9E9E"].CGColor];
-        [infoLayer setAutoresizingMask:kCALayerWidthSizable];
-        [infoLayer setAlignmentMode:kCAAlignmentCenter];
+    if (!_infoLayer) {
+        _infoLayer = [CATextLayer layer];
+        [_infoLayer bind:@"string" toObject:[self.window windowController] withKeyPath:@"infoString" options:nil];
+        [_infoLayer setFont:@"Futura"];
+        [_infoLayer setFontSize:12.0f];
+        [_infoLayer setForegroundColor:[NSColor colorWithHex:@"#9E9E9E"].CGColor];
+        [_infoLayer setAutoresizingMask:kCALayerWidthSizable];
+        [_infoLayer setAlignmentMode:kCAAlignmentCenter];
         
-        [infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, self.bounds.size.width, 16))];
-        [self.layer addSublayer:infoLayer];
+        [_infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, self.bounds.size.width, 16))];
+        [self.layer addSublayer:_infoLayer];
     }
     else {
         [CATransaction flush];
         [CATransaction begin];
         [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-        [infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, self.bounds.size.width, 20))];
+        [_infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, self.bounds.size.width, 20))];
         [CATransaction commit];
     }
     
+    if ([[self.layer sublayers] containsObject:topMask])
+        [topMask setBackgroundColor:[self.gradientColor colorWithAlphaComponent:.75f].CGColor];
+    if ([[self.layer sublayers] containsObject:bottomMask])
+        [bottomMask setBackgroundColor:[self.gradientColor colorWithAlphaComponent:.75f].CGColor];
+    
     [super drawRect:dirtyRect];
+}
+
+- (void)moveFocus:(NSDictionary *)rects
+{
+    if (self.gradientColor) {
+        NSColor *backColor = [self.gradientColor colorWithAlphaComponent:.75f];
+        if (![self wantsLayer])
+            [self setWantsLayer:YES];
+        
+        if (!topMask) {
+            topMask = [CALayer layer];
+            [topMask setAutoresizingMask:kCALayerWidthSizable];
+            [topMask setBackgroundColor:backColor.CGColor];
+        }
+        if (!bottomMask) {
+            bottomMask = [CALayer layer];
+            [bottomMask setAutoresizingMask:kCALayerWidthSizable];
+            [bottomMask setBackgroundColor:backColor.CGColor];
+        }
+        
+        if (bottomMask && ![[self.layer sublayers] containsObject:bottomMask])
+            [[self layer] addSublayer:bottomMask];
+        if (topMask && ![[self.layer sublayers] containsObject:topMask])
+            [[self layer] addSublayer:topMask];
+        
+        if (backColor.CGColor != bottomMask.backgroundColor)
+            [bottomMask setBackgroundColor:backColor.CGColor];
+        if (backColor.CGColor != topMask.backgroundColor)
+            [topMask setBackgroundColor:backColor.CGColor];
+        
+        NSRect bottom = [[rects valueForKey:@"bottomMask"] rectValue];
+        bottom = [self convertRect:bottom fromView:(NSView*)[[self.window windowController] aTextView]];
+        bottom.size.height += bottom.origin.y - _infoLayer.frame.size.height;
+        bottom.origin.y = _infoLayer.frame.size.height;
+        NSRect top = [[rects valueForKey:@"topMask"] rectValue];
+        top = [self convertRect:top fromView:(NSView*)[[self.window windowController] aTextView]];
+        
+        [CATransaction flush];
+        [CATransaction begin];
+        [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+        [bottomMask setFrame:NSRectToCGRect(bottom)];
+        [topMask setFrame:NSRectToCGRect(top)];
+        [CATransaction commit];
+    }
+}
+
+- (void)removeFocus
+{
+    [topMask removeFromSuperlayer];
+    [bottomMask removeFromSuperlayer];
 }
 
 @end

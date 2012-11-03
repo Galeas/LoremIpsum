@@ -95,7 +95,6 @@ typedef NSUInteger LIFontStyle;
 - (void)colorScheme:(NSNotification*)notification;
 
 - (void)focusOnText;
-- (void)moveFocusToRange:(NSDictionary*)maskRects;
 - (void)performDropFocusWhenScrolled:(NSNotification*)notification;
 
 - (void)updateMarkdownPreviewInstantly:(BOOL)updateNow;
