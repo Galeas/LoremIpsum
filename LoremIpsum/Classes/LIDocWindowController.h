@@ -50,7 +50,7 @@ typedef NSUInteger LIFontStyle;
     
     __weak NSLayoutConstraint *textViewRightSpace;
     __weak NSLayoutConstraint *textViewLeftSpace;
-    __weak LIScalingScrollView *scrollContainer;
+    __weak NSScrollView *scrollContainer;
     __weak LISplitView *splitContainer;
     __weak NSSegmentedControl *fontStylesControl;
     __weak NSView *editorView;
@@ -59,9 +59,16 @@ typedef NSUInteger LIFontStyle;
     NSPopover *textPopover;
     NSLayoutManager *layoutMgr;
     __weak NSTimer *markdownTimer;
+    
     __weak NSSegmentedControl *listSegment;
     __weak NSSegmentedControl *highlightSegment;
     __weak LIGradientOverlayVew *_gradientView;
+    
+    NSPopover *_markdownPopover;
+    __weak NSSegmentedControl *_mdSize;
+    __weak NSSegmentedControl *_mdStyle;
+    __weak NSSegmentedControl *_mdList;
+    __weak NSSegmentedControl *_mdHyperlink;
 }
 
 - (IBAction)showPopover:(id)sender;
@@ -79,13 +86,18 @@ typedef NSUInteger LIFontStyle;
 
 - (IBAction)richTextPlainText:(id)sender;
 
+#pragma mark RTF formatter
 - (IBAction)setFontSize:(id)sender;
 - (IBAction)setTextAlignment:(id)sender;
 - (IBAction)setFontStyle:(id)sender;
 - (IBAction)toggleSelection:(id)sender;
 - (IBAction)makeBulletList:(id)sender;
 
-- (IBAction)scaleText:(id)sender;
+#pragma mark MD formatter
+- (IBAction)setMDSize:(id)sender;
+- (IBAction)setMDFontStyle:(id)sender;
+- (IBAction)makeMDHyperlink:(id)sender;
+- (IBAction)makeMDList:(id)sender;
 
 - (NSFont*)fontWithTrait:(NSString*)trait onStyle:(LIFontStyle)style;
 
@@ -134,7 +146,7 @@ typedef NSUInteger LIFontStyle;
 @property BOOL bigTextAlertShown;
 @property BOOL mazochisticMode;
 
-@property (weak) IBOutlet LIScalingScrollView *scrollContainer;
+@property (weak) IBOutlet NSScrollView *scrollContainer;
 @property (strong) IBOutlet NSPopover *textPopover;
 @property (strong) IBOutlet LITextView *aTextView;
 @property (weak) IBOutlet NSSegmentedControl *fontStylesControl;
@@ -149,4 +161,9 @@ typedef NSUInteger LIFontStyle;
 @property NSLayoutManager *layoutMgr;
 
 @property (weak) IBOutlet LIGradientOverlayVew *gradientView;
+@property (strong) IBOutlet NSPopover *markdownPopover;
+@property (weak) IBOutlet NSSegmentedControl *mdSize;
+@property (weak) IBOutlet NSSegmentedControl *mdStyle;
+@property (weak) IBOutlet NSSegmentedControl *mdList;
+@property (weak) IBOutlet NSSegmentedControl *mdHyperlink;
 @end

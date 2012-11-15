@@ -13,7 +13,10 @@
 		6D786CFE157DB18900190625 /* text_align_right.png in Resources */ = {isa = PBXBuildFile; fileRef = 6D786CF6157DB18900190625 /* text_align_right.png */; };
 		6D786D01157DB18900190625 /* text_list_bullets.png in Resources */ = {isa = PBXBuildFile; fileRef = 6D786CF9157DB18900190625 /* text_list_bullets.png */; };
 		6DB2800B163DF2AA00A9D802 /* LIBackColoredView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DB2800A163DF2AA00A9D802 /* LIBackColoredView.m */; };
-		6DB28014163E00F900A9D802 /* LIScalingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DB28013163E00F900A9D802 /* LIScalingScrollView.m */; };
+		8404B1D5164C2B9F0062D5B3 /* H1_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8404B1D2164C2B9F0062D5B3 /* H1_icon.png */; };
+		8404B1D6164C2B9F0062D5B3 /* H2_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8404B1D3164C2B9F0062D5B3 /* H2_icon.png */; };
+		8404B1D7164C2B9F0062D5B3 /* H3_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8404B1D4164C2B9F0062D5B3 /* H3_icon.png */; };
+		8404B1D9164C2BB60062D5B3 /* hyperlink_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8404B1D8164C2BB60062D5B3 /* hyperlink_icon.png */; };
 		840C57EF1643CC3000557966 /* LISettingsProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 840C57EE1643CC3000557966 /* LISettingsProxy.m */; };
 		8414AFE0157F4454007AA580 /* LIDocumentCOntroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 8414AFDF157F4454007AA580 /* LIDocumentCOntroller.m */; };
 		8414AFE5157F4FB2007AA580 /* LITimedWritingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8414AFE3157F4FB2007AA580 /* LITimedWritingController.m */; };
@@ -85,8 +88,10 @@
 		6D786CF9157DB18900190625 /* text_list_bullets.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = text_list_bullets.png; path = Support/Graphics/text_list_bullets.png; sourceTree = "<group>"; };
 		6DB28009163DF2AA00A9D802 /* LIBackColoredView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LIBackColoredView.h; path = Classes/LIBackColoredView.h; sourceTree = "<group>"; };
 		6DB2800A163DF2AA00A9D802 /* LIBackColoredView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LIBackColoredView.m; path = Classes/LIBackColoredView.m; sourceTree = "<group>"; };
-		6DB28012163E00F900A9D802 /* LIScalingScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LIScalingScrollView.h; path = Classes/LIScalingScrollView.h; sourceTree = "<group>"; };
-		6DB28013163E00F900A9D802 /* LIScalingScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LIScalingScrollView.m; path = Classes/LIScalingScrollView.m; sourceTree = "<group>"; };
+		8404B1D2164C2B9F0062D5B3 /* H1_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = H1_icon.png; path = Support/Graphics/H1_icon.png; sourceTree = "<group>"; };
+		8404B1D3164C2B9F0062D5B3 /* H2_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = H2_icon.png; path = Support/Graphics/H2_icon.png; sourceTree = "<group>"; };
+		8404B1D4164C2B9F0062D5B3 /* H3_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = H3_icon.png; path = Support/Graphics/H3_icon.png; sourceTree = "<group>"; };
+		8404B1D8164C2BB60062D5B3 /* hyperlink_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hyperlink_icon.png; path = Support/Graphics/hyperlink_icon.png; sourceTree = "<group>"; };
 		840C57ED1643CC3000557966 /* LISettingsProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LISettingsProxy.h; path = Classes/LISettingsProxy.h; sourceTree = "<group>"; };
 		840C57EE1643CC3000557966 /* LISettingsProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LISettingsProxy.m; path = Classes/LISettingsProxy.m; sourceTree = "<group>"; };
 		8414AFDE157F4454007AA580 /* LIDocumentCOntroller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LIDocumentCOntroller.h; path = Classes/LIDocumentCOntroller.h; sourceTree = "<group>"; };
@@ -256,8 +261,6 @@
 			children = (
 				84C74E28163E987B00B782C0 /* LISplitView.h */,
 				84C74E29163E987B00B782C0 /* LISplitView.m */,
-				6DB28012163E00F900A9D802 /* LIScalingScrollView.h */,
-				6DB28013163E00F900A9D802 /* LIScalingScrollView.m */,
 				6DB28009163DF2AA00A9D802 /* LIBackColoredView.h */,
 				6DB2800A163DF2AA00A9D802 /* LIBackColoredView.m */,
 				8424C892157C9E3F0049F90C /* LIDocWindowController.h */,
@@ -312,6 +315,9 @@
 		8424C8A1157C9EB40049F90C /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
+				8404B1D2164C2B9F0062D5B3 /* H1_icon.png */,
+				8404B1D3164C2B9F0062D5B3 /* H2_icon.png */,
+				8404B1D4164C2B9F0062D5B3 /* H3_icon.png */,
 				844FD8D7159B44F70013C1FB /* bookmarkDummy.png */,
 				84196C681594C33B00960BF7 /* bookmark.png */,
 				84CDE6961588DAB100EC1A05 /* icon.icns */,
@@ -326,6 +332,7 @@
 				6D786CF5157DB18900190625 /* text_align_left.png */,
 				6D786CF6157DB18900190625 /* text_align_right.png */,
 				6D786CF9157DB18900190625 /* text_list_bullets.png */,
+				8404B1D8164C2BB60062D5B3 /* hyperlink_icon.png */,
 			);
 			name = Graphics;
 			sourceTree = "<group>";
@@ -430,6 +437,10 @@
 				844FD8D8159B44F70013C1FB /* bookmarkDummy.png in Resources */,
 				84BBB4CE15B82ABB00BB99E2 /* dark.css in Resources */,
 				84BBB4CF15B82ABB00BB99E2 /* light.css in Resources */,
+				8404B1D5164C2B9F0062D5B3 /* H1_icon.png in Resources */,
+				8404B1D6164C2B9F0062D5B3 /* H2_icon.png in Resources */,
+				8404B1D7164C2B9F0062D5B3 /* H3_icon.png in Resources */,
+				8404B1D9164C2BB60062D5B3 /* hyperlink_icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,7 +470,6 @@
 				84782D931599D6DB004E59ED /* ESSImageCategory.m in Sources */,
 				846F5EE215AF163900926F49 /* LIWebView.m in Sources */,
 				6DB2800B163DF2AA00A9D802 /* LIBackColoredView.m in Sources */,
-				6DB28014163E00F900A9D802 /* LIScalingScrollView.m in Sources */,
 				84C74E2A163E987C00B782C0 /* LISplitView.m in Sources */,
 				84B13F8C16413929000C022B /* LIGradientOverlayVew.m in Sources */,
 				840C57EF1643CC3000557966 /* LISettingsProxy.m in Sources */,

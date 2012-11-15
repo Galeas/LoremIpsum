@@ -17,7 +17,7 @@
 #import "ESSImageCategory.h"
 #import "LIWebView.h"
 #import "LIBackColoredView.h"
-#import "LIScalingScrollView.h"
+//#import "LIScalingScrollView.h"
 #import "LIGradientOverlayVew.h"
 #import "LISettingsProxy.h"
 
@@ -28,23 +28,25 @@ static NSString *cssDragType = @"cssDragType";
 
 @interface LIDocWindowController ()
 {
-    BOOL isPopoverShown;
-    NSRect popoverRelativeRect;
+    @private
+        BOOL isPopoverShown;
+        NSRect popoverRelativeRect;
+        NSPopover *showedPopover;
     
-    CGFloat splitviewSizeBefore, splitviewSizeAfter;
+        CGFloat splitviewSizeBefore, splitviewSizeAfter;
     
-    NSTimeInterval whenToUpdate;   
+        NSTimeInterval whenToUpdate;
     
-    LIGoToLineController *gotoSheet;
+        LIGoToLineController *gotoSheet;
     
-    NSParagraphStyle *paraStyle;
+        NSParagraphStyle *paraStyle;
     
-    NSString *_cssPath;
-    NSString *_cssHTML;
-    NSPoint previewPosition;
-    CGFloat dividerPosition;
+        NSString *_cssPath;
+        NSString *_cssHTML;
+        NSPoint previewPosition;
+        CGFloat dividerPosition;
     
-    LISettingsProxy *settingsProxy;
+        LISettingsProxy *settingsProxy;
 }
 @end
 
@@ -118,7 +120,6 @@ static NSString *cssDragType = @"cssDragType";
 - (void)windowDidLoad
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
     [super windowDidLoad];
-    
     if ([[settingsProxy valueForSetting:@"showCounts"] boolValue])
         [self setInfoString:[self simpleInfoStringWithTimerValue:nil bigText:self.iAmBigText]];
     
@@ -175,6 +176,15 @@ static NSString *cssDragType = @"cssDragType";
     [aTextView setIncrementalSearchingEnabled:YES];
     [aTextView setAllowsUndo:YES];
     
+    BOOL whiteBlack = [[settingsProxy valueForSetting:@"whiteBlack"] boolValue];
+    NSColor *caretColor, *selectionFore, *selectionBack;
+    whiteBlack ? (caretColor = [NSColor colorWithHex:@"#444444"]) : (caretColor = [NSColor colorWithHex:@"#F2F2F2"]);
+    whiteBlack ? (selectionFore = [NSColor colorWithHex:[[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.textColor"]]) : (selectionFore = [NSColor colorWithHex:@"#808080"]);
+    whiteBlack ? (selectionBack = [NSColor colorWithHex:@"#B4D4FF"]) : (selectionBack = [NSColor colorWithHex:@"#333333"]);
+    [aTextView  setInsertionPointColor:caretColor];
+    [aTextView setSelectedTextAttributes:@{ NSForegroundColorAttributeName:selectionFore , NSBackgroundColorAttributeName:selectionBack}];
+    
+    
     if ([editorView bounds].size.width - self.textContainerWidth > 50) {
         [aTextView setTextContainerInset:NSMakeSize(([aTextView bounds].size.width-self.textContainerWidth)/2, 20)];
         [[aTextView textContainer] setContainerSize:NSMakeSize(self.textContainerWidth, [[aTextView textContainer] containerSize].height)];
@@ -196,7 +206,7 @@ static NSString *cssDragType = @"cssDragType";
     BOOL needAddMenuItem = YES;
     NSInteger foundIndex = 0;
     for (NSMenuItem *item in substMenu.itemArray) {
-        if ([item.title isEqualToString:@"Smart Pares"]) {
+        if ([item.title isEqualToString:@"Smart Pairs"]) {
             needAddMenuItem = NO;
             foundIndex = [substMenu indexOfItem:item];
             break;
@@ -219,7 +229,7 @@ static NSString *cssDragType = @"cssDragType";
     }
     
     else if ([(__bridge_transfer NSString*)context isEqualToString:@"focusModeChanged"]) {
-        NSUInteger focusMode = [[settingsProxy valueForSetting:@"focusOn"] intValue]; //[[SharedDefaultsController valueForKeyPath:@"values.focusOn"] intValue];
+        NSUInteger focusMode = [[settingsProxy valueForSetting:@"focusOn"] intValue];
         if (focusMode > 0)
             [self setMasked:YES];
         else
@@ -302,15 +312,11 @@ static NSString *cssDragType = @"cssDragType";
         return  YES;
     }
     
-    if ([menuItem action] == @selector(showPopover:)) {
-        if ([[self.document docType] isEqualToString:RTF])
-            return YES;
-        return NO;
-    }
-    
     if ([menuItem action] == @selector(setFontStyle:)) {
-        if ([[aTextView string] length] == 0)
+        if ([[aTextView string] length] == 0) {
+            [menuItem setState:0];
             return YES;
+        }
         
         LIFontStyle style = [self fontStyleForFont:[aTextView currentFont] atRange:[aTextView selectedRange]];
         if ([[self.document docType] isEqualToString:RTF]) {
@@ -340,16 +346,26 @@ static NSString *cssDragType = @"cssDragType";
     }
     
     if ([menuItem action] == @selector(setTextAlignment:)) {
-        if ([[aTextView string] length] == 0)
-            return YES;
-        NSRange activeRange = [aTextView selectedRange];
-        if (activeRange.length == 0)
-            activeRange.length = 1;
-        
-        NSRange paragraphRange = [[[aTextView textStorage] string] paragraphRangeForRange:[aTextView selectedRange]];
-        NSParagraphStyle *style = [aTextView styleForParagraphRange:paragraphRange];
         
         if ([[self.document docType] isEqualToString:RTF]) {
+            
+            if (menuItem.isHidden) {
+                [[menuItem.menu itemAtIndex:13] setHidden:NO];
+                [menuItem setHidden:NO];
+            }
+            
+            if ([[aTextView string] length] == 0) {
+                [menuItem setState:0];
+                return YES;
+            }
+            
+            NSRange activeRange = [aTextView selectedRange];
+            if (activeRange.length == 0)
+                activeRange.length = 1;
+            
+            NSRange paragraphRange = [[[aTextView textStorage] string] paragraphRangeForRange:[aTextView selectedRange]];
+            NSParagraphStyle *style = [aTextView styleForParagraphRange:paragraphRange];
+            
             switch ([style alignment]) {
                 case NSLeftTextAlignment: {
                     [[menuItem title] isEqualToString:@"Align Left"] ? [menuItem setState:1] : [menuItem setState:0];
@@ -367,10 +383,17 @@ static NSString *cssDragType = @"cssDragType";
                     [[menuItem title] isEqualToString:@"Align Right"] ? [menuItem setState:1] : [menuItem setState:0];
                     break;
                 }
-                default:
+                default: {
+                    [menuItem setState:0];
                     break;
+                }
             }
             return YES;
+        }
+        
+        else if (!menuItem.isHidden) {
+            [[menuItem.menu itemAtIndex:13] setHidden:YES];
+            [menuItem setHidden:YES];
         }
         return NO;
     }
@@ -389,7 +412,7 @@ static NSString *cssDragType = @"cssDragType";
         }
     }
     
-    if ([menuItem action] == @selector(copyHTML:)) {
+    if ([menuItem action] == @selector(copyHTML:) || [menuItem action] == @selector(setMDSize:)) {
         if ([[self.document docType] isEqualToString:TXT])
             return YES;
         else
@@ -399,6 +422,12 @@ static NSString *cssDragType = @"cssDragType";
     if ([menuItem action] == @selector(toggleSmartPares:)) {
         BOOL needState = [[settingsProxy valueForSetting:@"useSmartPares"] boolValue];
         [menuItem setState:needState];
+        return YES;
+    }
+    
+    if ([menuItem action] == @selector(toggleSelection:)) {
+        if ([[self.document docType] isEqualTo:TXT])
+            return NO;
         return YES;
     }
     
@@ -533,6 +562,10 @@ static NSString *cssDragType = @"cssDragType";
     
     [[aTextView textStorage] beginEditing];
     [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:textColor range:NSMakeRange(0, txtLength)];
+    if (![[notification.userInfo valueForKey:@"whiteBlack"] boolValue])
+        [aTextView setSelectedTextAttributes:@{ NSForegroundColorAttributeName:[NSColor colorWithHex:@"#808080"] , NSBackgroundColorAttributeName:[NSColor colorWithHex:@"333333"]}];
+    else
+        [aTextView setSelectedTextAttributes:@{ NSForegroundColorAttributeName:textColor , NSBackgroundColorAttributeName:[NSColor colorWithHex:@"#B4D4FF"]}];
     
     if ([selections count] > 0) {
         
@@ -548,6 +581,7 @@ static NSString *cssDragType = @"cssDragType";
     
     [[aTextView textStorage] endEditing];
     [(LIBackColoredView*)[[self.splitContainer subviews] objectAtIndex:0] setBackground:backColor];
+    [self.aTextView setInsertionPointColor:textColor];
     [self.gradientView setGradientColor:backColor];
     [self.gradientView setNeedsDisplay:YES];
 }
@@ -587,7 +621,6 @@ static NSString *cssDragType = @"cssDragType";
 
 - (void)arrangeTextInView
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
-#warning Неправильный инсет после скрытия маркдаун превью
     if ([editorView bounds].size.width - self.textContainerWidth > 40) {
         if (aTextView.frame.size.width < editorView.bounds.size.width)
             [aTextView setFrameSize:NSMakeSize(editorView.bounds.size.width, aTextView.frame.size.height)];
@@ -1071,7 +1104,7 @@ static NSString *cssDragType = @"cssDragType";
         imageRef = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
         CFRelease(imageSource);
     }
-    
+ 
     [bookmarkLayer setContents:(__bridge id)imageRef];
     [bookmarkLayer setBounds:NSRectToCGRect(NSMakeRect(0, 0, bookmark.size.width, bookmark.size.height))];
     CGImageRelease(imageRef);
@@ -1180,29 +1213,32 @@ static NSString *cssDragType = @"cssDragType";
 
 - (void)windowWillStartLiveResize:(NSNotification *)notification
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
-    if ([textPopover isShown]) {
+    if ([textPopover isShown] || [self.markdownPopover isShown]) {
         isPopoverShown = YES;
     }
+    if (self.masked)
+        [self.gradientView removeFocus];
+
 }
 
 - (void)windowDidEndLiveResize:(NSNotification *)notification
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
     if (isPopoverShown) {
-        [textPopover showRelativeToRect:popoverRelativeRect ofView:aTextView preferredEdge:NSMaxYEdge];
+        [showedPopover showRelativeToRect:popoverRelativeRect ofView:self.aTextView preferredEdge:NSMaxYEdge];
         isPopoverShown = NO;
     }
 }
 
 - (void)windowWillMove:(NSNotification *)notification
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
-    if ([textPopover isShown])
+    if ([textPopover isShown] || [self.markdownPopover isShown])
         isPopoverShown = YES;
 }
 
 - (void)windowDidMove:(NSNotification *)notification
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
     if (isPopoverShown) {
-        [textPopover showRelativeToRect:popoverRelativeRect ofView:aTextView preferredEdge:NSMaxYEdge];
+        [showedPopover showRelativeToRect:popoverRelativeRect ofView:self.aTextView preferredEdge:NSMaxYEdge];
         isPopoverShown = NO;
     }
 }
@@ -1220,7 +1256,7 @@ static NSString *cssDragType = @"cssDragType";
         activeStorage = [self.document textStorage];
     }
     NSRange activeRange = [aTextView selectedRange];
-    
+    NSLog(@"%@", [aTextView selectedTextAttributes]);
     NSDictionary *isAttachment = [[NSDictionary alloc] initWithDictionary:[aTextView attributesAtRange:NSMakeRange(activeRange.location-1, [aTextView selectedRange].length)]];
     if ([isAttachment valueForKey:NSAttachmentAttributeName] != nil) {
         NSDictionary *trullyAttributes = [NSDictionary dictionaryWithDictionary:[aTextView attributesAtRange:NSMakeRange(activeRange.location, aTextView.selectedRange.length)]];
@@ -1228,18 +1264,17 @@ static NSString *cssDragType = @"cssDragType";
     }
     else {
         NSDictionary *currentAttrs = [[NSDictionary alloc] initWithDictionary:[aTextView attributesAtRange:NSMakeRange(activeRange.location, [aTextView selectedRange].length)]];
-        
         if ([[currentAttrs allKeys] count] != 0 && ![[aTextView typingAttributes] isEqualToDictionary:currentAttrs])   // текст форматирован?
             [aTextView setTypingAttributes:currentAttrs];
     }
     return newSelectedCharRange;
 }
 
-#pragma mark Popover Delegate
+/*#pragma mark Popover Delegate
 - (BOOL)popoverShouldClose:(NSPopover *)popover
 {
     return YES;
-}
+}*/
 
 #pragma mark SplitView Delegate
 
@@ -1254,6 +1289,8 @@ static NSString *cssDragType = @"cssDragType";
         NSSize right;
         right.height = splitViewSize.height;
         right.width = splitViewSize.width - [sender dividerThickness] - left.width;
+        if (right.width > splitViewSize.width / 2)
+            right.width = splitViewSize.width / 2;
     
         [editorView setFrameSize:left];
         for (NSView *aView in [sender subviews]) {
@@ -1336,6 +1373,12 @@ static NSString *cssDragType = @"cssDragType";
         activeRange.location -= 1;
     }
     
+    NSPoint mousePoint = [aTextView convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
+    popoverRelativeRect = [aTextView rectForPopover];
+    
+    if (popoverRelativeRect.size.width == 0)
+        popoverRelativeRect = NSMakeRect(popoverRelativeRect.origin.x, popoverRelativeRect.origin.y, 1, popoverRelativeRect.size.height);
+    
     if ([[[self document] docType] isEqualToString:RTF]) {
         NSRange paragraphRange = [[[aTextView textStorage] string] paragraphRangeForRange:[aTextView selectedRange]];
         NSParagraphStyle *style = [aTextView styleForParagraphRange:paragraphRange];
@@ -1368,7 +1411,7 @@ static NSString *cssDragType = @"cssDragType";
             // Определяем, подсвечен ли текст
         NSRange effectiveRange;
         NSColor *backHighlight = [[[aTextView textStorage] attributesAtIndex:activeRange.location effectiveRange:&effectiveRange] valueForKey:NSBackgroundColorAttributeName];
-        if (!backHighlight || [[backHighlight hexColor] isEqualToString:[settingsProxy valueForSetting:@"backgroundColor"]])
+        if ([backHighlight isEqualTo:[NSColor clearColor]] || !backHighlight)
             [highlightSegment setSelectedSegment:-1];
         else
             [highlightSegment setSelectedSegment:0];
@@ -1446,21 +1489,86 @@ static NSString *cssDragType = @"cssDragType";
             [self setIsList:NO];
             [listSegment setSelectedSegment:-1];
         }
-        
-        popoverRelativeRect = [aTextView rectForPopover];
-        
-        if (popoverRelativeRect.size.width == 0)
-            popoverRelativeRect = NSMakeRect(popoverRelativeRect.origin.x, popoverRelativeRect.origin.y, 1, popoverRelativeRect.size.height);
-        
-        NSPoint mousePoint = [aTextView convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
-        
+                
         textPopover.appearance = NSPopoverAppearanceMinimal;
         if (mousePoint.y > popoverRelativeRect.origin.y)
             [textPopover showRelativeToRect:popoverRelativeRect ofView:aTextView preferredEdge:NSMaxYEdge];
         else
             [textPopover showRelativeToRect:popoverRelativeRect ofView:aTextView preferredEdge:NSMinYEdge];
+        showedPopover = self.textPopover;
+    }
+    
+    else if ([[self.document docType] isEqualToString:TXT]) {        
+        
+        NSRange paragraphRange = [self.aTextView.textStorage.string paragraphRangeForRange:activeRange];
+        NSString *paragraphString = [self.aTextView.textStorage.string substringWithRange:paragraphRange];
+        if (activeRange.length == 0) {
+            activeRange.length += 1;
+        }
+        NSString *selectedString = [self.aTextView.textStorage.string substringWithRange:activeRange];
+        
+        // Определение уровня заголовка
+        [self.mdSize setSelectedSegment:-1];
+        if ([paragraphString hasPrefix:@"#"]) {
+            NSUInteger size = 0;
+            for (int i = 0; i < paragraphString.length; i++) {
+                unichar ch = [paragraphString characterAtIndex:i];
+                NSString *character = [NSString stringWithCharacters:&ch length:1];
+                if ([character isEqualToString:@" "])
+                    break;
+                else
+                    size++;
+            }
+            if (size > 0 && size < 4)
+                [self.mdSize setSelectedSegment:size-1];
+            else
+                [self.mdSize setSelectedSegment:-1];
+        }
+        
+        // Определение начертания
+        [self.mdStyle setSelectedSegment:-1];
+        NSInteger start = [paragraphString rangeOfString:selectedString].location;
+        if (start != NSNotFound) {
+            NSUInteger count = 0;
+            start -= 1;
+            
+            for (int i = 0; i < 3; i++) {
+                unichar ch = [paragraphString characterAtIndex:start];
+                if (activeRange.location - start > paragraphRange.location)
+                    start--;
+                if (ch == 42)
+                    count++;
+                else
+                    break;
+            }
+            switch (count) {
+                case 1: {
+                    [self.mdStyle setSelectedSegment:1];
+                    break;
+                }
+                case 2: {
+                    [self.mdStyle setSelectedSegment:0];
+                    break;
+                }
+                case 3: {
+                    [self.mdStyle setSelectedSegment:1];
+                    [self.mdStyle setSelectedSegment:0];
+                    break;
+                }
+                default:break;
+            }
+        }
+        
+        self.markdownPopover.appearance = NSPopoverAppearanceMinimal;
+        if (mousePoint.y > popoverRelativeRect.origin.y)
+            [self.markdownPopover showRelativeToRect:popoverRelativeRect ofView:self.aTextView preferredEdge:NSMaxYEdge];
+        else
+            [self.markdownPopover showRelativeToRect:popoverRelativeRect ofView:self.aTextView preferredEdge:NSMinYEdge];
+        showedPopover = self.markdownPopover;
     }
 }
+
+#pragma mark RTF Popover
 
 - (IBAction)setFontSize:(id)sender
 {
@@ -1579,30 +1687,155 @@ static NSString *cssDragType = @"cssDragType";
     NSString *txtViewBackColor = [[aTextView backgroundColor] hexColor];
     NSString *defaultBackColor = [settingsProxy valueForSetting:@"backgroundColor"];
     
-    if ([attributeBackColor isEqualToString:defaultBackColor] ||  ([txtViewBackColor isEqualToString:defaultBackColor] && [attributeBackColor isEqualToString:txtViewBackColor]) || attributeBackColor == nil) {
-        [[aTextView textStorage] beginEditing];
-        //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:@"#FFFB41"] range:[aTextView selectedRange]];
-        
-        if (![[settingsProxy valueForSetting:@"whiteBlack"] boolValue])
-            [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:[NSColor colorWithHex:defaultBackColor] range:[aTextView selectedRange]];
-        else
-            [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:[NSColor colorWithHex:[settingsProxy valueForSetting:@"textColor"]] range:[aTextView selectedRange]];
-            
-        [[aTextView textStorage] endEditing];
+    if ([attributeBackColor isEqualToString:defaultBackColor] || ([txtViewBackColor isEqualToString:defaultBackColor] && [attributeBackColor isEqualToString:txtViewBackColor]) || attributeBackColor == nil) {
+        [[self.aTextView textStorage] beginEditing];
+        [[self.aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:[settingsProxy valueForSetting:@"selectionColor"]] range:[self.aTextView selectedRange]];
+        [[self.aTextView textStorage] endEditing];
     }
     else {
-        [[aTextView textStorage] beginEditing];
-        //[[aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[aTextView backgroundColor] range:[aTextView selectedRange]];
-        if (![[settingsProxy valueForSetting:@"whiteBlack"] boolValue])
-            [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:[NSColor colorWithHex:[settingsProxy valueForSetting:@"textColor"]] range:[aTextView selectedRange]];
-        [[aTextView textStorage] endEditing];
-        [highlightSegment setSelectedSegment:-1];
+        [[self.aTextView textStorage] beginEditing];
+        [[self.aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor clearColor] range:[self.aTextView selectedRange]];
+        [[self.aTextView textStorage] endEditing];
+        [self.highlightSegment setSelectedSegment:-1];
     }
 }
 
 - (IBAction)makeBulletList:(id)sender
 {
     [aTextView markedListInsertion:[aTextView selectedRange]];
+}
+
+#pragma mark MD Popover
+
+- (IBAction)setMDSize:(id)sender
+{
+    NSRange selectedRange = self.aTextView.selectedRange;
+    NSRange paragraphRange = [[self.aTextView.textStorage string] paragraphRangeForRange:selectedRange];
+    NSString *paragraphString = [[self.aTextView.textStorage string] substringWithRange:paragraphRange];
+    NSMutableString *modifier = [NSMutableString string];
+    
+    if (![paragraphString hasPrefix:@"#"]) {
+        
+        NSInteger size = 0;
+        if ([sender isKindOfClass:[NSSegmentedControl class]])
+            size = [sender selectedSegment];
+        else if ([sender isKindOfClass:[NSMenuItem class]])
+            size = [sender tag];
+    
+        for (int i = 0; i < size + 1; i++)
+            [modifier appendString:@"#"];
+        
+        [modifier appendString:@" "];
+        selectedRange.location += modifier.length;
+        
+        [self.aTextView.textStorage beginEditing];
+        NSString *replaceString = [modifier stringByAppendingString:paragraphString];
+        [self.aTextView.textStorage replaceCharactersInRange:paragraphRange withString:replaceString];
+        [self.aTextView.textStorage endEditing];
+    }
+    
+    else {
+        for (int i = 0; i < paragraphString.length; i++) {
+            unichar ch = [paragraphString characterAtIndex:i];
+            NSString *character = [NSString stringWithCharacters:&ch length:1];
+            if ([character isEqualToString:@" "])
+                break;
+            else
+                [modifier appendString:character];
+        }
+        
+        NSString *clearParagraphString = [paragraphString stringByReplacingOccurrencesOfString:modifier withString:@""];
+        clearParagraphString = [clearParagraphString stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" "]];
+        selectedRange.location -= modifier.length+1;
+        
+        modifier = [NSMutableString string];
+        for (int i = 0; i < [sender selectedSegment] + 1; i++)
+            [modifier appendString:@"# "];
+        selectedRange.location += modifier.length;
+        
+        [self.aTextView.textStorage beginEditing];
+        NSString *replaceString = [modifier stringByAppendingString:clearParagraphString];
+        [self.aTextView.textStorage replaceCharactersInRange:paragraphRange withString:replaceString];
+        [self.aTextView.textStorage endEditing];
+    }
+    
+    [self.aTextView setSelectedRange:selectedRange];
+    [self.markdownPopover close];
+}
+
+- (IBAction)setMDFontStyle:(id)sender
+{
+    NSRange selectedRange = self.aTextView.selectedRange;
+    NSString *selectedString = [self.aTextView.textStorage.string substringWithRange:selectedRange];
+    NSString *modifier;
+    
+    switch ([sender selectedSegment]) {
+        case 0: {
+            modifier = @"**";
+            break;
+        }
+        case 1: {
+            modifier = @"*";
+            break;
+        }
+        default:break;
+    }
+    
+    if (![selectedString hasPrefix:modifier] && ![selectedString hasSuffix:modifier]) {
+        [self.aTextView.textStorage beginEditing];
+        NSMutableString *replaceString = [[modifier stringByAppendingString:selectedString] mutableCopy];
+        if ([selectedString hasSuffix:@"\n"] || [selectedString hasSuffix:@"\r"])
+            [replaceString insertString:modifier atIndex:replaceString.length-1];
+        else
+            [replaceString appendString:modifier];
+        [self.aTextView.textStorage replaceCharactersInRange:selectedRange withString:replaceString];
+        [self.aTextView.textStorage endEditing];
+        
+        selectedRange.location += modifier.length;
+    }
+    
+    else {
+        NSString *replaceString = [selectedString stringByReplacingOccurrencesOfString:modifier withString:@""];
+        [self.aTextView.textStorage beginEditing];
+        [self.aTextView.textStorage replaceCharactersInRange:selectedRange withString:replaceString];
+        [self.aTextView.textStorage endEditing];
+        selectedRange.location -= modifier.length;
+    }
+    
+    [self.aTextView setSelectedRange:selectedRange];
+}
+
+- (IBAction)makeMDHyperlink:(id)sender
+{
+    NSRange selectedRange = self.aTextView.selectedRange;
+    NSString *selectedString = [[self.aTextView.textStorage string] substringWithRange:selectedRange];
+    NSError *error = nil;
+    NSRegularExpression *hyperlinkValidator = [NSRegularExpression regularExpressionWithPattern:@"^(?i)(?:(?:https?):\\/\\/)?(?:\\S+(?::\\S*)?@)?(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))(?::\\d{2,5})?(?:\\/[^\\s]*)?" options:NSRegularExpressionCaseInsensitive error:&error];
+    NSRange hyperlinkRange = [hyperlinkValidator rangeOfFirstMatchInString:selectedString options:NSCaseInsensitiveSearch range:NSMakeRange(0, selectedRange.length)];
+    
+    if (hyperlinkRange.location != NSNotFound && hyperlinkRange.length != NSNotFound) {
+        NSString *hyperlink = [NSString stringWithFormat:@"[%@](%@)", selectedString, selectedString];
+        [self.aTextView.textStorage beginEditing];
+        [self.aTextView.textStorage replaceCharactersInRange:selectedRange withString:hyperlink];
+        [self.aTextView.textStorage endEditing];
+        selectedRange.location += 1;
+    }
+    else {
+        NSString *defaultURL = @"http://loremipsumapp.com";
+        NSString *hyperlink = [NSString stringWithFormat:@"[%@](%@)", selectedString, defaultURL];
+        [self.aTextView.textStorage beginEditing];
+        [self.aTextView.textStorage replaceCharactersInRange:selectedRange withString:hyperlink];
+        [self.aTextView.textStorage endEditing];
+        selectedRange.location += selectedString.length+3;
+        selectedRange.length = defaultURL.length;
+    }
+    [self.aTextView setSelectedRange:selectedRange];
+    [self.markdownPopover close];
+}
+
+- (IBAction)makeMDList:(id)sender
+{
+    [self.aTextView convertList:sender];
 }
 
 - (IBAction)showHTML:(id)sender
@@ -1651,6 +1884,8 @@ static NSString *cssDragType = @"cssDragType";
         [self.splitContainer animateSubviewAtIndex:1 collapse:YES];
 }
 
+#pragma mark Other
+
 - (IBAction)copyHTML:(id)sender
 {
     NSString *htmlString = [ORCDiscount markdown2HTML:[[aTextView textStorage] string]];
@@ -1688,7 +1923,20 @@ static NSString *cssDragType = @"cssDragType";
         gotoSheet = [[LIGoToLineController alloc] initWithWindowNibName:@"LIGoToLineController"];
     }
     
+    NSArray *arr = [[self.aTextView.textStorage string] linesRanges];
+    NSRange currRange = [self.aTextView selectedRange];
     [NSApp beginSheet:gotoSheet.window modalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:NULL];
+    for (NSValue* value in arr) {
+        if (![value isEqualToValue:[arr lastObject]]) {
+            NSRange range = [value rangeValue];
+            NSUInteger index = [arr indexOfObject:value];
+            NSRange nextRange = [[arr objectAtIndex:index+1] rangeValue];
+            if ((currRange.location >= range.location) && (currRange.location < nextRange.location)) {
+                [gotoSheet.lineNumber setStringValue:[NSString stringWithFormat:@"%ld", index+1]];
+                break;
+            }
+        }
+    }
 }
 
 - (IBAction)exportHTML:(id)sender
@@ -1765,6 +2013,8 @@ static NSString *cssDragType = @"cssDragType";
             [textPopover close];
     }
     else {
+        if ([self.markdownPopover isShown])
+            [self.markdownPopover close];
         if ([[aTextView textStorage] containsAttachments])
             proposedFileType = (NSString*)kUTTypeRTFD;
         else proposedFileType = (NSString*)kUTTypeRTF;
@@ -1800,7 +2050,10 @@ static NSString *cssDragType = @"cssDragType";
     }
     else {
         if ([[splitContainer subviews] count] == 2) {
+            [splitContainer animateSubviewAtIndex:1 collapse:YES];
             [[[splitContainer subviews] objectAtIndex:1] removeFromSuperview];
+            markdownViewContainer = nil;
+            markdownPreview = nil;
             if ([markdownTimer isValid])
                 [markdownTimer invalidate];
         }
@@ -1809,16 +2062,9 @@ static NSString *cssDragType = @"cssDragType";
     [self updateCountersManually:self];
 }
 
-- (IBAction)scaleText:(id)sender
-{
-    CGFloat scaleFactor = [sender tag];
-    scaleFactor = scaleFactor/100;    
-    [self.scrollContainer setScaleFactor:scaleFactor];
-    [self arrangeTextInView];
-}
-
 - (IBAction)toggleSmartPares:(id)sender
 {
     [settingsProxy setValue:[NSNumber numberWithBool:![sender state]] forSettingName:@"useSmartPares"];
 }
+
 @end

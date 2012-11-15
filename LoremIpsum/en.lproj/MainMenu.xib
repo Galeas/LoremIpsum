@@ -3,12 +3,12 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1080</int>
 		<string key="IBDocument.SystemVersion">12C60</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2843</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2844</string>
 		<string key="IBDocument.AppKitVersion">1187.34</string>
 		<string key="IBDocument.HIToolboxVersion">625.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">2843</string>
+			<string key="NS.object.0">2844</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>NSCustomObject</string>
@@ -677,7 +677,7 @@
 											</object>
 											<object class="NSMenuItem" id="249273327">
 												<reference key="NSMenu" ref="698887838"/>
-												<string key="NSTitle">Smart Pares</string>
+												<string key="NSTitle">Smart Pairs</string>
 												<string key="NSKeyEquiv"/>
 												<int key="NSMnemonicLoc">2147483647</int>
 												<reference key="NSOnImage" ref="1033313550"/>
@@ -854,6 +854,93 @@
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="1033313550"/>
 									<reference key="NSMixedImage" ref="310636482"/>
+								</object>
+								<object class="NSMenuItem" id="965957271">
+									<reference key="NSMenu" ref="892078337"/>
+									<string key="NSTitle">Highlight</string>
+									<string key="NSKeyEquiv">H</string>
+									<int key="NSKeyEquivModMask">1048576</int>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="1033313550"/>
+									<reference key="NSMixedImage" ref="310636482"/>
+								</object>
+								<object class="NSMenuItem" id="781021157">
+									<reference key="NSMenu" ref="892078337"/>
+									<bool key="NSIsDisabled">YES</bool>
+									<bool key="NSIsSeparator">YES</bool>
+									<string key="NSTitle"/>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="1033313550"/>
+									<reference key="NSMixedImage" ref="310636482"/>
+								</object>
+								<object class="NSMenuItem" id="561203122">
+									<reference key="NSMenu" ref="892078337"/>
+									<string key="NSTitle">Header Size</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="1033313550"/>
+									<reference key="NSMixedImage" ref="310636482"/>
+									<string key="NSAction">submenuAction:</string>
+									<object class="NSMenu" key="NSSubmenu" id="1030338272">
+										<string key="NSTitle">Header Size</string>
+										<array class="NSMutableArray" key="NSMenuItems">
+											<object class="NSMenuItem" id="910438852">
+												<reference key="NSMenu" ref="1030338272"/>
+												<string key="NSTitle">Header 1</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="1033313550"/>
+												<reference key="NSMixedImage" ref="310636482"/>
+												<int key="NSTag">1</int>
+											</object>
+											<object class="NSMenuItem" id="776758823">
+												<reference key="NSMenu" ref="1030338272"/>
+												<string key="NSTitle">Header 2</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="1033313550"/>
+												<reference key="NSMixedImage" ref="310636482"/>
+												<int key="NSTag">2</int>
+											</object>
+											<object class="NSMenuItem" id="239221332">
+												<reference key="NSMenu" ref="1030338272"/>
+												<string key="NSTitle">Header 3</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="1033313550"/>
+												<reference key="NSMixedImage" ref="310636482"/>
+												<int key="NSTag">3</int>
+											</object>
+											<object class="NSMenuItem" id="157545794">
+												<reference key="NSMenu" ref="1030338272"/>
+												<string key="NSTitle">Header 4</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="1033313550"/>
+												<reference key="NSMixedImage" ref="310636482"/>
+												<int key="NSTag">4</int>
+											</object>
+											<object class="NSMenuItem" id="398801426">
+												<reference key="NSMenu" ref="1030338272"/>
+												<string key="NSTitle">Header 5</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="1033313550"/>
+												<reference key="NSMixedImage" ref="310636482"/>
+												<int key="NSTag">5</int>
+											</object>
+											<object class="NSMenuItem" id="110014732">
+												<reference key="NSMenu" ref="1030338272"/>
+												<string key="NSTitle">Header 6</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="1033313550"/>
+												<reference key="NSMixedImage" ref="310636482"/>
+												<int key="NSTag">6</int>
+											</object>
+										</array>
+									</object>
 								</object>
 								<object class="NSMenuItem" id="692549729">
 									<reference key="NSMenu" ref="892078337"/>
@@ -1191,6 +1278,7 @@
 								</object>
 								<object class="NSMenuItem" id="235124948">
 									<reference key="NSMenu" ref="466310130"/>
+									<bool key="NSIsHidden">YES</bool>
 									<string key="NSTitle">Scaling</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -1306,6 +1394,7 @@
 									<reference key="NSMenu" ref="466310130"/>
 									<bool key="NSIsDisabled">YES</bool>
 									<bool key="NSIsSeparator">YES</bool>
+									<bool key="NSIsHidden">YES</bool>
 									<string key="NSTitle"/>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -2138,6 +2227,62 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleSelection:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="965957271"/>
+					</object>
+					<int key="connectionID">679</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">setMDSize:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="910438852"/>
+					</object>
+					<int key="connectionID">693</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">setMDSize:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="776758823"/>
+					</object>
+					<int key="connectionID">694</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">setMDSize:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="239221332"/>
+					</object>
+					<int key="connectionID">695</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">setMDSize:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="157545794"/>
+					</object>
+					<int key="connectionID">696</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">setMDSize:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="398801426"/>
+					</object>
+					<int key="connectionID">697</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">setMDSize:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="110014732"/>
+					</object>
+					<int key="connectionID">698</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">showWindow:</string>
 						<reference key="source" ref="15866968"/>
 						<reference key="destination" ref="609285721"/>
@@ -2772,6 +2917,9 @@
 							<reference ref="645815110"/>
 							<reference ref="348659466"/>
 							<reference ref="546971897"/>
+							<reference ref="965957271"/>
+							<reference ref="781021157"/>
+							<reference ref="561203122"/>
 						</array>
 						<reference key="parent" ref="470804886"/>
 					</object>
@@ -3295,6 +3443,67 @@
 						<reference key="object" ref="249273327"/>
 						<reference key="parent" ref="698887838"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">678</int>
+						<reference key="object" ref="965957271"/>
+						<reference key="parent" ref="892078337"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">680</int>
+						<reference key="object" ref="781021157"/>
+						<reference key="parent" ref="892078337"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">685</int>
+						<reference key="object" ref="561203122"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="1030338272"/>
+						</array>
+						<reference key="parent" ref="892078337"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">686</int>
+						<reference key="object" ref="1030338272"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="910438852"/>
+							<reference ref="776758823"/>
+							<reference ref="239221332"/>
+							<reference ref="157545794"/>
+							<reference ref="398801426"/>
+							<reference ref="110014732"/>
+						</array>
+						<reference key="parent" ref="561203122"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">687</int>
+						<reference key="object" ref="910438852"/>
+						<reference key="parent" ref="1030338272"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">688</int>
+						<reference key="object" ref="776758823"/>
+						<reference key="parent" ref="1030338272"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">689</int>
+						<reference key="object" ref="239221332"/>
+						<reference key="parent" ref="1030338272"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">690</int>
+						<reference key="object" ref="157545794"/>
+						<reference key="parent" ref="1030338272"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">691</int>
+						<reference key="object" ref="398801426"/>
+						<reference key="parent" ref="1030338272"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">692</int>
+						<reference key="object" ref="110014732"/>
+						<reference key="parent" ref="1030338272"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -3454,6 +3663,16 @@
 				<string key="666.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="667.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="676.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="678.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="680.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="685.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="686.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="687.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="688.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="689.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="690.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="691.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="692.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3469,7 +3688,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">677</int>
+			<int key="maxID">698</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3489,420 +3708,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBUserSource</string>
 						<string key="minorKey"/>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">LIBookmarxController</string>
-					<string key="superclassName">NSWindowController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">closeSheet:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">closeSheet:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">closeSheet:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="bArrayController">NSArrayController</string>
-						<string key="bookmarxTable">NSTableView</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="bArrayController">
-							<string key="name">bArrayController</string>
-							<string key="candidateClassName">NSArrayController</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="bookmarxTable">
-							<string key="name">bookmarxTable</string>
-							<string key="candidateClassName">NSTableView</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/LIBookmarxController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">LIDocWindowController</string>
-					<string key="superclassName">NSWindowController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="copyHTML:">id</string>
-						<string key="createBookmark:">id</string>
-						<string key="exportHTML:">id</string>
-						<string key="exportPDF:">id</string>
-						<string key="gotoLineOpenSheet:">id</string>
-						<string key="makeBulletList:">id</string>
-						<string key="richTextPlainText:">id</string>
-						<string key="scaleText:">id</string>
-						<string key="setFontSize:">id</string>
-						<string key="setFontStyle:">id</string>
-						<string key="setTextAlignment:">id</string>
-						<string key="showHTML:">id</string>
-						<string key="showHideCounters:">id</string>
-						<string key="showPopover:">id</string>
-						<string key="toggleSelection:">id</string>
-						<string key="toggleSmartPares:">id</string>
-						<string key="turnOnAutoUpdateCounters:">id</string>
-						<string key="updateCountersManually:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="copyHTML:">
-							<string key="name">copyHTML:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="createBookmark:">
-							<string key="name">createBookmark:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="exportHTML:">
-							<string key="name">exportHTML:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="exportPDF:">
-							<string key="name">exportPDF:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="gotoLineOpenSheet:">
-							<string key="name">gotoLineOpenSheet:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="makeBulletList:">
-							<string key="name">makeBulletList:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="richTextPlainText:">
-							<string key="name">richTextPlainText:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="scaleText:">
-							<string key="name">scaleText:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="setFontSize:">
-							<string key="name">setFontSize:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="setFontStyle:">
-							<string key="name">setFontStyle:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="setTextAlignment:">
-							<string key="name">setTextAlignment:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="showHTML:">
-							<string key="name">showHTML:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="showHideCounters:">
-							<string key="name">showHideCounters:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="showPopover:">
-							<string key="name">showPopover:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleSelection:">
-							<string key="name">toggleSelection:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleSmartPares:">
-							<string key="name">toggleSmartPares:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="turnOnAutoUpdateCounters:">
-							<string key="name">turnOnAutoUpdateCounters:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="updateCountersManually:">
-							<string key="name">updateCountersManually:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="aTextView">LITextView</string>
-						<string key="editorView">NSView</string>
-						<string key="fontStylesControl">NSSegmentedControl</string>
-						<string key="gradientView">LIGradientOverlayVew</string>
-						<string key="highlightSegment">NSSegmentedControl</string>
-						<string key="listSegment">NSSegmentedControl</string>
-						<string key="markdownPreview">LIWebView</string>
-						<string key="markdownViewContainer">NSView</string>
-						<string key="scrollContainer">LIScalingScrollView</string>
-						<string key="splitContainer">LISplitView</string>
-						<string key="textPopover">NSPopover</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="aTextView">
-							<string key="name">aTextView</string>
-							<string key="candidateClassName">LITextView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="editorView">
-							<string key="name">editorView</string>
-							<string key="candidateClassName">NSView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="fontStylesControl">
-							<string key="name">fontStylesControl</string>
-							<string key="candidateClassName">NSSegmentedControl</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gradientView">
-							<string key="name">gradientView</string>
-							<string key="candidateClassName">LIGradientOverlayVew</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="highlightSegment">
-							<string key="name">highlightSegment</string>
-							<string key="candidateClassName">NSSegmentedControl</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="listSegment">
-							<string key="name">listSegment</string>
-							<string key="candidateClassName">NSSegmentedControl</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="markdownPreview">
-							<string key="name">markdownPreview</string>
-							<string key="candidateClassName">LIWebView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="markdownViewContainer">
-							<string key="name">markdownViewContainer</string>
-							<string key="candidateClassName">NSView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="scrollContainer">
-							<string key="name">scrollContainer</string>
-							<string key="candidateClassName">LIScalingScrollView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="splitContainer">
-							<string key="name">splitContainer</string>
-							<string key="candidateClassName">LISplitView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="textPopover">
-							<string key="name">textPopover</string>
-							<string key="candidateClassName">NSPopover</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/LIDocWindowController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">LIDocumentController</string>
-					<string key="superclassName">NSDocumentController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">manualNewDocument:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">manualNewDocument:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">manualNewDocument:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/LIDocumentController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">LIGradientOverlayVew</string>
-					<string key="superclassName">NSView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/LIGradientOverlayVew.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">LIPreferences</string>
-					<string key="superclassName">NSWindowController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="focusOnLine:">id</string>
-						<string key="focusOnParagraph:">id</string>
-						<string key="openCssOpenPanel:">id</string>
-						<string key="switchColorTheme:">id</string>
-						<string key="updateWithNewSettings:">id</string>
-						<string key="useCustomCSS:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="focusOnLine:">
-							<string key="name">focusOnLine:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="focusOnParagraph:">
-							<string key="name">focusOnParagraph:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="openCssOpenPanel:">
-							<string key="name">openCssOpenPanel:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="switchColorTheme:">
-							<string key="name">switchColorTheme:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="updateWithNewSettings:">
-							<string key="name">updateWithNewSettings:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="useCustomCSS:">
-							<string key="name">useCustomCSS:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="bTextWback">NSButton</string>
-						<string key="customCSSCheck">NSButton</string>
-						<string key="lightDarkTheme">NSSegmentedControl</string>
-						<string key="onLine">NSMenuItem</string>
-						<string key="onParagraph">NSMenuItem</string>
-						<string key="wTextBback">NSButton</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="bTextWback">
-							<string key="name">bTextWback</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="customCSSCheck">
-							<string key="name">customCSSCheck</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="lightDarkTheme">
-							<string key="name">lightDarkTheme</string>
-							<string key="candidateClassName">NSSegmentedControl</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="onLine">
-							<string key="name">onLine</string>
-							<string key="candidateClassName">NSMenuItem</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="onParagraph">
-							<string key="name">onParagraph</string>
-							<string key="candidateClassName">NSMenuItem</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="wTextBback">
-							<string key="name">wTextBback</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/LIPreferences.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">LIScalingScrollView</string>
-					<string key="superclassName">NSScrollView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/LIScalingScrollView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">LISplitView</string>
-					<string key="superclassName">NSSplitView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/LISplitView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">LITextView</string>
-					<string key="superclassName">NSTextView</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="convertList:">id</string>
-						<string key="decreaseListLevel:">id</string>
-						<string key="decreaseQuoteLevel:">id</string>
-						<string key="increaseListLevel:">id</string>
-						<string key="increaseQuoteLevel:">id</string>
-						<string key="insertMarkedList:">id</string>
-						<string key="insertNumberedList:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="convertList:">
-							<string key="name">convertList:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="decreaseListLevel:">
-							<string key="name">decreaseListLevel:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="decreaseQuoteLevel:">
-							<string key="name">decreaseQuoteLevel:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="increaseListLevel:">
-							<string key="name">increaseListLevel:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="increaseQuoteLevel:">
-							<string key="name">increaseQuoteLevel:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="insertMarkedList:">
-							<string key="name">insertMarkedList:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="insertNumberedList:">
-							<string key="name">insertNumberedList:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/LITextView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">LITimedWritingController</string>
-					<string key="superclassName">NSWindowController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="closeSheet:">id</string>
-						<string key="startCountdown:">id</string>
-						<string key="stopTimer:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="closeSheet:">
-							<string key="name">closeSheet:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="startCountdown:">
-							<string key="name">startCountdown:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="stopTimer:">
-							<string key="name">stopTimer:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="countdownCheck">NSButton</string>
-						<string key="mainItem">NSMenuItem</string>
-						<string key="timeZ">NSDatePicker</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="countdownCheck">
-							<string key="name">countdownCheck</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="mainItem">
-							<string key="name">mainItem</string>
-							<string key="candidateClassName">NSMenuItem</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="timeZ">
-							<string key="name">timeZ</string>
-							<string key="candidateClassName">NSDatePicker</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/LITimedWritingController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">LIWebView</string>
-					<string key="superclassName">WebView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/LIWebView.h</string>
 					</object>
 				</object>
 			</array>

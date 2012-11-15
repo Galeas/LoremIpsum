@@ -11,7 +11,6 @@
 #import "LISettingsProxy.h"
 #import "ESSImageCategory.h"
 #import "LITextView.h"
-#import "LIScalingScrollView.h"
 #import <QuartzCore/QuartzCore.h>
 
 @implementation LIGradientOverlayVew
@@ -43,7 +42,7 @@
             [bottomLayer setName:@"bottomLayer"];
             [bottomLayer setAutoresizingMask:kCALayerWidthSizable];
             
-            [bottomLayer setFrame:NSRectToCGRect(NSMakeRect(textView.textContainerOrigin.x, scrollContainer.frame.origin.y, gradientSize.width, gradientSize.height))];
+            [bottomLayer setFrame:NSRectToCGRect(NSMakeRect(scrollContainer.frame.origin.x, scrollContainer.frame.origin.y, gradientSize.width, gradientSize.height))];
             [self.layer addSublayer:bottomLayer];
         }
         
@@ -54,22 +53,21 @@
             [topLayer setLocations:gLocationsTop];
             [topLayer setName:@"topLayer"];
             [topLayer setAutoresizingMask:kCALayerWidthSizable];
-            
+            [topLayer setFrame:NSRectToCGRect(NSMakeRect(0, dirtyRect.size.height-gradientSize.height, gradientSize.width, gradientSize.height))];
             [self.layer addSublayer:topLayer];
-            
-            [topLayer setFrame:NSRectToCGRect(NSMakeRect(textView.textContainerOrigin.x, dirtyRect.size.height-gradientSize.height, gradientSize.width, gradientSize.height))];
         }
+        
+        [CATransaction flush];
+        [CATransaction begin];
+        [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
         
         NSArray *gColorsBottom = @[(__bridge id)[self.gradientColor colorWithAlphaComponent:1.0f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.75f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.5f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.25f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.05f].CGColor];
         [bottomLayer setColors:gColorsBottom];
         NSArray *gColorsTop = [[gColorsBottom reverseObjectEnumerator] allObjects];
         [topLayer setColors:gColorsTop];
         
-        [CATransaction flush];
-        [CATransaction begin];
-        [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-        [topLayer setFrame:NSRectToCGRect(NSMakeRect(textView.textContainerOrigin.x, dirtyRect.size.height-gradientSize.height, gradientSize.width, gradientSize.height))];
-        [bottomLayer setFrame:NSRectToCGRect(NSMakeRect(textView.textContainerOrigin.x, scrollContainer.frame.origin.y, gradientSize.width, gradientSize.height))];
+        [bottomLayer setFrame:NSRectToCGRect(NSMakeRect(scrollContainer.frame.origin.x, scrollContainer.frame.origin.y, gradientSize.width, gradientSize.height))];
+        [topLayer setFrame:NSRectToCGRect(NSMakeRect(0, dirtyRect.size.height-gradientSize.height, gradientSize.width, gradientSize.height))];
         [CATransaction commit];
     }
     
@@ -86,18 +84,26 @@
         [self.layer addSublayer:_infoLayer];
     }
     else {
-        [CATransaction flush];
-        [CATransaction begin];
-        [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
         [_infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, self.bounds.size.width, 20))];
-        [CATransaction commit];
     }
     
-    if ([[self.layer sublayers] containsObject:topMask])
-        [topMask setBackgroundColor:[self.gradientColor colorWithAlphaComponent:.75f].CGColor];
-    if ([[self.layer sublayers] containsObject:bottomMask])
-        [bottomMask setBackgroundColor:[self.gradientColor colorWithAlphaComponent:.75f].CGColor];
     
+    if ([[self.layer sublayers] containsObject:topMask]) {
+        CGColorRef cgTopMaskBackC = topMask.backgroundColor;
+        CGFloat *colorComponents = (CGFloat*)CGColorGetComponents(cgTopMaskBackC);
+        NSColor *backTopMaskColor = [NSColor colorWithCalibratedRed:colorComponents[0] green:colorComponents[1] blue:colorComponents[2] alpha:colorComponents[3]];
+        if (![backTopMaskColor isEqualTo:self.gradientColor])
+            [topMask setBackgroundColor:[self.gradientColor colorWithAlphaComponent:.75f].CGColor];
+    }
+    if ([[self.layer sublayers] containsObject:bottomMask]) {
+        CGColorRef cgBottomMaskBackC = bottomMask.backgroundColor;
+        CGFloat *colorComponents = (CGFloat*)CGColorGetComponents(cgBottomMaskBackC);
+        NSColor *backBottomMaskColor = [NSColor colorWithCalibratedRed:colorComponents[0] green:colorComponents[1] blue:colorComponents[2] alpha:colorComponents[3]];
+        if (![backBottomMaskColor isEqualTo:self.gradientColor])
+            [bottomMask setBackgroundColor:[self.gradientColor colorWithAlphaComponent:.75f].CGColor];
+    }
+    
+    [CATransaction commit];
     [super drawRect:dirtyRect];
 }
 
@@ -167,10 +173,8 @@
     }
     
     [bookmarkLayer setContents:(__bridge id)imageRef];
-    CGFloat scaleFactor = [[[self.window windowController] scrollContainer] scaleFactor];
-    if (scaleFactor == 0) scaleFactor = 1;
     
-    [bookmarkLayer setBounds:NSRectToCGRect(NSMakeRect(0, 0, bookmark.size.width*scaleFactor, bookmark.size.height*scaleFactor))];
+    [bookmarkLayer setBounds:NSRectToCGRect(NSMakeRect(0, 0, bookmark.size.width, bookmark.size.height))];
     CGImageRelease(imageRef);
     
     NSRect rectForImageLayer = [textView rectForBookmarkAnimation:NSMakeRange(position, 0)];
@@ -182,7 +186,7 @@
     [self.layer addSublayer:bookmarkLayer];
     
     NSPoint startPoint = bookmarkLayer.position;
-    NSPoint endPoint = NSMakePoint(startPoint.x, startPoint.y - 18*scaleFactor);
+    NSPoint endPoint = NSMakePoint(startPoint.x, startPoint.y - 18);
     
     CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"position"];
     anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];

@@ -179,12 +179,12 @@
     return bookmarksArray;
 }
 
-- (NSDictionary *)selectedTextAttributes
+/*- (NSDictionary *)selectedTextAttributes
 {
     if (![[[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.whiteBlack"] boolValue])
         return [NSDictionary dictionaryWithObjectsAndKeys:[NSColor colorWithHex:@"#808080"], NSBackgroundColorAttributeName, [NSColor colorWithHex:@"#333333"], NSForegroundColorAttributeName,  nil];
     return [NSDictionary dictionaryWithObjectsAndKeys:[NSColor colorWithHex:[[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.textColor"]], NSForegroundColorAttributeName, [NSColor colorWithHex:@"#B4D4FF"], NSBackgroundColorAttributeName, nil];
-}
+}*/
 
 - (NSRect)rectForPopover
 {   
@@ -304,63 +304,67 @@
 - (void)keyDown:(NSEvent *)theEvent
 {
     if ([[[LISettingsProxy proxy] valueForSetting:@"useSmartPares"] boolValue]) {
-        NSString *keyPressed = [theEvent charactersIgnoringModifiers];
-        NSCharacterSet *enteredSet = [NSCharacterSet characterSetWithCharactersInString:@"({[<'\""];
-        unichar insertedCode = [keyPressed characterAtIndex:0];
         NSInteger currentPos = self.selectedRange.location;
-        
-        if ([keyPressed rangeOfCharacterFromSet:enteredSet].location != NSNotFound) {
-            switch (insertedCode) {
-                case 40: {
-                    keyPressed = @")";
-                    break;
+        if (currentPos != NSNotFound) {
+            NSString *keyPressed = [theEvent charactersIgnoringModifiers];
+            NSCharacterSet *enteredSet = [NSCharacterSet characterSetWithCharactersInString:@"({[<'\""];
+            unichar insertedCode = [keyPressed characterAtIndex:0];
+            
+            if ([keyPressed rangeOfCharacterFromSet:enteredSet].location != NSNotFound) {
+                switch (insertedCode) {
+                    case 40: {
+                        keyPressed = @")";
+                        break;
+                    }
+                    case 91: {
+                        keyPressed = @"]";
+                        break;
+                    }
+                    case 123: {
+                        keyPressed = @"}";
+                        break;
+                    }
+                    case 60: {
+                        keyPressed = @">";
+                        break;
+                    }
+                    default:break;
                 }
-                case 91: {
-                    keyPressed = @"]";
-                    break;
-                }
-                case 123: {
-                    keyPressed = @"}";
-                    break;
-                }
-                case 60: {
-                    keyPressed = @">";
-                    break;
-                }
-                default:break;
+                [self insertText:keyPressed replacementRange:NSMakeRange(currentPos, 0)];
+                [self setSelectedRange:NSMakeRange(currentPos, 0)];
             }
-            [self insertText:keyPressed replacementRange:NSMakeRange(currentPos, 0)];
-            [self setSelectedRange:NSMakeRange(currentPos, 0)];
-        }
-        
-        else {
-            switch (insertedCode) {
-                case 127: {
-                    if (self.string.length > 0 && self.selectedRange.location > 0) {
-                        NSRange hitRange = NSMakeRange(currentPos, 1);
-                        NSString *nextSymbol = [self.string substringWithRange:hitRange];
-                        NSString *currentSymbol = [self.string substringWithRange:NSMakeRange(hitRange.location-1, 1)];
-                        unichar next = [nextSymbol characterAtIndex:0];
-                        unichar curr = [currentSymbol characterAtIndex:0];
+            
+            else {
+                switch (insertedCode) {
+                    case 127: {
+                        if (self.string.length > 0 && self.selectedRange.location > 0 && self.selectedRange.location < self.string.length) {
+                            NSRange hitRange = NSMakeRange(currentPos, 1);
+                            NSString *nextSymbol = [self.string substringWithRange:hitRange];
+                            NSString *currentSymbol = [self.string substringWithRange:NSMakeRange(hitRange.location-1, 1)];
+                            unichar next = [nextSymbol characterAtIndex:0];
+                            unichar curr = [currentSymbol characterAtIndex:0];
+                            
+                            if ((curr == 40 && next == 41) || (curr == 91 && next == 93) || (curr == 123 && next == 125) || (curr == 60 && next == 62) || (curr == 39 && next == 39) || (curr == 34 && next == 34))
+                                [self insertText:@"" replacementRange:hitRange];
+                        }
                         
-                        if ((curr == 40 && next == 41) || (curr == 91 && next == 93) || (curr == 123 && next == 125) || (curr == 60 && next == 62) || (curr == 39 && next == 39) || (curr == 34 && next == 34))
-                            [self insertText:@"" replacementRange:hitRange];
+                        break;
                     }
-
-                    break;
-                }
-                case 63272: {
-                    if (self.string.length > 0 && [self selectedRange].location < self.string.length) {
-                        NSRange hitRange = NSMakeRange(currentPos-1, 1);
-                        NSString *prevSymbol = [self.string substringWithRange:hitRange];
-                        NSString *currentSymbol = [self.string substringWithRange:NSMakeRange(hitRange.location+1, 1)];
-                        unichar prev = [prevSymbol characterAtIndex:0];
-                        unichar curr = [currentSymbol characterAtIndex:0];
-                        
-                        if ((prev == 40 && curr == 41) || (prev == 91 && curr == 93) || (prev == 123 && curr == 125) || (prev == 60 && curr == 62) || (prev == 39 && curr == 39) || (prev == 34 && curr == 34))
-                            [self insertText:@"" replacementRange:hitRange];
+                    case 63272: {
+                        if (self.string.length > 0 && [self selectedRange].location < self.string.length) {
+                            NSRange hitRange = NSMakeRange(currentPos-1, 1);
+                            if (hitRange.location <= self.textStorage.string.length) {
+                                NSString *prevSymbol = [self.string substringWithRange:hitRange];
+                                NSString *currentSymbol = [self.string substringWithRange:NSMakeRange(hitRange.location+1, 1)];
+                                unichar prev = [prevSymbol characterAtIndex:0];
+                                unichar curr = [currentSymbol characterAtIndex:0];
+                                
+                                if ((prev == 40 && curr == 41) || (prev == 91 && curr == 93) || (prev == 123 && curr == 125) || (prev == 60 && curr == 62) || (prev == 39 && curr == 39) || (prev == 34 && curr == 34))
+                                    [self insertText:@"" replacementRange:hitRange];
+                            }
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -929,8 +933,6 @@
     }
     NSTextList *numberedList = [[NSTextList alloc] initWithMarkerFormat:@"{decimal}." options:0];
     
-    //NSString *bullet = [NSString stringWithFormat:@"%@\t", [markedList markerForItemNumber:1]];
-    
     NSUInteger currentPosition = 0;
     
     for (NSString *paragraphString in strings) {
@@ -952,33 +954,42 @@
             
             [[self textStorage] beginEditing];
             
-            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^([0-9]*)\\.\\s" options:NSRegularExpressionCaseInsensitive error:&error];
+            //NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^([0-9]*)\\.\\s" options:NSRegularExpressionCaseInsensitive error:&error];
+            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^\\*\\s" options:NSRegularExpressionCaseInsensitive error:&error];
             NSRange rangeOfFirstMatch = [regex rangeOfFirstMatchInString:commandString options:0 range:NSMakeRange(0, [commandString length])];
             
-            if (!NSEqualRanges(rangeOfFirstMatch, NSMakeRange(NSNotFound, 0))) {
-                [style setTextLists:[NSArray arrayWithObject:markedList]];
+            if (NSEqualRanges(rangeOfFirstMatch, NSMakeRange(NSNotFound, 0))) {
+                [style setTextLists:@[markedList]];
                 [attrs setValue:style forKey:NSParagraphStyleAttributeName];
-                [[self textStorage] setAttributes:attrs range:paragraphRange];
+                NSRegularExpression *regex_num = [NSRegularExpression regularExpressionWithPattern:@"^([0-9]*)\\.\\s" options:NSRegularExpressionCaseInsensitive error:&error];
+                NSRange index_range = [regex_num rangeOfFirstMatchInString:commandString options:NSRegularExpressionCaseInsensitive range:NSMakeRange(0, commandString.length)];
+                NSAttributedString *toAdd;
                 
-                NSRange trueRange;
-                NSString *index = [commandString substringWithRange:rangeOfFirstMatch];
-                trueRange = [paragraphString rangeOfString:index];
-                trueRange = NSMakeRange(paragraphRange.location + trueRange.location, trueRange.length);                
-                [[self textStorage] replaceCharactersInRange:trueRange withString:bullet];
+                if (!NSEqualRanges(index_range, NSMakeRange(NSNotFound, 0)))
+                    toAdd = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@%@", leadingTabs, bullet, [commandString stringByReplacingCharactersInRange:index_range withString:@""]] attributes:attrs];
+                else
+                    toAdd = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@%@", leadingTabs, bullet, commandString] attributes:attrs];
+                
+                [self.textStorage replaceCharactersInRange:paragraphRange withAttributedString:toAdd];
             }
             
             else {
+                
                 NSString *index;
                 if ([[[self.window.windowController document] docType] isEqualToString:RTF])
                     index = [NSString stringWithFormat:@"%@\t",[numberedList markerForItemNumber:[strings indexOfObject:paragraphString]+1]];
                 else
                     index = [NSString stringWithFormat:@"%@ ",[numberedList markerForItemNumber:[strings indexOfObject:paragraphString]+1]];
-                //NSString *index = [NSString stringWithFormat:@"%@\t",[numberedList markerForItemNumber:[strings indexOfObject:paragraphString]+1]];
                 [style setTextLists:[NSArray arrayWithObject:numberedList]];
                 [attrs setValue:style forKey:NSParagraphStyleAttributeName];
+                [self.textStorage setAttributes:attrs range:paragraphRange];
                 
-                NSAttributedString *toAdd = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@%@", leadingTabs, index, [commandString stringByReplacingOccurrencesOfString:bullet withString:@""]] attributes:attrs];
-                [[self textStorage] replaceCharactersInRange:paragraphRange withAttributedString:toAdd];
+                NSString *bulletS = [commandString substringWithRange:rangeOfFirstMatch];
+                NSRange trueRange = [paragraphString rangeOfString:bulletS];
+                trueRange.location += paragraphRange.location;
+                
+                NSAttributedString *toReplace = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@%@", leadingTabs, index, [commandString stringByReplacingOccurrencesOfString:bulletS withString:@""]] attributes:attrs];
+                [self.textStorage replaceCharactersInRange:paragraphRange withAttributedString:toReplace];
             }
             
             [[self textStorage] endEditing];
