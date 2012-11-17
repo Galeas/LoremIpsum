@@ -166,7 +166,11 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {//NSLog(@"%s", __PRETTY_FUNCTION__);
     NSString *fileType = [change valueForKey:@"new"];
-    [fileType isEqualToString:@"public.plain-text"] ? [self setDocType:TXT] : [self setDocType:RTF];
+    if ([fileType isEqualToString:(NSString*)kUTTypeRTF] || [fileType isEqualToString:(NSString*)kUTTypeRTFD])
+        [self setDocType:RTF];
+    else
+        [self setDocType:TXT];
+    //[fileType isEqualToString:@"public.plain-text"] ? [self setDocType:TXT] : [self setDocType:RTF];
 }
 
 - (NSView *)printableView

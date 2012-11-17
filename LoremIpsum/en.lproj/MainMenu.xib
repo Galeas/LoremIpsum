@@ -874,66 +874,72 @@
 									<reference key="NSOnImage" ref="1033313550"/>
 									<reference key="NSMixedImage" ref="310636482"/>
 								</object>
-								<object class="NSMenuItem" id="561203122">
+								<object class="NSMenuItem" id="607747546">
 									<reference key="NSMenu" ref="892078337"/>
-									<string key="NSTitle">Header Size</string>
+									<string key="NSTitle">Header</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="1033313550"/>
 									<reference key="NSMixedImage" ref="310636482"/>
 									<string key="NSAction">submenuAction:</string>
-									<object class="NSMenu" key="NSSubmenu" id="1030338272">
-										<string key="NSTitle">Header Size</string>
+									<object class="NSMenu" key="NSSubmenu" id="68813076">
+										<string key="NSTitle">Header</string>
 										<array class="NSMutableArray" key="NSMenuItems">
-											<object class="NSMenuItem" id="910438852">
-												<reference key="NSMenu" ref="1030338272"/>
-												<string key="NSTitle">Header 1</string>
-												<string key="NSKeyEquiv"/>
+											<object class="NSMenuItem" id="251651266">
+												<reference key="NSMenu" ref="68813076"/>
+												<string key="NSTitle">H1</string>
+												<string key="NSKeyEquiv">1</string>
+												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
 												<reference key="NSOnImage" ref="1033313550"/>
 												<reference key="NSMixedImage" ref="310636482"/>
 												<int key="NSTag">1</int>
 											</object>
-											<object class="NSMenuItem" id="776758823">
-												<reference key="NSMenu" ref="1030338272"/>
-												<string key="NSTitle">Header 2</string>
-												<string key="NSKeyEquiv"/>
+											<object class="NSMenuItem" id="129691411">
+												<reference key="NSMenu" ref="68813076"/>
+												<string key="NSTitle">H2</string>
+												<string key="NSKeyEquiv">2</string>
+												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
 												<reference key="NSOnImage" ref="1033313550"/>
 												<reference key="NSMixedImage" ref="310636482"/>
 												<int key="NSTag">2</int>
 											</object>
-											<object class="NSMenuItem" id="239221332">
-												<reference key="NSMenu" ref="1030338272"/>
-												<string key="NSTitle">Header 3</string>
-												<string key="NSKeyEquiv"/>
+											<object class="NSMenuItem" id="290845833">
+												<reference key="NSMenu" ref="68813076"/>
+												<string key="NSTitle">H3</string>
+												<string key="NSKeyEquiv">3</string>
+												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
 												<reference key="NSOnImage" ref="1033313550"/>
 												<reference key="NSMixedImage" ref="310636482"/>
 												<int key="NSTag">3</int>
 											</object>
-											<object class="NSMenuItem" id="157545794">
-												<reference key="NSMenu" ref="1030338272"/>
-												<string key="NSTitle">Header 4</string>
-												<string key="NSKeyEquiv"/>
+											<object class="NSMenuItem" id="246548766">
+												<reference key="NSMenu" ref="68813076"/>
+												<string key="NSTitle">H4</string>
+												<string key="NSKeyEquiv">4</string>
+												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
 												<reference key="NSOnImage" ref="1033313550"/>
 												<reference key="NSMixedImage" ref="310636482"/>
 												<int key="NSTag">4</int>
 											</object>
-											<object class="NSMenuItem" id="398801426">
-												<reference key="NSMenu" ref="1030338272"/>
-												<string key="NSTitle">Header 5</string>
-												<string key="NSKeyEquiv"/>
+											<object class="NSMenuItem" id="137482303">
+												<reference key="NSMenu" ref="68813076"/>
+												<string key="NSTitle">H5</string>
+												<string key="NSKeyEquiv">5</string>
+												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
 												<reference key="NSOnImage" ref="1033313550"/>
 												<reference key="NSMixedImage" ref="310636482"/>
 												<int key="NSTag">5</int>
 											</object>
-											<object class="NSMenuItem" id="110014732">
-												<reference key="NSMenu" ref="1030338272"/>
-												<string key="NSTitle">Header 6</string>
-												<string key="NSKeyEquiv"/>
+											<object class="NSMenuItem" id="640826702">
+												<reference key="NSMenu" ref="68813076"/>
+												<string key="NSTitle">H6</string>
+												<string key="NSKeyEquiv">6</string>
+												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
 												<reference key="NSOnImage" ref="1033313550"/>
 												<reference key="NSMixedImage" ref="310636482"/>
@@ -2237,7 +2243,7 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">setMDSize:</string>
 						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="910438852"/>
+						<reference key="destination" ref="251651266"/>
 					</object>
 					<int key="connectionID">693</int>
 				</object>
@@ -2245,7 +2251,7 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">setMDSize:</string>
 						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="776758823"/>
+						<reference key="destination" ref="129691411"/>
 					</object>
 					<int key="connectionID">694</int>
 				</object>
@@ -2253,7 +2259,7 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">setMDSize:</string>
 						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="239221332"/>
+						<reference key="destination" ref="290845833"/>
 					</object>
 					<int key="connectionID">695</int>
 				</object>
@@ -2261,7 +2267,7 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">setMDSize:</string>
 						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="157545794"/>
+						<reference key="destination" ref="246548766"/>
 					</object>
 					<int key="connectionID">696</int>
 				</object>
@@ -2269,7 +2275,7 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">setMDSize:</string>
 						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="398801426"/>
+						<reference key="destination" ref="137482303"/>
 					</object>
 					<int key="connectionID">697</int>
 				</object>
@@ -2277,7 +2283,7 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">setMDSize:</string>
 						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="110014732"/>
+						<reference key="destination" ref="640826702"/>
 					</object>
 					<int key="connectionID">698</int>
 				</object>
@@ -2919,7 +2925,7 @@
 							<reference ref="546971897"/>
 							<reference ref="965957271"/>
 							<reference ref="781021157"/>
-							<reference ref="561203122"/>
+							<reference ref="607747546"/>
 						</array>
 						<reference key="parent" ref="470804886"/>
 					</object>
@@ -3455,54 +3461,54 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">685</int>
-						<reference key="object" ref="561203122"/>
+						<reference key="object" ref="607747546"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="1030338272"/>
+							<reference ref="68813076"/>
 						</array>
 						<reference key="parent" ref="892078337"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">686</int>
-						<reference key="object" ref="1030338272"/>
+						<reference key="object" ref="68813076"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="910438852"/>
-							<reference ref="776758823"/>
-							<reference ref="239221332"/>
-							<reference ref="157545794"/>
-							<reference ref="398801426"/>
-							<reference ref="110014732"/>
+							<reference ref="251651266"/>
+							<reference ref="129691411"/>
+							<reference ref="290845833"/>
+							<reference ref="246548766"/>
+							<reference ref="137482303"/>
+							<reference ref="640826702"/>
 						</array>
-						<reference key="parent" ref="561203122"/>
+						<reference key="parent" ref="607747546"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">687</int>
-						<reference key="object" ref="910438852"/>
-						<reference key="parent" ref="1030338272"/>
+						<reference key="object" ref="251651266"/>
+						<reference key="parent" ref="68813076"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">688</int>
-						<reference key="object" ref="776758823"/>
-						<reference key="parent" ref="1030338272"/>
+						<reference key="object" ref="129691411"/>
+						<reference key="parent" ref="68813076"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">689</int>
-						<reference key="object" ref="239221332"/>
-						<reference key="parent" ref="1030338272"/>
+						<reference key="object" ref="290845833"/>
+						<reference key="parent" ref="68813076"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">690</int>
-						<reference key="object" ref="157545794"/>
-						<reference key="parent" ref="1030338272"/>
+						<reference key="object" ref="246548766"/>
+						<reference key="parent" ref="68813076"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">691</int>
-						<reference key="object" ref="398801426"/>
-						<reference key="parent" ref="1030338272"/>
+						<reference key="object" ref="137482303"/>
+						<reference key="parent" ref="68813076"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">692</int>
-						<reference key="object" ref="110014732"/>
-						<reference key="parent" ref="1030338272"/>
+						<reference key="object" ref="640826702"/>
+						<reference key="parent" ref="68813076"/>
 					</object>
 				</array>
 			</object>

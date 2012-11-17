@@ -40,7 +40,6 @@ typedef NSUInteger LIFontStyle;
 @class LITextView;
 @class LISplitView;
 @class LIWebView;
-@class LIScalingScrollView;
 @class LIGradientOverlayVew;
 
 @interface LIDocWindowController : NSWindowController <NSTextViewDelegate, NSLayoutManagerDelegate, NSWindowDelegate, NSPopoverDelegate, NSSplitViewDelegate>
@@ -137,6 +136,7 @@ typedef NSUInteger LIFontStyle;
 @property NSString *frozenSelectedInfoString;
 @property BOOL markdownShowed;
 @property BOOL masked;
+@property (strong) NSPopover *showedPopover;
 
 @property NSString *mdPreviewPath;
 @property NSString *cssPath;

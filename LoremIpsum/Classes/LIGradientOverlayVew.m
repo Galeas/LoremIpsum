@@ -11,6 +11,9 @@
 #import "LISettingsProxy.h"
 #import "ESSImageCategory.h"
 #import "LITextView.h"
+
+#import "LISplitView.h"
+#import "LIBackColoredView.h"
 #import <QuartzCore/QuartzCore.h>
 
 @implementation LIGradientOverlayVew
@@ -29,14 +32,17 @@
     
     if (self.gradientColor) {
 
-        NSTextView *textView = (NSTextView*)[[self.window windowController] aTextView];
+        //NSTextView *textView = (NSTextView*)[[self.window windowController] aTextView];
         NSScrollView *scrollContainer = (NSScrollView*)[[self.window windowController] scrollContainer];
-        NSSize gradientSize = textView.textContainer.containerSize;
-        gradientSize.height = 35.0f;
+        NSSize gradientSize = scrollContainer.bounds.size/*textView.textContainer.containerSize*/;
+        gradientSize.height = 25.0f;
         
         if (!bottomLayer) {
             bottomLayer = [CAGradientLayer layer];
-            NSArray *gLocationsBottom = @[[NSNumber numberWithFloat:0.4], [NSNumber numberWithFloat:0.65], [NSNumber numberWithFloat:0.75], [NSNumber numberWithFloat:0.85], [NSNumber numberWithFloat:1]];
+            //NSArray *gLocationsBottom = @[[NSNumber numberWithFloat:0.2], [NSNumber numberWithFloat:0.4], [NSNumber numberWithFloat:0.45], [NSNumber numberWithFloat:0.65], [NSNumber numberWithFloat:1]];
+            NSMutableArray *gLocationsBottom = [NSMutableArray array];
+            for (int i = 0; i < 10; i++)
+                [gLocationsBottom addObject:[NSNumber numberWithFloat:(float)i/10]];
         
             [bottomLayer setLocations:gLocationsBottom];
             [bottomLayer setName:@"bottomLayer"];
@@ -48,7 +54,10 @@
         
         if (!topLayer) {
             topLayer = [CAGradientLayer layer];
-            NSArray *gLocationsTop = @[[NSNumber numberWithFloat:0.2], [NSNumber numberWithFloat:0.4], [NSNumber numberWithFloat:0.45], [NSNumber numberWithFloat:0.6], [NSNumber numberWithFloat:1]];
+            //NSArray *gLocationsTop = @[[NSNumber numberWithFloat:0.2], [NSNumber numberWithFloat:0.4], [NSNumber numberWithFloat:0.45], [NSNumber numberWithFloat:0.65], [NSNumber numberWithFloat:1]];
+            NSMutableArray *gLocationsTop = [NSMutableArray array];
+            for (int i = 0; i < 10; i++)
+                [gLocationsTop addObject:[NSNumber numberWithFloat:(float)i/10]];
             
             [topLayer setLocations:gLocationsTop];
             [topLayer setName:@"topLayer"];
@@ -61,9 +70,17 @@
         [CATransaction begin];
         [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
         
-        NSArray *gColorsBottom = @[(__bridge id)[self.gradientColor colorWithAlphaComponent:1.0f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.75f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.5f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.25f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.05f].CGColor];
+        //NSArray *gColorsBottom = @[(__bridge id)[self.gradientColor colorWithAlphaComponent:1.0f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.75f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.5f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.25f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.05f].CGColor];
+        NSMutableArray *gColorsBottom = [NSMutableArray array];
+        for (int j = 10; j > 0; j--) {
+            float alpha = (float)j / 10;
+             [gColorsBottom addObject:(__bridge id)[self.gradientColor colorWithAlphaComponent:alpha].CGColor];
+        }
+        
         [bottomLayer setColors:gColorsBottom];
+        //[bottomLayer setBackgroundColor:[NSColor colorWithCalibratedRed:1 green:0 blue:0 alpha:.5f].CGColor];
         NSArray *gColorsTop = [[gColorsBottom reverseObjectEnumerator] allObjects];
+        //[topLayer setBackgroundColor:[NSColor colorWithCalibratedRed:0 green:0 blue:1 alpha:.5f].CGColor];
         [topLayer setColors:gColorsTop];
         
         [bottomLayer setFrame:NSRectToCGRect(NSMakeRect(scrollContainer.frame.origin.x, scrollContainer.frame.origin.y, gradientSize.width, gradientSize.height))];
@@ -79,6 +96,7 @@
         [_infoLayer setForegroundColor:[NSColor colorWithHex:@"#9E9E9E"].CGColor];
         [_infoLayer setAutoresizingMask:kCALayerWidthSizable];
         [_infoLayer setAlignmentMode:kCAAlignmentCenter];
+        [_infoLayer setBackgroundColor:self.gradientColor.CGColor];
         
         [_infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, self.bounds.size.width, 16))];
         [self.layer addSublayer:_infoLayer];

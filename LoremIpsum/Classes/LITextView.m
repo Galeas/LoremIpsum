@@ -379,6 +379,13 @@
         NSRange activeRange = [self selectedRange];
         
         unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+        
+        if (key == 27) {
+            LIDocWindowController *controller = self.window.windowController;
+            if ([controller.markdownPopover isShown] || [controller.textPopover isShown])
+                [controller.showedPopover close];
+        }
+        
         if (key == 3 || key == 9 || key == 13) {
             paragraphRange = [[[self textStorage] string] paragraphRangeForRange:activeRange];
             paragraphString = [[[self textStorage] string] substringWithRange:paragraphRange];
@@ -623,7 +630,8 @@
 }
 
 - (void)markedListInsertion:(NSRange)range
-{        
+{
+    BOOL empty = self.string.length == 0;
     BOOL isDeleting = NO;
     
     NSRange activeRange = range, selectionRange = range;
@@ -741,15 +749,18 @@
         currentPosition = NSMaxRange(paragraphRange)+1;
     }
     
-    if (!isDeleting)
-        [self setSelectedRange:NSMakeRange(selectionRange.location+bullet.length, selectionRange.length + bullet.length*numberOfParagraphs)];
-    else
-        [self setSelectedRange:NSMakeRange(selectionRange.location-bullet.length, selectionRange.length + bullet.length*numberOfParagraphs)];
+    if (!empty) {
+        if (!isDeleting)
+            [self setSelectedRange:NSMakeRange(selectionRange.location+bullet.length, selectionRange.length + bullet.length*numberOfParagraphs)];
+        else
+            [self setSelectedRange:NSMakeRange(selectionRange.location-bullet.length, selectionRange.length + bullet.length*numberOfParagraphs)];
+    }
 }
 
 - (void)numberedListInsertion:(NSRange)range
 {   
     BOOL isDeleting = NO;
+    BOOL empty = self.string.length == 0;
     NSRange activeRange = range, selectionRange = range;
     
     NSUInteger currentPosition = 0;
@@ -838,10 +849,12 @@
         }
         currentPosition = NSMaxRange(paragraphRange)+1;
     }
-    if (!isDeleting)
-        [self setSelectedRange:NSMakeRange(selectionRange.location+4, selectionRange.length + 4*numberOfParagraphs)];
-    else
-        [self setSelectedRange:NSMakeRange(selectionRange.location-4, selectionRange.length + 4*numberOfParagraphs)];
+    if (!empty) {
+        if (!isDeleting)
+            [self setSelectedRange:NSMakeRange(selectionRange.location+4, selectionRange.length + 4*numberOfParagraphs)];
+        else
+            [self setSelectedRange:NSMakeRange(selectionRange.location-4, selectionRange.length + 4*numberOfParagraphs)];
+    }
 }
 
 - (void)increasingIndentation:(NSRange)range
@@ -934,6 +947,7 @@
     NSTextList *numberedList = [[NSTextList alloc] initWithMarkerFormat:@"{decimal}." options:0];
     
     NSUInteger currentPosition = 0;
+    NSInteger modLength = range.length, modStart = range.location;
     
     for (NSString *paragraphString in strings) {
         NSRange paragraphRange = [[[self textStorage] string] rangeOfString:paragraphString];
@@ -965,10 +979,24 @@
                 NSRange index_range = [regex_num rangeOfFirstMatchInString:commandString options:NSRegularExpressionCaseInsensitive range:NSMakeRange(0, commandString.length)];
                 NSAttributedString *toAdd;
                 
-                if (!NSEqualRanges(index_range, NSMakeRange(NSNotFound, 0)))
+                if (!NSEqualRanges(index_range, NSMakeRange(NSNotFound, 0))) {
                     toAdd = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@%@", leadingTabs, bullet, [commandString stringByReplacingCharactersInRange:index_range withString:@""]] attributes:attrs];
-                else
+                    if ([strings indexOfObject:paragraphString] > 0) {
+                        if (range.length > 0)
+                            modLength += bullet.length - index_range.length;
+                    }
+                    else
+                        modStart += bullet.length - index_range.length;
+                }
+                else {
                     toAdd = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@%@", leadingTabs, bullet, commandString] attributes:attrs];
+                    if ([strings indexOfObject:paragraphString] > 0) {
+                        if (range.length > 0)
+                            modLength += bullet.length - index_range.length;
+                    }
+                    else
+                        modStart += bullet.length;
+                }
                 
                 [self.textStorage replaceCharactersInRange:paragraphRange withAttributedString:toAdd];
             }
@@ -990,6 +1018,13 @@
                 
                 NSAttributedString *toReplace = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@%@", leadingTabs, index, [commandString stringByReplacingOccurrencesOfString:bulletS withString:@""]] attributes:attrs];
                 [self.textStorage replaceCharactersInRange:paragraphRange withAttributedString:toReplace];
+                
+                if ( [strings indexOfObject:paragraphString] > 0) {
+                    if (range.length > 0)
+                        modLength += index.length - trueRange.length;
+                }
+                else
+                    modStart += index.length - trueRange.length;
             }
             
             [[self textStorage] endEditing];
@@ -997,6 +1032,7 @@
         
         currentPosition = NSMaxRange(paragraphRange)+1;
     }
+    [self setSelectedRange:NSMakeRange(modStart, modLength)];
 }
 
 - (void)increasingQuoteLevel:(NSRange)range
