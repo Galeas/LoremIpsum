@@ -22,6 +22,7 @@
 - (id)initWithBookmarkOnPosition:(id)pos lineNumber:(id)lNumber positionInParagraph:(id)posInParagraph length:(id)len
 {
     if (self = [super init]) {
+                
         position = [pos intValue];
         lineNumber = [lNumber intValue];
         inParagraph = [posInParagraph intValue];
@@ -46,7 +47,6 @@
         else        
             text = [[NSString alloc] initWithFormat:@"...%@...", toText];
         posForTable = [[NSString alloc] initWithFormat:@"%ld:%ld", lineNumber, inParagraph];
-        
         return self;
     }
     return nil;

@@ -137,7 +137,7 @@
         
         if ([bookmarxDataSource count] != 0)
             [bookmarxDataSource removeAllObjects];
-        
+
         NSArray *bookmarxRanges = [[NSArray alloc] initWithArray:[[[[NSApp mainWindow] windowController] aTextView] bookmarks]];
         for (NSValue *bMarkRangeValue in bookmarxRanges) {
             NSDictionary *bookmarkData = [self bookmarkData:[bMarkRangeValue rangeValue].location];

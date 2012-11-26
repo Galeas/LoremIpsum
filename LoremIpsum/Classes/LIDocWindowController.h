@@ -71,6 +71,7 @@ typedef NSUInteger LIFontStyle;
 }
 
 - (IBAction)showPopover:(id)sender;
+- (IBAction)popoverListConvertion:(id)sender;
 - (IBAction)showHTML:(id)sender;
 - (IBAction)createBookmark:(id)sender;
 - (IBAction)showHideCounters:(id)sender;
@@ -85,18 +86,18 @@ typedef NSUInteger LIFontStyle;
 
 - (IBAction)richTextPlainText:(id)sender;
 
+- (IBAction)openListPanel:(id)sender;
+
 #pragma mark RTF formatter
 - (IBAction)setFontSize:(id)sender;
 - (IBAction)setTextAlignment:(id)sender;
 - (IBAction)setFontStyle:(id)sender;
 - (IBAction)toggleSelection:(id)sender;
-- (IBAction)makeBulletList:(id)sender;
 
 #pragma mark MD formatter
 - (IBAction)setMDSize:(id)sender;
 - (IBAction)setMDFontStyle:(id)sender;
 - (IBAction)makeMDHyperlink:(id)sender;
-- (IBAction)makeMDList:(id)sender;
 
 - (NSFont*)fontWithTrait:(NSString*)trait onStyle:(LIFontStyle)style;
 

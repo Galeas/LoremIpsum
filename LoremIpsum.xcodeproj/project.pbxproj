@@ -60,6 +60,7 @@
 		84C74E2A163E987C00B782C0 /* LISplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84C74E29163E987B00B782C0 /* LISplitView.m */; };
 		84CDE6971588DAB100EC1A05 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 84CDE6961588DAB100EC1A05 /* icon.icns */; };
 		84CDE69A1588ECDB00EC1A05 /* NSString+Trimming.m in Sources */ = {isa = PBXBuildFile; fileRef = 84CDE6991588ECDB00EC1A05 /* NSString+Trimming.m */; };
+		84CEE0B4165FD79C00465BDB /* NSMenu+ItemByName.m in Sources */ = {isa = PBXBuildFile; fileRef = 84CEE0B3165FD79C00465BDB /* NSMenu+ItemByName.m */; };
 		84D3BBDB1580DED600AE8927 /* LIBookmarxController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84D3BBD91580DED600AE8927 /* LIBookmarxController.m */; };
 		84D3BBDC1580DED600AE8927 /* LIBookmarxController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84D3BBDA1580DED600AE8927 /* LIBookmarxController.xib */; };
 		84D3BBE01580E1EF00AE8927 /* LIBookmark.m in Sources */ = {isa = PBXBuildFile; fileRef = 84D3BBDF1580E1EF00AE8927 /* LIBookmark.m */; };
@@ -157,6 +158,8 @@
 		84CDE6961588DAB100EC1A05 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = icon.icns; path = Support/Graphics/icon.icns; sourceTree = "<group>"; };
 		84CDE6981588ECDB00EC1A05 /* NSString+Trimming.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Trimming.h"; path = "Categories/NSString+Trimming.h"; sourceTree = "<group>"; };
 		84CDE6991588ECDB00EC1A05 /* NSString+Trimming.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+Trimming.m"; path = "Categories/NSString+Trimming.m"; sourceTree = "<group>"; };
+		84CEE0B2165FD79C00465BDB /* NSMenu+ItemByName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMenu+ItemByName.h"; path = "Categories/NSMenu+ItemByName.h"; sourceTree = "<group>"; };
+		84CEE0B3165FD79C00465BDB /* NSMenu+ItemByName.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSMenu+ItemByName.m"; path = "Categories/NSMenu+ItemByName.m"; sourceTree = "<group>"; };
 		84D3BBD81580DED600AE8927 /* LIBookmarxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LIBookmarxController.h; path = Classes/LIBookmarxController.h; sourceTree = "<group>"; };
 		84D3BBD91580DED600AE8927 /* LIBookmarxController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LIBookmarxController.m; path = Classes/LIBookmarxController.m; sourceTree = "<group>"; };
 		84D3BBDA1580DED600AE8927 /* LIBookmarxController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = LIBookmarxController.xib; path = Classes/LIBookmarxController.xib; sourceTree = "<group>"; };
@@ -346,6 +349,8 @@
 				8424C8C1157CA02C0049F90C /* NSColor+Hex.m */,
 				84CDE6981588ECDB00EC1A05 /* NSString+Trimming.h */,
 				84CDE6991588ECDB00EC1A05 /* NSString+Trimming.m */,
+				84CEE0B2165FD79C00465BDB /* NSMenu+ItemByName.h */,
+				84CEE0B3165FD79C00465BDB /* NSMenu+ItemByName.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -473,6 +478,7 @@
 				84C74E2A163E987C00B782C0 /* LISplitView.m in Sources */,
 				84B13F8C16413929000C022B /* LIGradientOverlayVew.m in Sources */,
 				840C57EF1643CC3000557966 /* LISettingsProxy.m in Sources */,
+				84CEE0B4165FD79C00465BDB /* NSMenu+ItemByName.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

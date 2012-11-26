@@ -17,7 +17,7 @@
 #import "ESSImageCategory.h"
 #import "LIWebView.h"
 #import "LIBackColoredView.h"
-//#import "LIScalingScrollView.h"
+#import "NSMenu+ItemByName.h"
 #import "LIGradientOverlayVew.h"
 #import "LISettingsProxy.h"
 
@@ -127,6 +127,20 @@ static NSString *cssDragType = @"cssDragType";
     else
         [self setMasked:NO];
     
+    NSMenuItem *headersMenu = [[[[NSApp mainMenu] itemAtIndex:3] submenu] itemAtIndex:7];
+    NSMenuItem *separator = [[[[NSApp mainMenu] itemAtIndex:3] submenu] itemAtIndex:8];
+    
+    if (self.document && [[self.document docType] isEqualToString:RTF]) {
+        [headersMenu setHidden:YES];
+        [separator setHidden:YES];
+        [[[NSApp mainMenu] getItemWithPath:@"Format/List"] setHidden:YES];
+    }
+    else if (self.document && [[self.document docType] isEqualToString:TXT]) {
+        [headersMenu setHidden:NO];
+        [separator setHidden:NO];
+        [[[NSApp mainMenu] getItemWithPath:@"Format/List"] setHidden:NO];
+    }
+    
     [[NSNotificationCenter defaultCenter] addObserverForName:NSTextViewDidChangeSelectionNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note)
      {
          clock_t start = clock();
@@ -139,9 +153,8 @@ static NSString *cssDragType = @"cssDragType";
          if (self.masked)
              [self focusOnText];
          
-         if ([self.textPopover isShown] || [self.markdownPopover isShown]) {
+         if ([self.textPopover isShown] || [self.markdownPopover isShown])
              [self showPopover:self];
-         }
     
         whenToUpdate = [NSDate timeIntervalSinceReferenceDate] + 0.5;
          
@@ -227,7 +240,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{    //NSLog(@"%s", __PRETTY_FUNCTION__);
+{   NSLog(@"%s", __PRETTY_FUNCTION__);
     if ([(__bridge_transfer NSString*)context isEqualToString:@"windowSizeChanged"]) {        
         [self arrangeTextInView];
     }
@@ -262,7 +275,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if ([menuItem action] == @selector(showHideCounters:)) {
         if ([[self.gradientView infoLayer]  isHidden]) {
             [menuItem setTitle:@"Show counters"];
@@ -317,6 +330,7 @@ static NSString *cssDragType = @"cssDragType";
     }
     
     if ([menuItem action] == @selector(setFontStyle:)) {
+        
         if ([[aTextView string] length] == 0) {
             [menuItem setState:0];
             return YES;
@@ -393,7 +407,6 @@ static NSString *cssDragType = @"cssDragType";
     }
     
     if ([menuItem action] == @selector(setTextAlignment:)) {
-        
         if ([[self.document docType] isEqualToString:RTF]) {
             
             if (menuItem.isHidden) {
@@ -470,6 +483,8 @@ static NSString *cssDragType = @"cssDragType";
                     else
                         [menuItem setState:0];
                 }
+                else
+                    [menuItem setState:0];
             }
             return YES;
         }
@@ -492,13 +507,19 @@ static NSString *cssDragType = @"cssDragType";
         return YES;
     }
     
+    if (menuItem.action == @selector(openListPanel:)) {
+        if ([[self.document docType] isEqualToString:TXT]) {
+            [menuItem setHidden:YES];
+            return NO;
+        }
+        else {
+            [menuItem setHidden:NO];
+            return YES;
+        }
+    }
+    
     return YES;
     
-}
-
-- (void)windowDidExitVersionBrowser:(NSNotification *)notification
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
-    [[self.document textStorage] addLayoutManager:layoutMgr];
 }
 
 #pragma mark
@@ -614,12 +635,12 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)colorScheme:(NSNotification *)notification
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSColor *backColor = [[notification userInfo] valueForKey:@"backColor"];
     NSColor *textColor = [[notification userInfo] valueForKey:@"textColor"];
     NSInteger txtLength = [[aTextView textStorage] length];
     
-    NSArray *selections = [[NSArray alloc] initWithArray:[aTextView selectionFinder]];
+    NSArray *selections = [[NSArray alloc] initWithArray:[self.aTextView selectionFinder]];
     
     [[aTextView textStorage] beginEditing];
     [[aTextView textStorage] addAttribute:NSForegroundColorAttributeName value:textColor range:NSMakeRange(0, txtLength)];
@@ -835,6 +856,7 @@ static NSString *cssDragType = @"cssDragType";
             }
         }
         else {
+            
             if ([[settingsProxy valueForSetting:@"whiteBlack"] boolValue])
                 _cssHTML = defaultCSSLight;
             else
@@ -871,7 +893,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)focusOnText
-{      //NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSInteger caretLocation = [aTextView selectedRange].location;
     NSDictionary *rects = [[NSDictionary alloc] init];
     switch ([[settingsProxy valueForSetting:@"focusOn"] intValue]) {
@@ -880,12 +902,12 @@ static NSString *cssDragType = @"cssDragType";
             if (caretLocation == [aTextView.textStorage length])
                 caretLocation--;
             (void)[layoutMgr lineFragmentRectForGlyphAtIndex:caretLocation effectiveRange:&neededRange];
-            rects = [aTextView maskForRange:neededRange];
+            rects = [self.aTextView maskForRange:neededRange];
             break;
         }
         case 2: {
             NSRange paragraphRange = [[[aTextView textStorage] string] paragraphRangeForRange:NSMakeRange(caretLocation, 0)];
-            rects = [aTextView maskForRange:paragraphRange];
+            rects = [self.aTextView maskForRange:paragraphRange];
             break;
         }
     }
@@ -898,7 +920,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)insertMarkerWithIdentifier:(NSString *)identifier
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{    
     NSRange effectiveRange;
     NSRange activeRange = [aTextView selectedRange];
     
@@ -1152,11 +1174,10 @@ static NSString *cssDragType = @"cssDragType";
     NSUInteger size = 0;
     for (int i = 0; i < string.length; i++) {
         unichar ch = [string characterAtIndex:i];
-        NSString *character = [NSString stringWithCharacters:&ch length:1];
-        if ([character isEqualToString:@" "])
-            break;
-        else
+        if (ch == 35)
             size++;
+        else
+            break;
     }
     return size;
 }
@@ -1165,7 +1186,7 @@ static NSString *cssDragType = @"cssDragType";
 {
     NSUInteger firstCount = 0, secondCount = 0;
     
-    for (int i = (int)(activeSelection.location - paragraphRange.location)-1; i > 0; i--) {
+    for (int i = (int)(activeSelection.location - paragraphRange.location)-1; i >= 0; i--) {
         unichar ch = [paragraphString characterAtIndex:i];
         if (ch == 42)
             firstCount++;
@@ -1340,41 +1361,68 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
+    NSMenuItem *headersMenu = [[[[NSApp mainMenu] itemAtIndex:3] submenu] itemAtIndex:7];
+    NSMenuItem *separator = [[[[NSApp mainMenu] itemAtIndex:3] submenu] itemAtIndex:8];
+    
+    if (self.document && [[self.document docType] isEqualToString:RTF]) {
+        [headersMenu setHidden:YES];
+        [separator setHidden:YES];
+        [[[NSApp mainMenu] getItemWithPath:@"Format/List"] setHidden:YES];
+    }
+    else if (self.document && [[self.document docType] isEqualToString:TXT]) {
+        [headersMenu setHidden:NO];
+        [separator setHidden:NO];
+        [[[NSApp mainMenu] getItemWithPath:@"Format/List"] setHidden:NO];
+    }
+    
     [self.window makeFirstResponder:aTextView];
+}
+
+- (void)windowWillExitVersionBrowser:(NSNotification *)notification
+{
+    [[self.document textStorage] removeLayoutManager:layoutMgr];
+}
+
+- (void)windowDidExitVersionBrowser:(NSNotification *)notification
+{
+    [[self.document textStorage] addLayoutManager:layoutMgr];
 }
 
 #pragma mark TextView Delegate
 - (NSRange)textView:(NSTextView *)textView willChangeSelectionFromCharacterRange:(NSRange)oldSelectedCharRange toCharacterRange:(NSRange)newSelectedCharRange
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSTextStorage *activeStorage = [aTextView textStorage];
     if ([activeStorage length] == 0) {
         activeStorage = [self.document textStorage];
     }
     NSRange activeRange = [aTextView selectedRange];
     NSDictionary *isAttachment = [[NSDictionary alloc] initWithDictionary:[aTextView attributesAtRange:NSMakeRange(activeRange.location-1, [aTextView selectedRange].length)]];
-    if ([isAttachment valueForKey:NSAttachmentAttributeName] != nil) {
-        NSDictionary *trullyAttributes = [NSDictionary dictionaryWithDictionary:[aTextView attributesAtRange:NSMakeRange(activeRange.location, aTextView.selectedRange.length)]];
-        [aTextView setTypingAttributes:trullyAttributes];
+    if ([isAttachment valueForKey:NSAttachmentAttributeName] != nil ) {
+        if (oldSelectedCharRange.length == 0) {
+            NSDictionary *trullyAttributes = [NSDictionary dictionaryWithDictionary:[aTextView attributesAtRange:NSMakeRange(activeRange.location, aTextView.selectedRange.length)]];
+            [aTextView setTypingAttributes:trullyAttributes];
+        }
     }
     else {
         NSDictionary *currentAttrs = [[NSDictionary alloc] initWithDictionary:[aTextView attributesAtRange:NSMakeRange(activeRange.location, [aTextView selectedRange].length)]];
-        if ([[currentAttrs allKeys] count] != 0 && ![[aTextView typingAttributes] isEqualToDictionary:currentAttrs])   // текст форматирован?
+        if ([[currentAttrs allKeys] count] != 0 && ![[aTextView typingAttributes] isEqualToDictionary:currentAttrs] && oldSelectedCharRange.length == 0) // текст форматирован?
             [aTextView setTypingAttributes:currentAttrs];
     }
     return newSelectedCharRange;
 }
 
-/*#pragma mark Popover Delegate
-- (BOOL)popoverShouldClose:(NSPopover *)popover
+- (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index
 {
-    return YES;
-}*/
+    if ([self.textPopover isShown] || [self.markdownPopover isShown])
+        return nil;
+    return words;
+}
 
 #pragma mark SplitView Delegate
 
 - (void)splitView:(NSSplitView *)sender resizeSubviewsWithOldSize:(NSSize)oldSize
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if ([[sender subviews] count] > 1) {
         NSSize splitViewSize = [sender frame].size;
     
@@ -1463,6 +1511,11 @@ static NSString *cssDragType = @"cssDragType";
 
 - (IBAction)showPopover:(id)sender
 {
+    if (([self.textPopover isShown] || [self.markdownPopover isShown]) && sender != self) {
+        [self.showedPopover close];
+        return;
+    }
+    
     if (self.aTextView.string.length > 0) {
         NSRange activeRange = [aTextView selectedRange];
         if (activeRange.location == [[aTextView textStorage] length]) {
@@ -1655,6 +1708,12 @@ static NSString *cssDragType = @"cssDragType";
     }
 }
 
+- (IBAction)popoverListConvertion:(id)sender
+{
+    [self.aTextView listConversion:sender];
+    [self.showedPopover close];
+}
+
 #pragma mark RTF Popover
 
 - (IBAction)setFontSize:(id)sender
@@ -1774,7 +1833,7 @@ static NSString *cssDragType = @"cssDragType";
     NSString *txtViewBackColor = [[aTextView backgroundColor] hexColor];
     NSString *defaultBackColor = [settingsProxy valueForSetting:@"backgroundColor"];
     
-    if ([attributeBackColor isEqualToString:defaultBackColor] || ([txtViewBackColor isEqualToString:defaultBackColor] && [attributeBackColor isEqualToString:txtViewBackColor]) || attributeBackColor == nil) {
+    if ([attributeBackColor isEqualToString:defaultBackColor] || ([txtViewBackColor isEqualToString:defaultBackColor] && [attributeBackColor isEqualToString:txtViewBackColor]) || attributeBackColor == nil || [attributeBackColor isEqualToString:@"#000000"]) {
         [[self.aTextView textStorage] beginEditing];
         [[self.aTextView textStorage] addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithHex:[settingsProxy valueForSetting:@"selectionColor"]] range:[self.aTextView selectedRange]];
         [[self.aTextView textStorage] endEditing];
@@ -1785,11 +1844,6 @@ static NSString *cssDragType = @"cssDragType";
         [[self.aTextView textStorage] endEditing];
         [self.highlightSegment setSelectedSegment:-1];
     }
-}
-
-- (IBAction)makeBulletList:(id)sender
-{
-    [aTextView markedListInsertion:[aTextView selectedRange]];
 }
 
 #pragma mark MD Popover
@@ -1946,13 +2000,13 @@ static NSString *cssDragType = @"cssDragType";
     [self.aTextView setSelectedRange:selectedRange];
     [self.markdownPopover close];
 }
-
+/*
 - (IBAction)makeMDList:(id)sender
 {
-    [self.aTextView convertList:sender];
+    [self convertList:self];
     [self.markdownPopover close];
 }
-
+*/
 - (IBAction)showHTML:(id)sender
 {
     if ([[self.splitContainer subviews] count] == 1 || [self.markdownViewContainer isHidden]) {
@@ -2122,6 +2176,12 @@ static NSString *cssDragType = @"cssDragType";
 {
     NSError *error;
     NSString *proposedFileType;
+    
+    NSMenuItem *headersMenu = [[[[NSApp mainMenu] itemAtIndex:3] submenu] itemAtIndex:7];
+    NSMenuItem *separator = [[[[NSApp mainMenu] itemAtIndex:3] submenu] itemAtIndex:8];
+    
+    NSRange visibleRange = [layoutMgr glyphRangeForBoundingRect:self.aTextView.visibleRect inTextContainer:self.aTextView.textContainer];
+    
     if ([[self.document fileType] compare:(NSString*)kUTTypeRTF] == NSOrderedSame || [[self.document fileType] compare:(NSString*)kUTTypeRTFD] == NSOrderedSame) {
         proposedFileType = (NSString*)kUTTypePlainText;
         if ([textPopover isShown])
@@ -2147,23 +2207,64 @@ static NSString *cssDragType = @"cssDragType";
     [[NSDocumentController sharedDocumentController] addDocument:docForReplace];
     [docForReplace makeWindowControllersManual:YES];
     [docForReplace setFileURL:nil];
+    
+    BOOL toPlainText = [proposedFileType compare:(NSString*)kUTTypePlainText] == NSOrderedSame;
+    NSMenuItem *item = [[NSApp mainMenu] getItemWithPath:@"Format/List"];
+    [item setHidden:!toPlainText];
         
-    if ([proposedFileType compare:(NSString*)kUTTypePlainText] == NSOrderedSame) {
+    if (toPlainText) {
+        
+        [headersMenu setHidden:NO];
+        [separator setHidden:NO];
+        
         if ([[aTextView textStorage] length]) {
             [[aTextView textStorage] enumerateAttributesInRange:NSMakeRange(0, [[aTextView textStorage] length]) options:NSAttributedStringEnumerationReverse usingBlock:^(NSDictionary *attributes, NSRange range, BOOL *stop) {
                 NSMutableDictionary *mutableAttributes = [NSMutableDictionary dictionaryWithDictionary:attributes];
+                
                 if (![mutableAttributes valueForKey:NSAttachmentAttributeName]) {
+                    
+                    [self.aTextView.textStorage beginEditing];
+                    
+                    NSMutableParagraphStyle *style = [[mutableAttributes valueForKey:NSParagraphStyleAttributeName] mutableCopy];
+                    if (style.textLists.count > 0)
+                        [style setTextLists:nil];
+                    if (style.textBlocks.count > 0)
+                        [style setTextBlocks:nil];
                     [[aTextView textStorage] setAttributes:mutableAttributes range:range];
-                    if (!(NSParagraphStyle*)[mutableAttributes valueForKey:NSParagraphStyleAttributeName] || [(NSParagraphStyle*)[mutableAttributes valueForKey:NSParagraphStyleAttributeName] alignment] != NSLeftTextAlignment) {
+                    
+                    if (style || [style alignment] != NSLeftTextAlignment) {
                         NSMutableParagraphStyle *leftAlignmentStyle = [[NSMutableParagraphStyle alloc] init];
                         [leftAlignmentStyle setAlignment:NSLeftTextAlignment];
                         [[aTextView textStorage] addAttribute:NSParagraphStyleAttributeName value:leftAlignmentStyle range:range];
                     }
+                    
+                    NSFont *defaultFont = [self.document docFont:[settingsProxy valueForSetting:@"docFont"]];
+                    if ((NSFont*)[mutableAttributes valueForKey:NSFontAttributeName] != defaultFont) {
+                        [mutableAttributes setValue:defaultFont forKey:NSFontAttributeName];
+                        [aTextView.textStorage setAttributes:mutableAttributes range:range];
+                    }
+                    
+                    if ([mutableAttributes valueForKey:NSUnderlineStyleAttributeName]) {
+                        [mutableAttributes removeObjectForKey:NSUnderlineStyleAttributeName];
+                        [self.aTextView.textStorage removeAttribute:NSUnderlineStyleAttributeName range:range];
+                        [aTextView.textStorage setAttributes:mutableAttributes range:range];
+                    }
+                    
+                    if ([mutableAttributes valueForKey:NSBackgroundColorAttributeName]) {
+                        [mutableAttributes removeObjectForKey:NSBackgroundColorAttributeName];
+                        [aTextView.textStorage setAttributes:mutableAttributes range:range];
+                    }
+                    
+                    [self.aTextView.textStorage endEditing];
                 }
             }];
         }
     }
     else {
+        
+        [headersMenu setHidden:YES];
+        [separator setHidden:YES];
+        
         if ([[splitContainer subviews] count] == 2) {
             [splitContainer animateSubviewAtIndex:1 collapse:YES];
             [[[splitContainer subviews] objectAtIndex:1] removeFromSuperview];
@@ -2174,6 +2275,8 @@ static NSString *cssDragType = @"cssDragType";
         }
     }
     
+    [self.aTextView scrollRangeToVisible:visibleRange];
+    
     [self updateCountersManually:self];
 }
 
@@ -2182,4 +2285,9 @@ static NSString *cssDragType = @"cssDragType";
     [settingsProxy setValue:[NSNumber numberWithBool:![sender state]] forSettingName:@"useSmartPares"];
 }
 
+- (IBAction)openListPanel:(id)sender
+{
+    [self.aTextView orderFrontListPanel:self];
+    [self.showedPopover close];
+}
 @end

@@ -3,12 +3,12 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1080</int>
 		<string key="IBDocument.SystemVersion">12C60</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2843</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2844</string>
 		<string key="IBDocument.AppKitVersion">1187.34</string>
 		<string key="IBDocument.HIToolboxVersion">625.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">2843</string>
+			<string key="NS.object.0">2844</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBNSLayoutConstraint</string>
@@ -69,7 +69,6 @@
 											<int key="NSvFlags">268</int>
 											<string key="NSFrameSize">{615, 444}</string>
 											<reference key="NSSuperview" ref="290604142"/>
-											<reference key="NSNextKeyView"/>
 											<string key="NSReuseIdentifierKey">_NS:9</string>
 											<string key="NSClassName">LIGradientOverlayVew</string>
 										</object>
@@ -84,9 +83,9 @@
 														<object class="NSTextView" id="431652070">
 															<reference key="NSNextResponder" ref="90208921"/>
 															<int key="NSvFlags">6418</int>
-															<string key="NSFrameSize">{600, 419}</string>
+															<string key="NSFrameSize">{615, 419}</string>
 															<reference key="NSSuperview" ref="90208921"/>
-															<reference key="NSNextKeyView" ref="134131162"/>
+															<reference key="NSNextKeyView" ref="75781885"/>
 															<string key="NSReuseIdentifierKey">_NS:13</string>
 															<object class="NSTextContainer" key="NSTextContainer" id="621419795">
 																<object class="NSLayoutManager" key="NSLayoutManager">
@@ -103,7 +102,7 @@
 																	<nil key="NSDelegate"/>
 																</object>
 																<reference key="NSTextView" ref="431652070"/>
-																<double key="NSWidth">600</double>
+																<double key="NSWidth">615</double>
 																<int key="NSTCFlags">1</int>
 															</object>
 															<object class="NSTextViewSharedData" key="NSSharedData">
@@ -155,7 +154,7 @@
 															<nil key="NSDelegate"/>
 														</object>
 													</array>
-													<string key="NSFrameSize">{600, 419}</string>
+													<string key="NSFrameSize">{615, 419}</string>
 													<reference key="NSSuperview" ref="485629883"/>
 													<reference key="NSNextKeyView" ref="431652070"/>
 													<string key="NSReuseIdentifierKey">_NS:11</string>
@@ -188,7 +187,7 @@
 												<object class="NSScroller" id="134131162">
 													<reference key="NSNextResponder" ref="485629883"/>
 													<int key="NSvFlags">256</int>
-													<string key="NSFrame">{{600, 0}, {15, 419}}</string>
+													<string key="NSFrame">{{599, 0}, {16, 419}}</string>
 													<reference key="NSSuperview" ref="485629883"/>
 													<reference key="NSNextKeyView" ref="366241973"/>
 													<string key="NSReuseIdentifierKey">_NS:84</string>
@@ -215,7 +214,7 @@
 											</array>
 											<string key="NSFrame">{{0, 25}, {615, 419}}</string>
 											<reference key="NSSuperview" ref="290604142"/>
-											<reference key="NSNextKeyView" ref="75781885"/>
+											<reference key="NSNextKeyView" ref="90208921"/>
 											<string key="NSReuseIdentifierKey">_NS:9</string>
 											<int key="NSsFlags">133136</int>
 											<reference key="NSVScroller" ref="134131162"/>
@@ -245,7 +244,7 @@
 					<reference key="NSSuperview"/>
 					<reference key="NSNextKeyView" ref="293003794"/>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
+				<string key="NSScreenRect">{{0, 0}, {1920, 1058}}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<int key="NSWindowCollectionBehavior">128</int>
 				<bool key="NSWindowIsRestorable">YES</bool>
@@ -302,7 +301,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{185, 7}, {51, 24}}</string>
 						<reference key="NSSuperview" ref="22163926"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSSegmentedCell" key="NSCell" id="297991208">
@@ -495,7 +493,7 @@
 				<bool key="NSAnimates">YES</bool>
 			</object>
 			<object class="NSCustomView" id="529150466">
-				<nil key="NSNextResponder"/>
+				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="NSSegmentedControl" id="706581456">
@@ -640,6 +638,7 @@
 					</object>
 				</array>
 				<string key="NSFrameSize">{313, 43}</string>
+				<reference key="NSSuperview"/>
 				<reference key="NSNextKeyView" ref="452885551"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">LIPopoverView</string>
@@ -737,14 +736,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">makeBulletList:</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="966595894"/>
-					</object>
-					<int key="connectionID">930</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
 						<string key="label">toggleSelection:</string>
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="7462720"/>
@@ -833,11 +824,19 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">makeMDList:</string>
+						<string key="label">popoverListConvertion:</string>
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="1025120167"/>
 					</object>
-					<int key="connectionID">1039</int>
+					<int key="connectionID">1040</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">openListPanel:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="966595894"/>
+					</object>
+					<int key="connectionID">1042</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -1969,7 +1968,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">1039</int>
+			<int key="maxID">1042</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes"/>
 		<int key="IBDocument.localizationMode">0</int>

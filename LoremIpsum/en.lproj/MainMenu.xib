@@ -1082,6 +1082,14 @@
 										</array>
 									</object>
 								</object>
+								<object class="NSMenuItem" id="990316591">
+									<reference key="NSMenu" ref="892078337"/>
+									<string key="NSTitle">List...</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="1033313550"/>
+									<reference key="NSMixedImage" ref="310636482"/>
+								</object>
 								<object class="NSMenuItem" id="348659466">
 									<reference key="NSMenu" ref="892078337"/>
 									<string key="NSTitle">Paragraph</string>
@@ -2057,62 +2065,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">insertMarkedList:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="61639613"/>
-					</object>
-					<int key="connectionID">625</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">insertNumberedList:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="852166480"/>
-					</object>
-					<int key="connectionID">626</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">increaseListLevel:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="71464931"/>
-					</object>
-					<int key="connectionID">630</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">decreaseListLevel:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="131137889"/>
-					</object>
-					<int key="connectionID">631</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">convertList:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="370110287"/>
-					</object>
-					<int key="connectionID">634</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">increaseListLevel:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="706979945"/>
-					</object>
-					<int key="connectionID">639</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">decreaseListLevel:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="511357578"/>
-					</object>
-					<int key="connectionID">640</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
 						<string key="label">increaseQuoteLevel:</string>
 						<reference key="source" ref="1014"/>
 						<reference key="destination" ref="603544300"/>
@@ -2286,6 +2238,70 @@
 						<reference key="destination" ref="640826702"/>
 					</object>
 					<int key="connectionID">698</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">listLevelIncreasing:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="71464931"/>
+					</object>
+					<int key="connectionID">699</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">listLevelDecreasing:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="131137889"/>
+					</object>
+					<int key="connectionID">700</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">markedListInsertion:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="61639613"/>
+					</object>
+					<int key="connectionID">701</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">numberedListInsertion:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="852166480"/>
+					</object>
+					<int key="connectionID">702</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">listConversion:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="370110287"/>
+					</object>
+					<int key="connectionID">703</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">listLevelIncreasing:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="706979945"/>
+					</object>
+					<int key="connectionID">704</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">listLevelDecreasing:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="511357578"/>
+					</object>
+					<int key="connectionID">705</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">openListPanel:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="990316591"/>
+					</object>
+					<int key="connectionID">709</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -2926,6 +2942,7 @@
 							<reference ref="965957271"/>
 							<reference ref="781021157"/>
 							<reference ref="607747546"/>
+							<reference ref="990316591"/>
 						</array>
 						<reference key="parent" ref="470804886"/>
 					</object>
@@ -3510,6 +3527,11 @@
 						<reference key="object" ref="640826702"/>
 						<reference key="parent" ref="68813076"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">706</int>
+						<reference key="object" ref="990316591"/>
+						<reference key="parent" ref="892078337"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -3679,6 +3701,7 @@
 				<string key="690.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="691.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="692.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="706.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3694,7 +3717,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">698</int>
+			<int key="maxID">713</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
