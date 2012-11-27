@@ -27,7 +27,7 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 @synthesize typingAttribs;
 
 - (id)init
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     self = [super init];
     if (self) {
         // Add your subclass-specific initialization here.
@@ -37,11 +37,11 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
         // Исходные настройки приложения
         NSMutableDictionary *initialSettings;
 
-        if ([[NSUserDefaults standardUserDefaults] objectForKey:@"LIInitSettings"] == nil) {
+        if ([[NSUserDefaults standardUserDefaults] objectForKey:@"LISettingsStorage"] == nil) {
             initialSettings = [[NSMutableDictionary alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"LIInitSettings" ofType:@"plist"]];
-            [[NSUserDefaults standardUserDefaults] setObject:initialSettings forKey:@"LIInitSettings"];
+            [[NSUserDefaults standardUserDefaults] setObject:initialSettings forKey:@"LISettingsStorage"];
         } else
-            initialSettings = [[NSUserDefaults standardUserDefaults] objectForKey:@"LIInitSettings"];
+            initialSettings = [[NSUserDefaults standardUserDefaults] objectForKey:@"LISettingsStorage"];
         
         [settingsProxy setSettings:initialSettings];
         //[SharedDefaultsController setInitialValues:initialSettings];
@@ -60,7 +60,7 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 }
 
 - (void)makeWindowControllers
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if ([[self windowControllers] count] == 0) {
         LIDocWindowController *controller = [[LIDocWindowController alloc] initWithWindowNibName:@"LIDocWindowController"];
         [self addWindowController:controller];
@@ -68,7 +68,7 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 }
 
 - (void)makeWindowControllersManual:(BOOL)manual
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if (!manual)
         [self makeWindowControllers];
     else {
@@ -80,12 +80,12 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 }
 
 + (BOOL)autosavesInPlace
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     return YES;
 }
 
 - (BOOL)readFromFileWrapper:(NSFileWrapper *)fileWrapper ofType:(NSString *)typeName error:(NSError *__autoreleasing *)outError
-{    //NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSTextStorage *aStorage;
     
     if ([fileWrapper isRegularFile] && ([typeName compare:@"public.rtf"] == NSOrderedSame)) {
@@ -113,7 +113,7 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 }
 
 - (NSFileWrapper *)fileWrapperOfType:(NSString *)typeName error:(NSError *__autoreleasing *)outError
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSRange documentRange = NSMakeRange(0, [[[WindowController aTextView] textStorage] length]);
     NSMutableAttributedString *maString = [[[WindowController aTextView] attributedString] mutableCopy];
     [maString addAttributes:@{ NSBackgroundColorAttributeName : [NSColor whiteColor] , NSForegroundColorAttributeName : [NSColor blackColor] } range:documentRange];
@@ -164,7 +164,7 @@ static NSString *plainTextBookmarkMarker = @"<!-- LoremIpsum:Bookmark -->";
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSString *fileType = [change valueForKey:@"new"];
     if ([fileType isEqualToString:(NSString*)kUTTypeRTF] || [fileType isEqualToString:(NSString*)kUTTypeRTFD])
         [self setDocType:RTF];

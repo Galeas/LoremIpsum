@@ -21,13 +21,13 @@
         [self setManualCreation:NO];
         return (NSString*)([self.manualFormat isEqualToString:RTF] ? kUTTypeRTF : kUTTypePlainText);
     }
-    return (NSString*)([[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.docType"] isEqualToString:RTF] ? kUTTypeRTF : kUTTypePlainText);
+    return (NSString*)([[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.docType"] isEqualToString:RTF] ? kUTTypeRTF : kUTTypePlainText);
 }
 
 -(BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
     if ([menuItem action] == @selector(manualNewDocument:)) {
-        if ([[menuItem title] isEqualToString:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.docType"]]) {
+        if ([[menuItem title] isEqualToString:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.docType"]]) {
             [menuItem setKeyEquivalent:@"n"];
             [menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
             return YES;

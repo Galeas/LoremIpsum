@@ -69,6 +69,8 @@
 											<int key="NSvFlags">268</int>
 											<string key="NSFrameSize">{615, 444}</string>
 											<reference key="NSSuperview" ref="290604142"/>
+											<reference key="NSWindow"/>
+											<reference key="NSNextKeyView"/>
 											<string key="NSReuseIdentifierKey">_NS:9</string>
 											<string key="NSClassName">LIGradientOverlayVew</string>
 										</object>
@@ -83,9 +85,29 @@
 														<object class="NSTextView" id="431652070">
 															<reference key="NSNextResponder" ref="90208921"/>
 															<int key="NSvFlags">6418</int>
-															<string key="NSFrameSize">{615, 419}</string>
+															<set class="NSMutableSet" key="NSDragTypes">
+																<string>Apple HTML pasteboard type</string>
+																<string>Apple PDF pasteboard type</string>
+																<string>Apple PICT pasteboard type</string>
+																<string>Apple PNG pasteboard type</string>
+																<string>Apple URL pasteboard type</string>
+																<string>CorePasteboardFlavorType 0x6D6F6F76</string>
+																<string>NSColor pasteboard type</string>
+																<string>NSFilenamesPboardType</string>
+																<string>NSStringPboardType</string>
+																<string>NeXT Encapsulated PostScript v1.2 pasteboard type</string>
+																<string>NeXT RTFD pasteboard type</string>
+																<string>NeXT Rich Text Format v1.0 pasteboard type</string>
+																<string>NeXT TIFF v4.0 pasteboard type</string>
+																<string>NeXT font pasteboard type</string>
+																<string>NeXT ruler pasteboard type</string>
+																<string>WebURLsWithTitlesPboardType</string>
+																<string>public.url</string>
+															</set>
+															<string key="NSFrameSize">{600, 419}</string>
 															<reference key="NSSuperview" ref="90208921"/>
-															<reference key="NSNextKeyView" ref="75781885"/>
+															<reference key="NSWindow"/>
+															<reference key="NSNextKeyView" ref="134131162"/>
 															<string key="NSReuseIdentifierKey">_NS:13</string>
 															<object class="NSTextContainer" key="NSTextContainer" id="621419795">
 																<object class="NSLayoutManager" key="NSLayoutManager">
@@ -102,7 +124,7 @@
 																	<nil key="NSDelegate"/>
 																</object>
 																<reference key="NSTextView" ref="431652070"/>
-																<double key="NSWidth">615</double>
+																<double key="NSWidth">600</double>
 																<int key="NSTCFlags">1</int>
 															</object>
 															<object class="NSTextViewSharedData" key="NSSharedData">
@@ -154,8 +176,9 @@
 															<nil key="NSDelegate"/>
 														</object>
 													</array>
-													<string key="NSFrameSize">{615, 419}</string>
+													<string key="NSFrameSize">{600, 419}</string>
 													<reference key="NSSuperview" ref="485629883"/>
+													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="431652070"/>
 													<string key="NSReuseIdentifierKey">_NS:11</string>
 													<reference key="NSDocView" ref="431652070"/>
@@ -187,8 +210,9 @@
 												<object class="NSScroller" id="134131162">
 													<reference key="NSNextResponder" ref="485629883"/>
 													<int key="NSvFlags">256</int>
-													<string key="NSFrame">{{599, 0}, {16, 419}}</string>
+													<string key="NSFrame">{{600, 0}, {15, 419}}</string>
 													<reference key="NSSuperview" ref="485629883"/>
+													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="366241973"/>
 													<string key="NSReuseIdentifierKey">_NS:84</string>
 													<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
@@ -202,6 +226,7 @@
 													<int key="NSvFlags">-2147483392</int>
 													<string key="NSFrame">{{-100, -100}, {632, 15}}</string>
 													<reference key="NSSuperview" ref="485629883"/>
+													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="90208921"/>
 													<string key="NSReuseIdentifierKey">_NS:33</string>
 													<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
@@ -214,7 +239,8 @@
 											</array>
 											<string key="NSFrame">{{0, 25}, {615, 419}}</string>
 											<reference key="NSSuperview" ref="290604142"/>
-											<reference key="NSNextKeyView" ref="90208921"/>
+											<reference key="NSWindow"/>
+											<reference key="NSNextKeyView" ref="75781885"/>
 											<string key="NSReuseIdentifierKey">_NS:9</string>
 											<int key="NSsFlags">133136</int>
 											<reference key="NSVScroller" ref="134131162"/>
@@ -227,6 +253,7 @@
 									</array>
 									<string key="NSFrameSize">{615, 444}</string>
 									<reference key="NSSuperview" ref="293003794"/>
+									<reference key="NSWindow"/>
 									<reference key="NSNextKeyView" ref="485629883"/>
 									<string key="NSReuseIdentifierKey">_NS:11</string>
 									<string key="NSClassName">LIBackColoredView</string>
@@ -234,6 +261,7 @@
 							</array>
 							<string key="NSFrameSize">{615, 444}</string>
 							<reference key="NSSuperview" ref="1006"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="290604142"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<bool key="NSIsVertical">YES</bool>
@@ -242,9 +270,10 @@
 					</array>
 					<string key="NSFrameSize">{615, 444}</string>
 					<reference key="NSSuperview"/>
+					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="293003794"/>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1920, 1058}}</string>
+				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<int key="NSWindowCollectionBehavior">128</int>
 				<bool key="NSWindowIsRestorable">YES</bool>
@@ -267,6 +296,7 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{132, 7}, {49, 24}}</string>
 						<reference key="NSSuperview" ref="22163926"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="7462720"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -301,6 +331,8 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{185, 7}, {51, 24}}</string>
 						<reference key="NSSuperview" ref="22163926"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSSegmentedCell" key="NSCell" id="297991208">
@@ -330,6 +362,7 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{132, 42}, {104, 24}}</string>
 						<reference key="NSSuperview" ref="22163926"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="1039751396"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -383,6 +416,7 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{7, 7}, {116, 24}}</string>
 						<reference key="NSSuperview" ref="22163926"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="966595894"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -431,6 +465,7 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{7, 42}, {116, 24}}</string>
 						<reference key="NSSuperview" ref="22163926"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="168459277"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -476,6 +511,7 @@
 				</array>
 				<string key="NSFrameSize">{244, 76}</string>
 				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="254684299"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">LIPopoverView</string>
@@ -493,7 +529,7 @@
 				<bool key="NSAnimates">YES</bool>
 			</object>
 			<object class="NSCustomView" id="529150466">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="NSSegmentedControl" id="706581456">
@@ -638,7 +674,6 @@
 					</object>
 				</array>
 				<string key="NSFrameSize">{313, 43}</string>
-				<reference key="NSSuperview"/>
 				<reference key="NSNextKeyView" ref="452885551"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">LIPopoverView</string>
@@ -693,14 +728,6 @@
 						<reference key="destination" ref="168459277"/>
 					</object>
 					<int key="connectionID">365</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">scrollContainer</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="485629883"/>
-					</object>
-					<int key="connectionID">484</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -837,6 +864,14 @@
 						<reference key="destination" ref="966595894"/>
 					</object>
 					<int key="connectionID">1042</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">scrollContainer</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="485629883"/>
+					</object>
+					<int key="connectionID">1043</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -1968,9 +2003,308 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">1042</int>
+			<int key="maxID">1043</int>
 		</object>
-		<object class="IBClassDescriber" key="IBDocument.Classes"/>
+		<object class="IBClassDescriber" key="IBDocument.Classes">
+			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
+				<object class="IBPartialClassDescription">
+					<string key="className">LIBackColoredView</string>
+					<string key="superclassName">NSView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/LIBackColoredView.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">LIDocWindowController</string>
+					<string key="superclassName">NSWindowController</string>
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="copyHTML:">id</string>
+						<string key="createBookmark:">id</string>
+						<string key="exportHTML:">id</string>
+						<string key="exportPDF:">id</string>
+						<string key="gotoLineOpenSheet:">id</string>
+						<string key="makeMDHyperlink:">id</string>
+						<string key="openListPanel:">id</string>
+						<string key="popoverListConvertion:">id</string>
+						<string key="richTextPlainText:">id</string>
+						<string key="setFontSize:">id</string>
+						<string key="setFontStyle:">id</string>
+						<string key="setMDFontStyle:">id</string>
+						<string key="setMDSize:">id</string>
+						<string key="setTextAlignment:">id</string>
+						<string key="showHTML:">id</string>
+						<string key="showHideCounters:">id</string>
+						<string key="showPopover:">id</string>
+						<string key="toggleSelection:">id</string>
+						<string key="toggleSmartPares:">id</string>
+						<string key="turnOnAutoUpdateCounters:">id</string>
+						<string key="updateCountersManually:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="copyHTML:">
+							<string key="name">copyHTML:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="createBookmark:">
+							<string key="name">createBookmark:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="exportHTML:">
+							<string key="name">exportHTML:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="exportPDF:">
+							<string key="name">exportPDF:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="gotoLineOpenSheet:">
+							<string key="name">gotoLineOpenSheet:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="makeMDHyperlink:">
+							<string key="name">makeMDHyperlink:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="openListPanel:">
+							<string key="name">openListPanel:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="popoverListConvertion:">
+							<string key="name">popoverListConvertion:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="richTextPlainText:">
+							<string key="name">richTextPlainText:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="setFontSize:">
+							<string key="name">setFontSize:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="setFontStyle:">
+							<string key="name">setFontStyle:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="setMDFontStyle:">
+							<string key="name">setMDFontStyle:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="setMDSize:">
+							<string key="name">setMDSize:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="setTextAlignment:">
+							<string key="name">setTextAlignment:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="showHTML:">
+							<string key="name">showHTML:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="showHideCounters:">
+							<string key="name">showHideCounters:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="showPopover:">
+							<string key="name">showPopover:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleSelection:">
+							<string key="name">toggleSelection:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleSmartPares:">
+							<string key="name">toggleSmartPares:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="turnOnAutoUpdateCounters:">
+							<string key="name">turnOnAutoUpdateCounters:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="updateCountersManually:">
+							<string key="name">updateCountersManually:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="aTextView">LITextView</string>
+						<string key="editorView">NSView</string>
+						<string key="fontStylesControl">NSSegmentedControl</string>
+						<string key="gradientView">LIGradientOverlayVew</string>
+						<string key="highlightSegment">NSSegmentedControl</string>
+						<string key="listSegment">NSSegmentedControl</string>
+						<string key="markdownPopover">NSPopover</string>
+						<string key="markdownPreview">LIWebView</string>
+						<string key="markdownViewContainer">NSView</string>
+						<string key="mdHyperlink">NSSegmentedControl</string>
+						<string key="mdList">NSSegmentedControl</string>
+						<string key="mdSize">NSSegmentedControl</string>
+						<string key="mdStyle">NSSegmentedControl</string>
+						<string key="scrollContainer">NSScrollView</string>
+						<string key="splitContainer">LISplitView</string>
+						<string key="textPopover">NSPopover</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="aTextView">
+							<string key="name">aTextView</string>
+							<string key="candidateClassName">LITextView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="editorView">
+							<string key="name">editorView</string>
+							<string key="candidateClassName">NSView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="fontStylesControl">
+							<string key="name">fontStylesControl</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="gradientView">
+							<string key="name">gradientView</string>
+							<string key="candidateClassName">LIGradientOverlayVew</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="highlightSegment">
+							<string key="name">highlightSegment</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="listSegment">
+							<string key="name">listSegment</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="markdownPopover">
+							<string key="name">markdownPopover</string>
+							<string key="candidateClassName">NSPopover</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="markdownPreview">
+							<string key="name">markdownPreview</string>
+							<string key="candidateClassName">LIWebView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="markdownViewContainer">
+							<string key="name">markdownViewContainer</string>
+							<string key="candidateClassName">NSView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mdHyperlink">
+							<string key="name">mdHyperlink</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mdList">
+							<string key="name">mdList</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mdSize">
+							<string key="name">mdSize</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mdStyle">
+							<string key="name">mdStyle</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="scrollContainer">
+							<string key="name">scrollContainer</string>
+							<string key="candidateClassName">NSScrollView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="splitContainer">
+							<string key="name">splitContainer</string>
+							<string key="candidateClassName">LISplitView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="textPopover">
+							<string key="name">textPopover</string>
+							<string key="candidateClassName">NSPopover</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/LIDocWindowController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">LIGradientOverlayVew</string>
+					<string key="superclassName">NSView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/LIGradientOverlayVew.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">LIPopoverView</string>
+					<string key="superclassName">NSView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/LIPopoverView.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">LISplitView</string>
+					<string key="superclassName">NSSplitView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/LISplitView.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">LITextView</string>
+					<string key="superclassName">NSTextView</string>
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="decreaseQuoteLevel:">id</string>
+						<string key="increaseQuoteLevel:">id</string>
+						<string key="listConversion:">id</string>
+						<string key="listLevelDecreasing:">id</string>
+						<string key="listLevelIncreasing:">id</string>
+						<string key="markedListInsertion:">id</string>
+						<string key="numberedListInsertion:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="decreaseQuoteLevel:">
+							<string key="name">decreaseQuoteLevel:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="increaseQuoteLevel:">
+							<string key="name">increaseQuoteLevel:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="listConversion:">
+							<string key="name">listConversion:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="listLevelDecreasing:">
+							<string key="name">listLevelDecreasing:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="listLevelIncreasing:">
+							<string key="name">listLevelIncreasing:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="markedListInsertion:">
+							<string key="name">markedListInsertion:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="numberedListInsertion:">
+							<string key="name">numberedListInsertion:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/LITextView.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">LIWebView</string>
+					<string key="superclassName">WebView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/LIWebView.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">NSLayoutConstraint</string>
+					<string key="superclassName">NSObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/NSLayoutConstraint.h</string>
+					</object>
+				</object>
+			</array>
+		</object>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaFramework</string>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>

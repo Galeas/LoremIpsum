@@ -11,9 +11,9 @@
 #import "LIDocWindowController.h"
 #import "LISettingsProxy.h"
 
-#define standardDocType @"LIInitSettings.docType"
-#define standardTextFont @"LIInitSettings.textFont"
-#define standardTextWidth @"LIInitSettings.textWidth"
+#define standardDocType @"LISettingsStorage.docType"
+#define standardTextFont @"LISettingsStorage.textFont"
+#define standardTextWidth @"LISettingsStorage.textWidth"
 
 @interface LIPreferences ()
 {
@@ -76,25 +76,25 @@
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-    NSString *fontName = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.docFont.fontName"];
+    NSString *fontName = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.docFont.fontName"];
     
     if ([fontName isEqualToString:@"HelveticaNeue"])
         fontName = @"Helvetica Neue";
     if ([fontName isEqualToString:@"CourierNewPSMT"])
         fontName = @"Courier New";
     
-    NSString *fontSize = [NSString stringWithFormat:@"%1.0f", [[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.docFont.fontSize"] floatValue]];
+    NSString *fontSize = [NSString stringWithFormat:@"%1.0f", [[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.docFont.fontSize"] floatValue]];
     
     [self setFontDescr:[fontName stringByAppendingString:[NSString stringWithFormat:@" %@pt", fontSize]]];
-    [self setDocType:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.docType"]];
-    [self setHexBackColor:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.backgroundColor"]];
-    [self setHexTextColor:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.textColor"]];
-    [self setWhiteBlack:[[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.whiteBlack"] boolValue]];
+    [self setDocType:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.docType"]];
+    [self setHexBackColor:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.backgroundColor"]];
+    [self setHexTextColor:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.textColor"]];
+    [self setWhiteBlack:[[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.whiteBlack"] boolValue]];
     
-    if ([[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.markdownAutoupdate"] intValue] == 1)
-        [self setPreviewAutoupdate:[NSString stringWithFormat:@"%@ second", [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.markdownAutoupdate"]]];
+    if ([[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.markdownAutoupdate"] intValue] == 1)
+        [self setPreviewAutoupdate:[NSString stringWithFormat:@"%@ second", [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.markdownAutoupdate"]]];
     else
-        [self setPreviewAutoupdate:[NSString stringWithFormat:@"%@ seconds", [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.markdownAutoupdate"]]];
+        [self setPreviewAutoupdate:[NSString stringWithFormat:@"%@ seconds", [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.markdownAutoupdate"]]];
     
     switch (self.whiteBlack) {
         case YES: {
@@ -189,13 +189,13 @@
     NSDictionary *fontDict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textFont fontName], @"fontName", [NSNumber numberWithFloat:[self.textFont pointSize]], @"fontSize", nil];
     NSDictionary *settingsDict = @{ @"docType":self.docType , @"docFont":fontDict , @"textColor":self.hexTextColor , @"backgroundColor":self.hexBackColor , @"textWidth":[settingsProxy valueForSetting:@"textWidth"] , @"whiteBlack":[NSNumber numberWithBool:self.whiteBlack] , @"markdownAutoupdate":[NSNumber numberWithInteger:updateDelay] };
     
-    NSMutableDictionary *usDef = [[NSMutableDictionary alloc] initWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"LIInitSettings"]];
+    NSMutableDictionary *usDef = [[NSMutableDictionary alloc] initWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"LISettingsStorage"]];
     for (NSString *key in settingsDict) {
         [usDef setValue:[settingsDict valueForKey:key] forKey:key];
     }
     
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LIInitSettings"];
-    [[NSUserDefaults standardUserDefaults] setObject:usDef forKey:@"LIInitSettings"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LISettingsStorage"];
+    [[NSUserDefaults standardUserDefaults] setObject:usDef forKey:@"LISettingsStorage"];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"newSettingsArrived" object:nil userInfo:settingsDict];
 }
@@ -204,8 +204,8 @@
 {    
     switch ([sender selectedSegment]) {
         case 0: {
-            NSColor *aColorBack = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.backgroundColor"]];
-            NSColor *aColorText = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.textColor"]];
+            NSColor *aColorBack = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.backgroundColor"]];
+            NSColor *aColorText = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.textColor"]];
             
             [self setWhiteBlack:YES];
             
@@ -216,8 +216,8 @@
             break;
         }
         case 1: {
-            NSColor *invBack = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.backgroundColorDark"]];
-            NSColor *invText = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.textColorDark"]];
+            NSColor *invBack = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.backgroundColorDark"]];
+            NSColor *invText = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.textColorDark"]];
             [self setWhiteBlack:NO];
             
             NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:invBack, @"backColor", invText, @"textColor", self.textFont, @"textFont", [NSNumber numberWithBool:self.whiteBlack], @"whiteBlack", nil];
@@ -226,10 +226,10 @@
         }
     }
     
-    NSMutableDictionary *usDef = [[NSMutableDictionary alloc] initWithDictionary:[[NSUserDefaults standardUserDefaults] valueForKey:@"LIInitSettings"]];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LIInitSettings"];
+    NSMutableDictionary *usDef = [[NSMutableDictionary alloc] initWithDictionary:[[NSUserDefaults standardUserDefaults] valueForKey:@"LISettingsStorage"]];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LISettingsStorage"];
     [usDef setValue:[NSNumber numberWithBool:self.whiteBlack] forKey:@"whiteBlack"];
-    [[NSUserDefaults standardUserDefaults] setObject:usDef forKey:@"LIInitSettings"];
+    [[NSUserDefaults standardUserDefaults] setObject:usDef forKey:@"LISettingsStorage"];
 }
 
 - (IBAction)focusOnParagraph:(id)sender
@@ -308,15 +308,15 @@
             NSString *path = [[cssOpenPanel URL] path];
             [settingsProxy setValue:path forSettingName:@"customCSS"];
                         
-            if ([(NSString*)[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.customCSS"] isEqualToString:path] || [(NSString*)[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.customCSS"] isEqualToString:@""]) {
-                NSDictionary *settingsDict = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings"];
+            if ([(NSString*)[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.customCSS"] isEqualToString:path] || [(NSString*)[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.customCSS"] isEqualToString:@""]) {
+                NSDictionary *settingsDict = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage"];
                 NSMutableDictionary *usDef = [[NSMutableDictionary alloc] initWithDictionary:settingsDict];
                 for (NSString *key in settingsDict) {
                     [usDef setValue:[settingsDict valueForKey:key] forKey:key];
                 }
                 [usDef setValue:path forKey:@"customCSS"];
-                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LIInitSettings"];
-                [[NSUserDefaults standardUserDefaults] setObject:usDef forKey:@"LIInitSettings"];
+                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LISettingsStorage"];
+                [[NSUserDefaults standardUserDefaults] setObject:usDef forKey:@"LISettingsStorage"];
                                 
                 [cssLabel setStringValue:[path lastPathComponent]];
             }

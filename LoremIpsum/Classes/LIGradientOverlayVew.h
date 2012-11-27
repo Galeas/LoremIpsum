@@ -10,10 +10,14 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface LIGradientOverlayVew : NSView
+{
+    NSColor *_gradientColor;
+}
 
 - (void)moveFocus:(NSDictionary*)rects;
 - (void)removeFocus;
 - (void)animateAppearingBookmarkAtPosition:(NSInteger)position;
+- (void)findActive:(BOOL)active;
 
 @property (copy) NSColor *gradientColor;
 @property (copy) CATextLayer *infoLayer;

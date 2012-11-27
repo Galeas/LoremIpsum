@@ -13,6 +13,7 @@
 #import "LITextAttachmentCell.h"
 #import "LIDocWindowController.h"
 #import "LISettingsProxy.h"
+#import "LIGradientOverlayVew.h"
 #import <QuartzCore/QuartzCore.h>
 
 #define UndoManager [[[[self window] windowController] document] undoManager]
@@ -21,6 +22,7 @@
 {
     @private
     CATextLayer *selectionOverlay;
+    NSTimer *findBarDetectionTimer;
     
 }
 #pragma mark Subclassed Methods
@@ -93,6 +95,34 @@
         return [NSString stringWithFormat:@"\t%@\t", glyph];
     }
 }
+
+- (BOOL)resignFirstResponder
+{
+    if ([self.window.windowController markdownPreview])
+        return NO;
+    return [super resignFirstResponder];
+}
+
+- (void)performFindPanelAction:(id)sender
+{
+    [super performFindPanelAction:sender];
+    
+    if ([sender tag] == 1 || [sender tag] == 12) {
+        [[self.window.windowController gradientView] findActive:YES];
+        if (!findBarDetectionTimer || !findBarDetectionTimer.isValid) {
+            findBarDetectionTimer = [NSTimer scheduledTimerWithTimeInterval:.1f target:self selector:@selector(findPanelClosed) userInfo:nil repeats:YES];
+        }
+    }
+}
+
+- (void)findPanelClosed
+{
+    if (![[self.window.windowController scrollContainer] isFindBarVisible]) {
+        [findBarDetectionTimer invalidate];
+        [[self.window.windowController gradientView] findActive:NO];
+    }
+}
+
 #pragma mark ---- KeyDown ----
 
 - (void)keyDown:(NSEvent *)theEvent
@@ -364,7 +394,7 @@
 {
     if ([self isPlainText]) {
         NSString *backup = [self.textStorage.string copy];
-        [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup];
+        [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup selectedRange:self.selectedRange];
         [[self undoManager] setActionName:@"insert marked list"];
         [self markdownMarkedInsertion];
     }
@@ -374,7 +404,7 @@
 {
     if ([self isPlainText]) {
         NSString *backup = [self.textStorage.string copy];
-        [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup];
+        [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup selectedRange:self.selectedRange];
         [[self undoManager] setActionName:@"insert numbered list"];
         [self markdownNumberedInsertion];
     }
@@ -383,7 +413,7 @@
 - (IBAction)listConversion:(id)sender
 {
     NSString *backup = [self.textStorage.string copy];
-    [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup];
+    [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup selectedRange:self.selectedRange];
     [[self undoManager] setActionName:@"convert list"];
     
     NSRange selectedRange = self.selectedRange;
@@ -391,6 +421,8 @@
     NSDictionary *fixLastBreak = [self fixedLastBreak:extendedRange];
     NSString *activeSubstring = [fixLastBreak valueForKey:@"string"];
     extendedRange = [[fixLastBreak valueForKey:@"range"] rangeValue];
+    
+    NSRange rangetoKeep = selectedRange;
     
     NSArray *stringsToPerform = [self stringsToListFromString:activeSubstring];
     
@@ -437,6 +469,11 @@
                 NSString *numberedString = [NSString stringWithFormat:@"%@%@%@", leadingTabs, indexStr, [validString stringByReplacingCharactersInRange:[validString rangeOfString:bullet] withString:@""]];
                 [stringsToPlace insertObject:numberedString atIndex:stringsToPlace.count];
                 [levelsNumbers setValue:[NSNumber numberWithInteger:indexForCurrentString+1] forKey:leadingTabs];
+                
+                if ([stringsToPerform indexOfObject:string] == 0)
+                    rangetoKeep.location += indexStr.length - bullet.length;
+                else
+                    rangetoKeep.length += indexStr.length- bullet.length;
             }
         }
         
@@ -446,10 +483,20 @@
                 if (!NSEqualRanges(indexRange, NSMakeRange(NSNotFound, 0))) {     // Строка - элемент нумерованного списка
                     NSString *convertedToBulletString = [NSString stringWithFormat:@"%@%@", leadingTabs, [validString stringByReplacingCharactersInRange:indexRange withString:bullet]];
                     [stringsToPlace insertObject:convertedToBulletString atIndex:stringsToPlace.count];
+                    
+                    if ([stringsToPerform indexOfObject:string] == 0)
+                        rangetoKeep.location += indexRange.length - bullet.length;
+                    else
+                        rangetoKeep.length += indexRange.length - bullet.length;
                 }
                 else {      // Простая строка
                     NSString *makeBulletString = [NSString stringWithFormat:@"%@%@", leadingTabs, [bullet stringByAppendingString:validString]];
                     [stringsToPlace insertObject:makeBulletString atIndex:stringsToPlace.count];
+                    
+                    if ([stringsToPerform indexOfObject:string] == 0)
+                        rangetoKeep.location += bullet.length;
+                    else
+                        rangetoKeep.length += bullet.length;
                 }
             }
             else {      // Конвертация в нумерованный список
@@ -469,11 +516,21 @@
                         NSString *numberedString = [NSString stringWithFormat:@"%@%@%@", leadingTabs, indexStr, [validString stringByReplacingCharactersInRange:bulletRange withString:@""]];
                         [stringsToPlace insertObject:numberedString atIndex:stringsToPlace.count];
                         [levelsNumbers setValue:[NSNumber numberWithInteger:indexForCurrentString+1] forKey:leadingTabs];
+                        
+                        if ([stringsToPerform indexOfObject:string] == 0)
+                            rangetoKeep.location += indexStr.length - bullet.length;
+                        else
+                            rangetoKeep.length += indexStr.length - bullet.length;
                     }
                     else {
                         NSString *numberedString = [NSString stringWithFormat:@"%@%@", leadingTabs, [indexStr stringByAppendingString:validString]];
                         [stringsToPlace insertObject:numberedString atIndex:stringsToPlace.count];
                         [levelsNumbers setValue:[NSNumber numberWithInteger:indexForCurrentString+1] forKey:leadingTabs];
+                        
+                        if ([stringsToPerform indexOfObject:string] == 0)
+                            rangetoKeep.location += indexStr.length;
+                        else
+                            rangetoKeep.length += indexStr.length;
                     }
                 }
             }
@@ -486,6 +543,7 @@
     [self.textStorage replaceCharactersInRange:extendedRange withString:resultString];
     [self.textStorage endEditing];
 
+    [self setSelectedRange:rangetoKeep];
 }
 
 - (void)markdownMarkedInsertion
@@ -496,6 +554,8 @@
     NSDictionary *fixLastBreak = [self fixedLastBreak:extendedRange];
     NSString *activeSubstring = [fixLastBreak valueForKey:@"string"];
     extendedRange = [[fixLastBreak valueForKey:@"range"] rangeValue];
+    
+    NSRange rangetoKeep = selectedRange;
     
     NSArray *stringsToPerform = [self stringsToListFromString:activeSubstring];
     
@@ -514,11 +574,16 @@
         
         if (!deleteList) {  //Вставляем список
             if (![validString hasPrefix:bullet]) {        // Нету марки
-                if (!NSEqualRanges(indexRange, NSMakeRange(NSNotFound, 0)))     // Если есть индекс (строка - элемент нумерованного списка)
+                if (!NSEqualRanges(indexRange, NSMakeRange(NSNotFound, 0)))    // Если есть индекс (строка - элемент нумерованного списка) - не трогаем
                     [stringsToPlace insertObject:[NSString stringWithFormat:@"%@%@", leadingTabs, validString] atIndex:stringsToPlace.count];
                 else {
                     NSString *listItemString = [NSString stringWithFormat:@"%@%@%@", leadingTabs, bullet, validString];
                     [stringsToPlace insertObject:listItemString atIndex:stringsToPlace.count];
+                    
+                    if ([stringsToPerform indexOfObject:string] == 0)
+                        rangetoKeep.location += bullet.length;
+                    else
+                        rangetoKeep.length += bullet.length;
                 }
             }
             else    // есть марка - оставляем строку нетронутой
@@ -528,10 +593,20 @@
             if (!NSEqualRanges(indexRange, NSMakeRange(NSNotFound, 0))) {
                 NSString *stringWOIndex = [NSString stringWithFormat:@"%@%@", leadingTabs, [validString stringByReplacingCharactersInRange:indexRange withString:@""]];
                 [stringsToPlace insertObject:stringWOIndex atIndex:stringsToPlace.count];
+                
+                if ([stringsToPerform indexOfObject:string] == 0)
+                    rangetoKeep.location -= indexRange.length;
+                else
+                    rangetoKeep.length -= indexRange.length;
             }
             else {
                 NSString *nonListString = [NSString stringWithFormat:@"%@%@", leadingTabs, [validString stringByReplacingCharactersInRange:[validString rangeOfString:bullet] withString:@""]];
                 [stringsToPlace insertObject:nonListString atIndex:stringsToPlace.count];
+                
+                if ([stringsToPerform indexOfObject:string] == 0)
+                    rangetoKeep.location -= bullet.length;
+                else
+                    rangetoKeep.length -= bullet.length;
             }
         }
     }
@@ -540,6 +615,8 @@
     [self.textStorage beginEditing];
     [self.textStorage replaceCharactersInRange:extendedRange withString:listString];
     [self.textStorage endEditing];
+    
+    [self setSelectedRange:rangetoKeep];
 }
 
 - (void)markdownNumberedInsertion
@@ -549,6 +626,8 @@
     NSDictionary *fixLastBreak = [self fixedLastBreak:extendedRange];
     NSString *activeSubstring = [fixLastBreak valueForKey:@"string"];
     extendedRange = [[fixLastBreak valueForKey:@"range"] rangeValue];
+    
+    NSRange rangetoKeep = selectedRange;
     
     NSArray *stringsToPerform = [self stringsToListFromString:activeSubstring];
     NSMutableArray *stringsToPlace = [[NSMutableArray alloc] initWithCapacity:stringsToPerform.count];
@@ -585,6 +664,11 @@
                     NSString *numberedString = [NSString stringWithFormat:@"%@%@%@", leadingTabs, indexStr, validString];
                     [stringsToPlace insertObject:numberedString atIndex:stringsToPlace.count];
                     [levelsNumbers setValue:[NSNumber numberWithInteger:indexForCurrentString+1] forKey:leadingTabs];
+                    
+                    if ([stringsToPerform indexOfObject:string] == 0)
+                        rangetoKeep.location += indexStr.length;
+                    else
+                        rangetoKeep.length += indexStr.length;
                 }
             }
             else    // Есть индекс - строку не трогаем
@@ -595,10 +679,20 @@
             if (!NSEqualRanges(indexRange, NSMakeRange(NSNotFound, 0))) {   // Строка с индексом - индекс удаляем
                 NSString *nonNumListItemString = [NSString stringWithFormat:@"%@%@", leadingTabs, [validString stringByReplacingCharactersInRange:indexRange withString:@""]];
                 [stringsToPlace insertObject:nonNumListItemString atIndex:stringsToPlace.count];
+                
+                if ([stringsToPerform indexOfObject:string] == 0)
+                    rangetoKeep.location -= indexRange.length;
+                else
+                    rangetoKeep.length -= indexRange.length;
             }
             else if ([validString hasPrefix:bullet]) {
                 NSString *strWOBullet = [NSString stringWithFormat:@"%@%@", leadingTabs, [validString stringByReplacingCharactersInRange:[validString rangeOfString:bullet] withString:@""]];
                 [stringsToPlace insertObject:strWOBullet atIndex:stringsToPlace.count];
+                
+                if ([stringsToPerform indexOfObject:string] == 0)
+                    rangetoKeep.location -= bullet.length;
+                else
+                    rangetoKeep.length -= bullet.length;
             }
             else
                 [stringsToPlace insertObject:string atIndex:stringsToPlace.count];
@@ -610,6 +704,8 @@
     [self.textStorage beginEditing];
     [self.textStorage replaceCharactersInRange:extendedRange withString:numListString];
     [self.textStorage endEditing];
+    
+    [self setSelectedRange:rangetoKeep];
 }
 
 - (NSDictionary*)fixedLastBreak:(NSRange)extRange
@@ -942,7 +1038,7 @@
 {
     NSRange processingRange = [self selectedRange];
     NSString *backup = [self.textStorage.string copy];
-    [[self.undoManager prepareWithInvocationTarget:self] mdHardcoreUndo:backup];
+    [[self.undoManager prepareWithInvocationTarget:self] mdHardcoreUndo:backup selectedRange:processingRange];
     if ([[sender title] isEqualToString:@"Increase list level"])
         [[self undoManager] setActionName:@"increase list level"];
     else
@@ -955,7 +1051,7 @@
 {
     NSRange processingRange = [self selectedRange];
     NSString *backup = [self.textStorage.string copy];
-    [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup];
+    [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup selectedRange:processingRange];
     if ([[sender title] isEqualToString:@"Decrease list level"])
         [[self undoManager] setActionName:@"decrease list level"];
     else
@@ -968,7 +1064,7 @@
 {
     NSRange processingRange = [self selectedRange];
     NSString *backup = [self.textStorage.string copy];
-    [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup];
+    [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup selectedRange:processingRange];
     [[self undoManager] setActionName:@"increase quote level"];
     
     [self increasingQuoteLevel:processingRange];
@@ -978,7 +1074,7 @@
 {
     NSRange processingRange = [self selectedRange];
     NSString *backup = [self.textStorage.string copy];
-    [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup];
+    [[[self undoManager] prepareWithInvocationTarget:self] mdHardcoreUndo:backup selectedRange:processingRange];
     [[self undoManager] setActionName:@"decrease quote level"];
     
     [self decreasingQuoteLevel:processingRange];
@@ -991,6 +1087,8 @@
     NSString *activeSubstring = [fixLastBreak valueForKey:@"string"];
     extendedRange = [[fixLastBreak valueForKey:@"range"] rangeValue];
     NSArray *stringsToPerform = [self stringsToListFromString:activeSubstring];
+    
+    NSRange rangeToKeep = range;
     
     NSMutableArray *stringsToPlace = [NSMutableArray arrayWithCapacity:stringsToPerform.count];
     
@@ -1007,6 +1105,11 @@
         
         NSString *incresingIndentStr = [NSString stringWithFormat:@"%@%@", leadingTabs, validString];
         [stringsToPlace insertObject:incresingIndentStr atIndex:stringsToPlace.count];
+        
+        if ([stringsToPerform indexOfObject:string] == 0)
+            rangeToKeep.location += 1;
+        else
+            rangeToKeep.length += 1;
     }
     
     NSString *resultString = [stringsToPlace componentsJoinedByString:@"\n"];
@@ -1014,6 +1117,8 @@
     [self.textStorage beginEditing];
     [self.textStorage replaceCharactersInRange:extendedRange withString:resultString];
     [self.textStorage endEditing];
+    
+    [self setSelectedRange:rangeToKeep];
 }
 
 - (void)decreasingIndentation:(NSRange)range
@@ -1024,6 +1129,8 @@
     extendedRange = [[fixLastBreak valueForKey:@"range"] rangeValue];
     NSArray *stringsToPerform = [self stringsToListFromString:activeSubstring];
     
+    NSRange rangeToKeep = range;
+    
     NSMutableArray *stringsToPlace = [NSMutableArray arrayWithCapacity:stringsToPerform.count];
     
     for (NSString *string in stringsToPerform) {
@@ -1031,6 +1138,14 @@
         NSString *validString = string;
         if (leadingTabs.length > 0)
             validString = [string stringByReplacingCharactersInRange:[string rangeOfString:leadingTabs] withString:@""];
+        
+        if (leadingTabs.length > 0) {
+            if ([stringsToPerform indexOfObject:string] == 0) {
+                rangeToKeep.location -= 1;
+            }
+            else
+                rangeToKeep.length -= 1;
+        }
         
         NSInteger neededTabs = leadingTabs.length - 1;
         leadingTabs = [NSString string];
@@ -1046,6 +1161,8 @@
     [self.textStorage beginEditing];
     [self.textStorage replaceCharactersInRange:extendedRange withString:resultString];
     [self.textStorage endEditing];
+    
+    [self setSelectedRange:rangeToKeep];
 }
 
 - (void)increasingQuoteLevel:(NSRange)range
@@ -1055,6 +1172,8 @@
     NSString *activeSubstring = [fixLastBreak valueForKey:@"string"];
     extendedRange = [[fixLastBreak valueForKey:@"range"] rangeValue];
     NSArray *stringsToPerform = [self stringsToListFromString:activeSubstring];
+    
+    NSRange rangeToKeep = range;
     
     NSMutableArray *stringsToPlace = [NSMutableArray arrayWithCapacity:stringsToPerform.count];
     
@@ -1070,12 +1189,19 @@
         
         NSString *increasedQuote = [NSString stringWithFormat:@"%@%@%@", leadingTabs, quoter, validString];
         [stringsToPlace insertObject:increasedQuote atIndex:stringsToPlace.count];
+        
+        if ([stringsToPerform indexOfObject:string] == 0)
+            rangeToKeep.location += quoter.length;
+        else
+            rangeToKeep.length += quoter.length;
     }
     NSString *resultString = [stringsToPlace componentsJoinedByString:@"\n"];
     
     [self.textStorage beginEditing];
     [self.textStorage replaceCharactersInRange:extendedRange withString:resultString];
     [self.textStorage endEditing];
+    
+    [self setSelectedRange:rangeToKeep];
 }
 
 - (void)decreasingQuoteLevel:(NSRange)range
@@ -1085,6 +1211,8 @@
     NSString *activeSubstring = [fixLastBreak valueForKey:@"string"];
     extendedRange = [[fixLastBreak valueForKey:@"range"] rangeValue];
     NSArray *stringsToPerform = [self stringsToListFromString:activeSubstring];
+    
+    NSRange rangeToKeep = range;
     
     NSMutableArray *stringsToPlace = [NSMutableArray arrayWithCapacity:stringsToPerform.count];
     
@@ -1097,10 +1225,20 @@
         if ([validString hasPrefix:@"> "]) {
             NSString *lastQuote = [NSString stringWithFormat:@"%@%@", leadingTabs, [validString stringByReplacingCharactersInRange:[validString rangeOfString:@"> "] withString:@""]];
             [stringsToPlace insertObject:lastQuote atIndex:stringsToPlace.count];
+            
+            if ([stringsToPerform indexOfObject:string] == 0)
+                rangeToKeep.location -= 2;
+            else
+                rangeToKeep.length -= 2;
         }
         else if ([validString hasPrefix:quoter]) {
             NSString *minusQuote = [NSString stringWithFormat:@"%@%@", leadingTabs, [validString stringByReplacingCharactersInRange:[validString rangeOfString:quoter] withString:@""]];
             [stringsToPlace insertObject:minusQuote atIndex:stringsToPlace.count];
+            
+            if ([stringsToPerform indexOfObject:string] == 0)
+                rangeToKeep.location -= quoter.length;
+            else
+                rangeToKeep.length -= quoter.length;
         }
         else
             [stringsToPlace insertObject:string atIndex:stringsToPlace.count];
@@ -1111,11 +1249,14 @@
     [self.textStorage beginEditing];
     [self.textStorage replaceCharactersInRange:extendedRange withString:resultString];
     [self.textStorage endEditing];
+    
+    [self setSelectedRange:rangeToKeep];
 }
 
 #pragma mark ---- Undo ----
-- (void)mdHardcoreUndo:(NSString*)string
+- (void)mdHardcoreUndo:(NSString*)string selectedRange:(NSRange)range
 {
     [self setString:string];
+    [self setSelectedRange:range];
 }
 @end

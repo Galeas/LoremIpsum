@@ -18,10 +18,11 @@
 
 @implementation LIGradientOverlayVew
 {
-    //NSGradient *topGradient, *bottomGradient;
     NSColor *currentColor;
     CAGradientLayer *topLayer, *bottomLayer;
     CALayer *topMask, *bottomMask;
+    
+    NSArray *topLayerColorsBackup;
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -31,15 +32,13 @@
         [self setWantsLayer:YES];
     
     if (self.gradientColor) {
-
-        //NSTextView *textView = (NSTextView*)[[self.window windowController] aTextView];
+        
         NSScrollView *scrollContainer = (NSScrollView*)[[self.window windowController] scrollContainer];
         NSSize gradientSize = scrollContainer.bounds.size/*textView.textContainer.containerSize*/;
         gradientSize.height = 25.0f;
         
         if (!bottomLayer) {
             bottomLayer = [CAGradientLayer layer];
-            //NSArray *gLocationsBottom = @[[NSNumber numberWithFloat:0.2], [NSNumber numberWithFloat:0.4], [NSNumber numberWithFloat:0.45], [NSNumber numberWithFloat:0.65], [NSNumber numberWithFloat:1]];
             NSMutableArray *gLocationsBottom = [NSMutableArray array];
             for (int i = 0; i < 10; i++)
                 [gLocationsBottom addObject:[NSNumber numberWithFloat:(float)i/10]];
@@ -49,12 +48,20 @@
             [bottomLayer setAutoresizingMask:kCALayerWidthSizable];
             
             [bottomLayer setFrame:NSRectToCGRect(NSMakeRect(scrollContainer.frame.origin.x, scrollContainer.frame.origin.y, gradientSize.width, gradientSize.height))];
+            
+            NSMutableArray *gColorsBottom = [NSMutableArray array];
+            for (int j = 10; j > 0; j--) {
+                float alpha = (float)j / 10;
+                [gColorsBottom addObject:(__bridge id)[self.gradientColor colorWithAlphaComponent:alpha].CGColor];
+            }
+            
+            [bottomLayer setColors:gColorsBottom];
+            
             [self.layer addSublayer:bottomLayer];
         }
         
         if (!topLayer) {
             topLayer = [CAGradientLayer layer];
-            //NSArray *gLocationsTop = @[[NSNumber numberWithFloat:0.2], [NSNumber numberWithFloat:0.4], [NSNumber numberWithFloat:0.45], [NSNumber numberWithFloat:0.65], [NSNumber numberWithFloat:1]];
             NSMutableArray *gLocationsTop = [NSMutableArray array];
             for (int i = 0; i < 10; i++)
                 [gLocationsTop addObject:[NSNumber numberWithFloat:(float)i/10]];
@@ -63,29 +70,30 @@
             [topLayer setName:@"topLayer"];
             [topLayer setAutoresizingMask:kCALayerWidthSizable];
             [topLayer setFrame:NSRectToCGRect(NSMakeRect(0, dirtyRect.size.height-gradientSize.height, gradientSize.width, gradientSize.height))];
+            
+            NSArray *gColorsTop = [[bottomLayer.colors reverseObjectEnumerator] allObjects];
+            [topLayer setColors:gColorsTop];
+            
             [self.layer addSublayer:topLayer];
         }
         
         [CATransaction flush];
         [CATransaction begin];
         [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-        
-        //NSArray *gColorsBottom = @[(__bridge id)[self.gradientColor colorWithAlphaComponent:1.0f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.75f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.5f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.25f].CGColor, (__bridge id)[self.gradientColor colorWithAlphaComponent:0.05f].CGColor];
-        NSMutableArray *gColorsBottom = [NSMutableArray array];
+        /*NSMutableArray *gColorsBottom = [NSMutableArray array];
         for (int j = 10; j > 0; j--) {
             float alpha = (float)j / 10;
              [gColorsBottom addObject:(__bridge id)[self.gradientColor colorWithAlphaComponent:alpha].CGColor];
         }
         
         [bottomLayer setColors:gColorsBottom];
-        //[bottomLayer setBackgroundColor:[NSColor colorWithCalibratedRed:1 green:0 blue:0 alpha:.5f].CGColor];
         NSArray *gColorsTop = [[gColorsBottom reverseObjectEnumerator] allObjects];
-        //[topLayer setBackgroundColor:[NSColor colorWithCalibratedRed:0 green:0 blue:1 alpha:.5f].CGColor];
-        [topLayer setColors:gColorsTop];
+        [topLayer setColors:gColorsTop];*/
         
         [bottomLayer setFrame:NSRectToCGRect(NSMakeRect(scrollContainer.frame.origin.x, scrollContainer.frame.origin.y, gradientSize.width, gradientSize.height))];
         [topLayer setFrame:NSRectToCGRect(NSMakeRect(0, dirtyRect.size.height-gradientSize.height, gradientSize.width, gradientSize.height))];
         [CATransaction commit];
+
     }
     
     if (!_infoLayer) {
@@ -220,4 +228,50 @@
     [bookmarkLayer performSelector:@selector(removeFromSuperlayer) withObject:nil afterDelay:anim.duration - .15f];
 }
 
+- (void)findActive:(BOOL)active
+{
+    [CATransaction flush];
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+    if (active) {
+        if (!topLayerColorsBackup)
+            topLayerColorsBackup = topLayer.colors;
+        
+        NSMutableArray *fakeColors = [NSMutableArray arrayWithCapacity:topLayer.colors.count];
+        for (int i = 0; i < topLayer.colors.count; i++)
+            [fakeColors addObject:(__bridge id)[NSColor clearColor].CGColor];
+        [topLayer setColors:fakeColors];
+    }
+    else {
+        [topLayer setColors:topLayerColorsBackup];
+        topLayerColorsBackup = nil;
+    }
+    [CATransaction commit];
+    
+    [self setNeedsDisplay:YES];
+}
+
+- (void)setGradientColor:(NSColor *)gradientColor
+{
+    _gradientColor = gradientColor;
+    
+    if (topLayer && bottomLayer) {
+        NSMutableArray *gColorsBottom = [NSMutableArray array];
+        for (int j = 10; j > 0; j--) {
+            float alpha = (float)j / 10;
+            [gColorsBottom addObject:(__bridge id)[_gradientColor colorWithAlphaComponent:alpha].CGColor];
+        }
+        
+        [bottomLayer setColors:gColorsBottom];
+        NSArray *gColorsTop = [[gColorsBottom reverseObjectEnumerator] allObjects];
+        [topLayer setColors:gColorsTop];
+    }
+    
+    [self setNeedsDisplay:YES];
+}
+
+- (NSColor *)gradientColor
+{
+    return _gradientColor;
+}
 @end

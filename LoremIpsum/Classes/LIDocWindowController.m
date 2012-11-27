@@ -45,7 +45,7 @@ static NSString *cssDragType = @"cssDragType";
         NSPoint previewPosition;
         CGFloat dividerPosition;
     
-        LISettingsProxy *settingsProxy;
+        LISettingsProxy *settingsProxy;   
 }
 @end
 
@@ -84,7 +84,6 @@ static NSString *cssDragType = @"cssDragType";
 
 - (id)initWithWindow:(NSWindow *)window
 {
-    //NSLog(@"%s", __PRETTY_FUNCTION__);
     self = [super initWithWindow:window];
     if (self) {
         // Initialization code here.
@@ -111,13 +110,13 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)window:(NSWindow *)window didDecodeRestorableState:(NSCoder *)state
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if (state)
         [self arrangeTextInView];
 }
 
 - (void)windowDidLoad
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     [super windowDidLoad];
     if ([[settingsProxy valueForSetting:@"showCounts"] boolValue])
         [self setInfoString:[self simpleInfoStringWithTimerValue:nil bigText:self.iAmBigText]];
@@ -240,7 +239,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{   NSLog(@"%s", __PRETTY_FUNCTION__);
+{   
     if ([(__bridge_transfer NSString*)context isEqualToString:@"windowSizeChanged"]) {        
         [self arrangeTextInView];
     }
@@ -267,7 +266,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)setDocument:(LIDocument *)document
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if (document) {
         [[document textStorage] addLayoutManager:layoutMgr];
     }
@@ -526,7 +525,7 @@ static NSString *cssDragType = @"cssDragType";
 #pragma mark ---- Custom Methods ----
 
 - (void)updateSettings:(NSNotification *)notification
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSDictionary *settings;
     NSColor *textColor, *backColor;
     NSFont *aNewFont;
@@ -568,13 +567,13 @@ static NSString *cssDragType = @"cssDragType";
 
         switch ([[[notification userInfo] valueForKey:@"whiteBlack"] boolValue]) {
             case YES: {
-                textColor = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.textColor"]];
-                backColor = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.backgroundColor"]];
+                textColor = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.textColor"]];
+                backColor = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.backgroundColor"]];
                 break;
             }
             case NO: {
-                backColor = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.backgroundColorDark"]];
-                textColor = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LIInitSettings.textColorDark"]];
+                backColor = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.backgroundColorDark"]];
+                textColor = [NSColor colorWithHex:[[NSUserDefaults standardUserDefaults] valueForKeyPath:@"LISettingsStorage.textColorDark"]];
                 break;
             }
         }
@@ -669,7 +668,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (LIFontStyle)fontStyleForFont:(NSFont *)aFont atRange:(NSRange)aRange
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSRange effectiveRange;
     
     if (aRange.location == [[aTextView textStorage] length])
@@ -702,7 +701,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)arrangeTextInView
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if ([editorView bounds].size.width - self.textContainerWidth > 40) {
         if (aTextView.frame.size.width < editorView.bounds.size.width)
             [aTextView setFrameSize:NSMakeSize(editorView.bounds.size.width, aTextView.frame.size.height)];
@@ -715,7 +714,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (NSString *)yarlyTimer:(NSNotification *)notification
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
 #pragma unused (notification)
     LITimedWritingController *orlyTimer = [LITimedWritingController timedWritingController];
     NSString *yarlyTimerValue = [orlyTimer showedCountdown];
@@ -734,12 +733,12 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)timerStopped
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     [self setInfoString:[self simpleInfoStringWithTimerValue:nil bigText:NO]];
 }
 
 - (NSString *)simpleInfoStringWithTimerValue:(NSString *)timerString bigText:(BOOL)bigText
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSString *bullet = [NSString stringWithUTF8String:"\u2022"];
     
     if (!bigText) {
@@ -774,7 +773,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (NSString *)infoStringwithDocType:(NSString *)doucmentType wordsSelected:(NSUInteger)wSelected charsSelected:(NSUInteger)cSelected timerStringValue:(NSString *)timerString
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSString *bullet = [NSString stringWithUTF8String:"\u2022"];
     
     LITimedWritingController *aTimer = [LITimedWritingController timedWritingController];
@@ -831,7 +830,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)updateMarkdownPreviewInstantly:(BOOL)updateNow
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSError *error = nil;
     if ((([NSDate timeIntervalSinceReferenceDate] >= whenToUpdate) || updateNow) && [[aTextView textStorage] length] != 0) {
 		whenToUpdate = [[NSDate distantFuture] timeIntervalSinceReferenceDate];
@@ -915,7 +914,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)performDropFocusWhenScrolled:(NSNotification *)notification
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     [self.gradientView removeFocus];
 }
 
@@ -960,7 +959,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)gotoLine:(int)lineNumber
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if (lineNumber == 0)
         return;
     
@@ -976,7 +975,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)updateCounters
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     LITimedWritingController *orlyTimer = [LITimedWritingController timedWritingController];
     NSTextStorage *activeStorage = [aTextView textStorage];
     if ([activeStorage length] == 0) {
@@ -1021,7 +1020,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (NSFont *)fontWithTrait:(NSString *)trait onStyle:(LIFontStyle)style
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSFont *defaultFont = [self.document docFont:[settingsProxy valueForSetting:@"docFont"]];
     NSString *currentFamilyName = [[NSString alloc] initWithString:[defaultFont familyName]];
     CGFloat currentSize = [defaultFont pointSize];
@@ -1207,7 +1206,7 @@ static NSString *cssDragType = @"cssDragType";
 #pragma mark ---- Some Animations ----
 
 /*- (void)animatedAppearingBookmark:(NSNumber *)position
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
 
     NSUInteger aPosition = [position intValue];
     NSImage *bookmark = [NSImage imageNamed:@"bookmark"];
@@ -1251,7 +1250,7 @@ static NSString *cssDragType = @"cssDragType";
 }*/
 
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
-{    //NSLog(@"%s", __PRETTY_FUNCTION__);
+{    //
     NSUInteger positionForBookmark = [aTextView selectedRange].location-1;
     
         // Вставляем настоящий аттачмент
@@ -1288,7 +1287,7 @@ static NSString *cssDragType = @"cssDragType";
 #pragma mark Window Delegate
 
 - (void)windowWillClose:(NSNotification *)notification
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     [self removeObserver:self forKeyPath:@"windowContentWidth"];
     [self removeObserver:self forKeyPath:@"masked"];
     
@@ -1329,7 +1328,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)windowWillStartLiveResize:(NSNotification *)notification
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if ([textPopover isShown] || [self.markdownPopover isShown]) {
         isPopoverShown = YES;
     }
@@ -1339,7 +1338,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)windowDidEndLiveResize:(NSNotification *)notification
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if (isPopoverShown) {
         [self.showedPopover showRelativeToRect:popoverRelativeRect ofView:self.aTextView preferredEdge:NSMaxYEdge];
         isPopoverShown = NO;
@@ -1347,13 +1346,13 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (void)windowWillMove:(NSNotification *)notification
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if ([textPopover isShown] || [self.markdownPopover isShown])
         isPopoverShown = YES;
 }
 
 - (void)windowDidMove:(NSNotification *)notification
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if (isPopoverShown) {
         [self.showedPopover showRelativeToRect:popoverRelativeRect ofView:self.aTextView preferredEdge:NSMaxYEdge];
         isPopoverShown = NO;
@@ -1450,7 +1449,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (BOOL)splitView:(NSSplitView *)splitView shouldHideDividerAtIndex:(NSInteger)dividerIndex
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     switch (self.markdownShowed) {
         case NO:
             return YES;
@@ -1462,7 +1461,7 @@ static NSString *cssDragType = @"cssDragType";
 }
 
 - (BOOL)splitView:(NSSplitView *)splitView canCollapseSubview:(NSView *)subview
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSView* rightView = [[splitView subviews] objectAtIndex:1];
     return ([subview isEqual:rightView]);
 }
@@ -1475,28 +1474,23 @@ static NSString *cssDragType = @"cssDragType";
     }
     return result;
 }
-/*- (BOOL)splitView:(NSSplitView *)splitView shouldCollapseSubview:(NSView *)subview forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
-{
-    NSView* rightView = [[splitView subviews] objectAtIndex:1];
-    return ([subview isEqual:rightView]);
-}*/
 
 #pragma mark WebView Delegate
 
 - (NSArray*)webView:(WebView *)sender contextMenuItemsForElement:(NSDictionary *)element defaultMenuItems:(NSArray *)defaultMenuItems
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     return nil;
 }
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     NSScrollView *mdScrollView = [[[[markdownPreview mainFrame] frameView] documentView] enclosingScrollView];
     [[mdScrollView contentView] scrollPoint:previewPosition];
 }
 
 #pragma mark Dragging Support
 - (NSUInteger)webView:(WebView *)webView dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo
-{//NSLog(@"%s", __PRETTY_FUNCTION__);
+{
     if ([[[draggingInfo draggingPasteboard] types] containsObject:NSURLPboardType]) {
         NSURL *cssURL = [NSURL URLFromPasteboard:[draggingInfo draggingPasteboard]];
         if ([[cssURL pathExtension] isEqualToString:@"css"] || [[cssURL pathExtension] isEqualToString:@"CSS"]) 
@@ -1906,66 +1900,60 @@ static NSString *cssDragType = @"cssDragType";
 - (IBAction)setMDFontStyle:(id)sender
 {
     NSRange selectedRange = self.aTextView.selectedRange;
-    //if (selectedRange.length > 0) {
-        NSString *selectedString = [self.aTextView.textStorage.string substringWithRange:selectedRange];
-        NSString *modifier;
-        //NSLog(@"%ld ~ %hhd", [sender selectedSegment], [sender isSelectedForSegment:[sender selectedSegment]]);
-        BOOL isActiveStyle;
-        
-        if ([sender isKindOfClass:[NSSegmentedControl class]]) {
-            isActiveStyle = [sender isSelectedForSegment:[sender selectedSegment]];
-            switch ([sender selectedSegment]) {
-                case 0: {
-                    modifier = @"**";
-                    break;
-                }
-                case 1: {
-                    modifier = @"*";
-                    break;
-                }
-                default:break;
+    NSString *selectedString = [self.aTextView.textStorage.string substringWithRange:selectedRange];
+    NSString *modifier;
+    BOOL isActiveStyle;
+    
+    if ([sender isKindOfClass:[NSSegmentedControl class]]) {
+        isActiveStyle = [sender isSelectedForSegment:[sender selectedSegment]];
+        switch ([sender selectedSegment]) {
+            case 0: {
+                modifier = @"**";
+                break;
             }
-        }
-        else if ([sender isKindOfClass:[NSMenuItem class]]) {
-            isActiveStyle = ![sender state];
-            [sender tag] == 2 ? (modifier = @"**") : (modifier = @"*");
-        }
-        
-        if (isActiveStyle) {
-            if (![selectedString hasPrefix:modifier] && ![selectedString hasSuffix:modifier]) {
-                [self.aTextView.textStorage beginEditing];
-                NSMutableString *replaceString = [[modifier stringByAppendingString:selectedString] mutableCopy];
-                if ([selectedString hasSuffix:@"\n"] || [selectedString hasSuffix:@"\r"])
-                    [replaceString insertString:modifier atIndex:replaceString.length-1];
-                else
-                    [replaceString appendString:modifier];
-                [self.aTextView.textStorage replaceCharactersInRange:selectedRange withString:replaceString];
-                [self.aTextView.textStorage endEditing];
-                
-                selectedRange.location += modifier.length;
+            case 1: {
+                modifier = @"*";
+                break;
             }
+            default:break;
+        }
+    }
+    else if ([sender isKindOfClass:[NSMenuItem class]]) {
+        isActiveStyle = ![sender state];
+        [sender tag] == 2 ? (modifier = @"**") : (modifier = @"*");
+    }
+    
+    if (isActiveStyle) {
+        if (![selectedString hasPrefix:modifier] && ![selectedString hasSuffix:modifier]) {
+            [self.aTextView.textStorage beginEditing];
+            NSMutableString *replaceString = [[modifier stringByAppendingString:selectedString] mutableCopy];
+            if ([selectedString hasSuffix:@"\n"] || [selectedString hasSuffix:@"\r"])
+                [replaceString insertString:modifier atIndex:replaceString.length-1];
+            else
+                [replaceString appendString:modifier];
+            [self.aTextView.textStorage replaceCharactersInRange:selectedRange withString:replaceString];
+            [self.aTextView.textStorage endEditing];
             
-            else {
-                NSString *replaceString = [selectedString stringByReplacingOccurrencesOfString:modifier withString:@""];
-                [self.aTextView.textStorage beginEditing];
-                [self.aTextView.textStorage replaceCharactersInRange:selectedRange withString:replaceString];
-                [self.aTextView.textStorage endEditing];
-                selectedRange.location -= modifier.length;
-            }
+            selectedRange.location += modifier.length;
         }
         
         else {
+            NSString *replaceString = [selectedString stringByReplacingOccurrencesOfString:modifier withString:@""];
             [self.aTextView.textStorage beginEditing];
-            NSRange extRange = NSMakeRange(selectedRange.location - modifier.length, selectedRange.length + 2*modifier.length);
-            [self.aTextView.textStorage replaceCharactersInRange:extRange withString:selectedString];
+            [self.aTextView.textStorage replaceCharactersInRange:selectedRange withString:replaceString];
             [self.aTextView.textStorage endEditing];
             selectedRange.location -= modifier.length;
         }
-        [self.aTextView setSelectedRange:selectedRange];
-    /*}
+    }
     
-    else
-        [sender setSelectedSegment:-1];*/
+    else {
+        [self.aTextView.textStorage beginEditing];
+        NSRange extRange = NSMakeRange(selectedRange.location - modifier.length, selectedRange.length + 2*modifier.length);
+        [self.aTextView.textStorage replaceCharactersInRange:extRange withString:selectedString];
+        [self.aTextView.textStorage endEditing];
+        selectedRange.location -= modifier.length;
+    }
+    [self.aTextView setSelectedRange:selectedRange];
 }
 
 - (IBAction)makeMDHyperlink:(id)sender
@@ -2080,10 +2068,10 @@ static NSString *cssDragType = @"cssDragType";
         [settingsProxy setValue:[NSNumber numberWithBool:NO] forSettingName:@"showCounts"];
     }
     
-    NSMutableDictionary *buffer = [[[NSUserDefaults standardUserDefaults] objectForKey:@"LIInitSettings"] mutableCopy];
+    NSMutableDictionary *buffer = [[[NSUserDefaults standardUserDefaults] objectForKey:@"LISettingsStorage"] mutableCopy];
     [buffer setValue:[settingsProxy valueForSetting:@"showCounts"] forKey:@"showCounts"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LIInitSettings"];
-    [[NSUserDefaults standardUserDefaults] setObject:buffer forKey:@"LIInitSettings"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"LISettingsStorage"];
+    [[NSUserDefaults standardUserDefaults] setObject:buffer forKey:@"LISettingsStorage"];
 }
 
 - (IBAction)gotoLineOpenSheet:(id)sender
