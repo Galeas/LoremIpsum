@@ -41,4 +41,5 @@
 - (void)removeAttachmentAtPosition:(NSUInteger)position;
 - (NSArray *)bookmarks;
 
+@property BOOL pasteHTML;
 @end

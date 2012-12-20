@@ -56,11 +56,7 @@
     dateZ = [timeZ dateValue];
     
     if ([dateZ compare:[NSDate date]] == NSOrderedAscending) {
-        NSAlert *dateAlrt = [NSAlert alertWithMessageText:@"Time is gone!" defaultButton:@"Re-Pick Date" alternateButton:@"" otherButton:@"" informativeTextWithFormat:@"You can't choose past time!"];
-        [dateAlrt setAlertStyle:NSInformationalAlertStyle];
-        if ([[[NSApp mainWindow] windowController] isMemberOfClass:[LIDocWindowController class]]) {
-            [dateAlrt beginSheetModalForWindow:[NSApp keyWindow] modalDelegate:nil didEndSelector:nil contextInfo:NULL];
-        }
+        NSBeep();
     } else {
         if (![countdownTimer isValid])
             countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(performCountown:) userInfo:nil repeats:YES];
@@ -104,7 +100,7 @@
 {
     if ([[[NSApp mainWindow] windowController] isMemberOfClass:[LIDocWindowController class]]) {
         [[NSApplication sharedApplication] beginSheet:[self window] modalForWindow:[[NSApplication sharedApplication] keyWindow] modalDelegate:nil didEndSelector:nil contextInfo:NULL];
-        [timeZ setDateValue:[NSDate dateWithTimeIntervalSinceNow:0]];
+        [timeZ setDateValue:[NSDate dateWithTimeIntervalSinceNow:1800]];
     }
 }
 

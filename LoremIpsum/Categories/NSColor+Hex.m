@@ -86,10 +86,11 @@
         // Pad the array out (for cases where we're given invalid input)
         while ([rgb count] != 3) [rgb addObject:[NSNumber numberWithFloat:0.0]];
         
-        return [NSColor colorWithCalibratedRed:[[rgb objectAtIndex:0] floatValue] 
-                                         green:[[rgb objectAtIndex:1] floatValue] 
-                                          blue:[[rgb objectAtIndex:2] floatValue] 
-                                         alpha:1];
+        NSColor *resultColor = [NSColor colorWithCalibratedRed:[[rgb objectAtIndex:0] floatValue]
+                                                         green:[[rgb objectAtIndex:1] floatValue]
+                                                          blue:[[rgb objectAtIndex:2] floatValue]
+                                                         alpha:1];    
+        return resultColor;
     }
     else {
         NSException* invalidHexException = [NSException exceptionWithName:@"InvalidHexException"
@@ -117,12 +118,16 @@
 
 - (CGColorRef)coreGraphicsColorWithAlfa:(CGFloat)alfa
 {
-    NSColor *bufferColor = [self colorUsingColorSpaceName:NSDeviceRGBColorSpace];
+    CGColorSpaceRef colorspaceRef = CGColorSpaceCreateDeviceRGB();
+    NSColor *deviceColor = [self colorUsingColorSpaceName:NSDeviceRGBColorSpace];
+    CGFloat components[4];
     
-    if (alfa != -1)
-        return [NSColor colorWithCalibratedRed:[bufferColor redComponent] green:[bufferColor greenComponent] blue:[bufferColor blueComponent] alpha:alfa].CGColor;
-    else
-        return [NSColor colorWithCalibratedRed:[bufferColor redComponent] green:[bufferColor greenComponent] blue:[bufferColor blueComponent] alpha:[bufferColor alphaComponent]].CGColor;
+    [deviceColor getRed:&components[0] green:&components[1] blue:&components[2] alpha:&components[3]];
+    components[3] = alfa;
+    CGColorRef colorRef = CGColorCreate(colorspaceRef, components);
+    CGColorSpaceRelease(colorspaceRef);
+    
+    return colorRef;
 }
 
 @end

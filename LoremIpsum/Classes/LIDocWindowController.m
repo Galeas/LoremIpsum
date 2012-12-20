@@ -164,7 +164,7 @@ static NSString *cssDragType = @"cssDragType";
              NSString *cmd = [NSString stringWithUTF8String:"\u2318"];
              NSString *ctrl = [NSString stringWithUTF8String:"\u2303"];
              
-             NSAlert *alert = [NSAlert alertWithMessageText:@"Seems your text is too large." defaultButton:@"Ok." alternateButton:@"" otherButton:@"" informativeTextWithFormat:@"So we will turn off counter but you still can update them manually using %@+%@+C.", cmd, ctrl];
+             NSAlert *alert = [NSAlert alertWithMessageText:@"Seems your text is too large." defaultButton:@"Ok." alternateButton:@"" otherButton:@"" informativeTextWithFormat:@"So we will turn off word counter but you still can update counter manually using %@+%@+C.", cmd, ctrl];
              [alert setAlertStyle:NSCriticalAlertStyle];
              [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:NULL];
              
@@ -229,12 +229,23 @@ static NSString *cssDragType = @"cssDragType";
         }
     }
     if (needAddMenuItem) {
-        NSMenuItem *smartParesItem = [[NSMenuItem alloc] initWithTitle:@"Smart Pares" action:@selector(toggleSmartPares:) keyEquivalent:@""];
+        NSMenuItem *smartParesItem = [[NSMenuItem alloc] initWithTitle:@"Smart Pairs" action:@selector(toggleSmartPares:) keyEquivalent:@""];
         [substMenu insertItem:smartParesItem atIndex:substMenu.itemArray.count-5];
         [smartParesItem setState:[[settingsProxy valueForSetting:@"useSmartPares"] boolValue]];
     }
     else
         [[substMenu itemAtIndex:foundIndex] setState:[[settingsProxy valueForSetting:@"useSmartPares"] boolValue]];
+    
+    if ([[self.document docType] isEqualToString:TXT] && [self.document fileURL] && [settingsProxy valueForSetting:@"mdPreviewSplitPositions"]) {
+        NSDictionary *splitPosDict = [settingsProxy valueForSetting:@"mdPreviewSplitPositions"];
+        CGFloat apprPos = [[splitPosDict valueForKey:[[self.document fileURL] path]] floatValue];
+        CGFloat totalWidth = [self.window.contentView frame].size.width;
+        CGFloat mdSplitPos = totalWidth*apprPos;
+        if (mdSplitPos < totalWidth) {
+            [self.splitContainer setLastDividerPosition:mdSplitPos];
+            [self showHTML:self];
+        }
+    }
     
 }
 
@@ -275,6 +286,22 @@ static NSString *cssDragType = @"cssDragType";
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
+    if (menuItem.action == @selector(showHTML:)) {
+        if ([[self.document docType] isEqualToString:TXT]) {
+            [menuItem setHidden:NO];
+            if ([[splitContainer subviews] count] > 1)
+                [menuItem setTitle:@"Hide Markdown Preview"];
+            else
+                [menuItem setTitle:@"Preview Markdown"];
+            return YES;
+        }
+        else {
+            [menuItem setHidden:YES];
+            [menuItem setTitle:@"Preview Markdown"];
+            return NO;
+        }
+    }
+    
     if ([menuItem action] == @selector(showHideCounters:)) {
         if ([[self.gradientView infoLayer]  isHidden]) {
             [menuItem setTitle:@"Show counters"];
@@ -457,38 +484,34 @@ static NSString *cssDragType = @"cssDragType";
         return NO;
     }
     
-    if ([menuItem action] == @selector(showHTML:)) {
-        if ([[self.document fileType] compare:(NSString*)kUTTypePlainText]) {
-            if ([[splitContainer subviews] count] > 1)
-                [menuItem setTitle:@"Hide Markdown Preview"];
-            else
-                [menuItem setTitle:@"Preview Markdown"];
-            return YES;
+    if (menuItem.action == @selector(copyHTML:)) {
+        if (![[self.document docType] isEqualToString:TXT]) {
+            [menuItem setHidden:YES];
+            return NO;
         }
         else {
-            [menuItem setTitle:@"Preview Markdown"];
-            return NO;
+            [menuItem setHidden:NO];
+            return YES;
         }
     }
     
-    if ([menuItem action] == @selector(copyHTML:) || [menuItem action] == @selector(setMDSize:)) {
+    if (menuItem.action == @selector(setMDSize:)) {
         if ([[self.document docType] isEqualToString:TXT]) {
-            if ([menuItem action] == @selector(setMDSize:)) {
-                NSString *paragraphString = [self.aTextView.textStorage.string substringWithRange:[self.aTextView.textStorage.string paragraphRangeForRange:[self.aTextView selectedRange]]];
-                NSUInteger size = [self mdHeaderSizeInString:paragraphString];
-                if (size > 0) {
-                    if ([menuItem tag] == size)
-                        [menuItem setState:1];
-                    else
-                        [menuItem setState:0];
-                }
+            NSString *paragraphString = [self.aTextView.textStorage.string substringWithRange:[self.aTextView.textStorage.string paragraphRangeForRange:[self.aTextView selectedRange]]];
+            NSUInteger size = [self mdHeaderSizeInString:paragraphString];
+            if (size > 0) {
+                if ([menuItem tag] == size)
+                    [menuItem setState:1];
                 else
                     [menuItem setState:0];
             }
+            else
+                [menuItem setState:0];
+            
             return YES;
         }
-        else
-            return NO;
+        
+        else return NO;
     }
     
     if ([menuItem action] == @selector(toggleSmartPares:)) {
@@ -1309,13 +1332,23 @@ static NSString *cssDragType = @"cssDragType";
     
     BOOL existedFile;
     NSString *bufferPath;
+    
     if ([self.document fileURL])
         existedFile = YES;
     else
         existedFile = NO;
+    
     if (existedFile) {
         NSString *lastComponent = [NSString stringWithFormat:@".%@.html",[[[[self.document fileURL] path] lastPathComponent] stringByDeletingPathExtension]];
         bufferPath = [[[self.document fileURL] path] stringByReplacingOccurrencesOfString:[[[self.document fileURL] path] lastPathComponent] withString:lastComponent];
+        
+        CGFloat mdPreviewPosition = [[self.splitContainer.subviews objectAtIndex:0] frame].size.width;
+        CGFloat totalWidth = [self.window.contentView frame].size.width;
+        CGFloat apprPos = mdPreviewPosition/totalWidth;
+        
+        NSString *fullDocPath = [[self.document fileURL] path];
+        NSDictionary *splitPos = @{fullDocPath : [NSNumber numberWithFloat:apprPos]};
+        [settingsProxy setValue:splitPos forSettingName:@"mdPreviewSplitPositions"];
     }
     else {
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES); 
@@ -1324,7 +1357,7 @@ static NSString *cssDragType = @"cssDragType";
         bufferPath = [mdPreviewDirectory stringByAppendingPathComponent:lastComponent];
     }
     NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:bufferPath error:&error];
+    [[NSFileManager defaultManager] removeItemAtPath:bufferPath error:&error];    
 }
 
 - (void)windowWillStartLiveResize:(NSNotification *)notification
@@ -1362,17 +1395,24 @@ static NSString *cssDragType = @"cssDragType";
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
     NSMenuItem *headersMenu = [[[[NSApp mainMenu] itemAtIndex:3] submenu] itemAtIndex:7];
-    NSMenuItem *separator = [[[[NSApp mainMenu] itemAtIndex:3] submenu] itemAtIndex:8];
+    NSMenuItem *separator0 = [[[[NSApp mainMenu] itemAtIndex:3] submenu] itemAtIndex:8];
+    NSMenuItem *separator1 = [[[[NSApp mainMenu] itemAtIndex:1] submenu] itemAtIndex:13];
+    NSMenuItem *fl = [[NSApp mainMenu] getItemWithPath:@"Format/List"];
+    NSMenuItem *fe = [[NSApp mainMenu] getItemWithPath:@"File/Export"];
     
     if (self.document && [[self.document docType] isEqualToString:RTF]) {
         [headersMenu setHidden:YES];
-        [separator setHidden:YES];
-        [[[NSApp mainMenu] getItemWithPath:@"Format/List"] setHidden:YES];
+        [separator0 setHidden:YES];
+        [separator1 setHidden:YES];
+        [fl setHidden:YES];
+        [fe setHidden:YES];
     }
     else if (self.document && [[self.document docType] isEqualToString:TXT]) {
         [headersMenu setHidden:NO];
-        [separator setHidden:NO];
-        [[[NSApp mainMenu] getItemWithPath:@"Format/List"] setHidden:NO];
+        [separator0 setHidden:NO];
+        [separator1 setHidden:NO];
+        [fl setHidden:NO];
+        [fe setHidden:NO];
     }
     
     [self.window makeFirstResponder:aTextView];
@@ -1666,7 +1706,7 @@ static NSString *cssDragType = @"cssDragType";
             if (self.aTextView.selectedRange.length > 0) {
                 NSInteger start = [paragraphString rangeOfString:selectedString].location;
                 if (start != NSNotFound) {
-                    start -= 1;
+//                    start -= 1;
                     NSUInteger count = [self mdStyleInParagraph:paragraphString paragraphRange:paragraphRange withSelection:activeRange]; //[self mdStyleInString:paragraphString withStartAt:start inRange:paragraphRange selection:activeRange];
                     
                     switch (count) {
@@ -1902,7 +1942,7 @@ static NSString *cssDragType = @"cssDragType";
     NSRange selectedRange = self.aTextView.selectedRange;
     NSString *selectedString = [self.aTextView.textStorage.string substringWithRange:selectedRange];
     NSString *modifier;
-    BOOL isActiveStyle;
+    BOOL isActiveStyle = NO;
     
     if ([sender isKindOfClass:[NSSegmentedControl class]]) {
         isActiveStyle = [sender isSelectedForSegment:[sender selectedSegment]];
@@ -2110,8 +2150,10 @@ static NSString *cssDragType = @"cssDragType";
     
     [panel beginSheetModalForWindow:self.window completionHandler:^(NSInteger returnCode) {
         NSError *error;
-        if (![htmlString writeToURL:panel.URL atomically:YES encoding:NSUTF8StringEncoding error:&error]) {
-            NSAlert *alert = [NSAlert alertWithMessageText:@"Can't save HTML here." defaultButton:@"Ok." alternateButton:@"" otherButton:@"" informativeTextWithFormat:@"Check saving directory."];
+        
+        BOOL writeSucceded = [htmlString writeToURL:panel.URL atomically:YES encoding:NSUTF8StringEncoding error:&error];
+        if (!writeSucceded && returnCode == 1) {
+            NSAlert *alert = [NSAlert alertWithMessageText:@"The document could not be saved." defaultButton:@"Ok." alternateButton:@"" otherButton:@"" informativeTextWithFormat:@"Please choose a different folder."];
             [alert setAlertStyle:NSCriticalAlertStyle];
             [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:NULL];
             return;
@@ -2197,8 +2239,7 @@ static NSString *cssDragType = @"cssDragType";
     [docForReplace setFileURL:nil];
     
     BOOL toPlainText = [proposedFileType compare:(NSString*)kUTTypePlainText] == NSOrderedSame;
-    NSMenuItem *item = [[NSApp mainMenu] getItemWithPath:@"Format/List"];
-    [item setHidden:!toPlainText];
+    [self windowDidBecomeKey:nil];
         
     if (toPlainText) {
         
@@ -2278,4 +2319,11 @@ static NSString *cssDragType = @"cssDragType";
     [self.aTextView orderFrontListPanel:self];
     [self.showedPopover close];
 }
+
+- (IBAction)performPaste:(id)sender
+{
+    [self.aTextView setPasteHTML:![[sender title] isEqualToString:@"Paste"]];
+    [self.aTextView paste:self];
+}
+
 @end

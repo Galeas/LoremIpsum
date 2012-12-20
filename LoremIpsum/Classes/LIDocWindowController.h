@@ -122,6 +122,7 @@ typedef NSUInteger LIFontStyle;
 - (void)updateCounters;
 
 - (IBAction)toggleSmartPares:(id)sender;
+- (IBAction)performPaste:(id)sender;
 
 @property NSUInteger wordsCount;
 @property NSUInteger charCount;

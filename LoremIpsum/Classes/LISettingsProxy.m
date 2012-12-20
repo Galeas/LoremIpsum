@@ -54,6 +54,9 @@ static NSUserDefaultsController *defaultsController;
     NSString *pref = @"values";
     NSString *path = [pref stringByAppendingPathExtension:settingName];
     
+    if (![[defaultsController valueForKeyPath:path] isEqualTo:value])
+        [defaultsController setValue:nil forKeyPath:path];
+    
     [defaultsController setValue:value forKeyPath:path];
 }
 

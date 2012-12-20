@@ -27,6 +27,8 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
+    //NSLog(@"%s", __PRETTY_FUNCTION__);
+    
     // Drawing code here.
     if (![self wantsLayer] && !topLayer && !bottomLayer && !_infoLayer)
         [self setWantsLayer:YES];
@@ -52,7 +54,9 @@
             NSMutableArray *gColorsBottom = [NSMutableArray array];
             for (int j = 10; j > 0; j--) {
                 float alpha = (float)j / 10;
-                [gColorsBottom addObject:(__bridge id)[self.gradientColor colorWithAlphaComponent:alpha].CGColor];
+                CGColorRef cgAlfaColor = [self.gradientColor coreGraphicsColorWithAlfa:alpha];
+                [gColorsBottom addObject:(__bridge id)cgAlfaColor];
+                CGColorRelease(cgAlfaColor);
             }
             
             [bottomLayer setColors:gColorsBottom];
@@ -93,40 +97,63 @@
         [bottomLayer setFrame:NSRectToCGRect(NSMakeRect(scrollContainer.frame.origin.x, scrollContainer.frame.origin.y, gradientSize.width, gradientSize.height))];
         [topLayer setFrame:NSRectToCGRect(NSMakeRect(0, dirtyRect.size.height-gradientSize.height, gradientSize.width, gradientSize.height))];
         [CATransaction commit];
-
-    }
-    
-    if (!_infoLayer) {
-        _infoLayer = [CATextLayer layer];
-        [_infoLayer bind:@"string" toObject:[self.window windowController] withKeyPath:@"infoString" options:nil];
-        [_infoLayer setFont:@"Futura"];
-        [_infoLayer setFontSize:12.0f];
-        [_infoLayer setForegroundColor:[NSColor colorWithHex:@"#9E9E9E"].CGColor];
-        [_infoLayer setAutoresizingMask:kCALayerWidthSizable];
-        [_infoLayer setAlignmentMode:kCAAlignmentCenter];
-        [_infoLayer setBackgroundColor:self.gradientColor.CGColor];
         
-        [_infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, self.bounds.size.width, 16))];
-        [self.layer addSublayer:_infoLayer];
-    }
-    else {
-        [_infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, self.bounds.size.width, 20))];
-    }
+        if (!_infoLayer) {
+            _infoLayer = [CATextLayer layer];
+            [_infoLayer bind:@"string" toObject:[self.window windowController] withKeyPath:@"infoString" options:nil];
+            [_infoLayer setFont:@"Futura"];
+            [_infoLayer setFontSize:12.0f];
+            
+            CGColorRef infoLayerColorRef = [[NSColor colorWithHex:@"#9E9E9E"] coreGraphicsColorWithAlfa:1];
+            [_infoLayer setForegroundColor:infoLayerColorRef];
+            CGColorRelease(infoLayerColorRef);
+            
+            [_infoLayer setAutoresizingMask:kCALayerWidthSizable];
+            [_infoLayer setAlignmentMode:kCAAlignmentCenter];
+            
+            CGColorRef infoLayerBackColorRef = [self.gradientColor coreGraphicsColorWithAlfa:1];
+            [_infoLayer setBackgroundColor:infoLayerBackColorRef];
+            CGColorRelease(infoLayerBackColorRef);
+            
+            [_infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, self.bounds.size.width, 25))];
+            [self.layer addSublayer:_infoLayer];
+        }
+        else {
+            [_infoLayer setFrame:NSRectToCGRect(NSMakeRect(0, 0, self.bounds.size.width, 25))];
+            CGColorRef infoBackColorRef = _infoLayer.backgroundColor;
+            CGFloat *colorComponents = (CGFloat*)CGColorGetComponents(infoBackColorRef);
+            NSColor *infoBackColor = [NSColor colorWithCalibratedRed:colorComponents[0] green:colorComponents[1] blue:colorComponents[2] alpha:colorComponents[3]];
+            if (![infoBackColor isEqualTo:self.gradientColor]) {
+                CGColorRef infoLayerBackColorRef = [self.gradientColor coreGraphicsColorWithAlfa:1];
+                [_infoLayer setBackgroundColor:infoLayerBackColorRef];
+                CGColorRelease(infoLayerBackColorRef);
+            }
+        }
+        
+    }    
     
-    
+    [CATransaction flush];
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
     if ([[self.layer sublayers] containsObject:topMask]) {
         CGColorRef cgTopMaskBackC = topMask.backgroundColor;
         CGFloat *colorComponents = (CGFloat*)CGColorGetComponents(cgTopMaskBackC);
         NSColor *backTopMaskColor = [NSColor colorWithCalibratedRed:colorComponents[0] green:colorComponents[1] blue:colorComponents[2] alpha:colorComponents[3]];
-        if (![backTopMaskColor isEqualTo:self.gradientColor])
-            [topMask setBackgroundColor:[self.gradientColor colorWithAlphaComponent:.75f].CGColor];
+        if (![backTopMaskColor isEqualTo:self.gradientColor]) {
+            CGColorRef topMaskBackColorRef = [self.gradientColor coreGraphicsColorWithAlfa:.75f];
+            [topMask setBackgroundColor:topMaskBackColorRef];
+            CGColorRelease(topMaskBackColorRef);
+        }
     }
     if ([[self.layer sublayers] containsObject:bottomMask]) {
         CGColorRef cgBottomMaskBackC = bottomMask.backgroundColor;
         CGFloat *colorComponents = (CGFloat*)CGColorGetComponents(cgBottomMaskBackC);
         NSColor *backBottomMaskColor = [NSColor colorWithCalibratedRed:colorComponents[0] green:colorComponents[1] blue:colorComponents[2] alpha:colorComponents[3]];
-        if (![backBottomMaskColor isEqualTo:self.gradientColor])
-            [bottomMask setBackgroundColor:[self.gradientColor colorWithAlphaComponent:.75f].CGColor];
+        if (![backBottomMaskColor isEqualTo:self.gradientColor]) {
+            CGColorRef bottomMaskBackColorRef = [self.gradientColor coreGraphicsColorWithAlfa:.75f];
+            [bottomMask setBackgroundColor:bottomMaskBackColorRef];
+            CGColorRelease(bottomMaskBackColorRef);
+        }
     }
     
     [CATransaction commit];
@@ -137,18 +164,19 @@
 {
     if (self.gradientColor) {
         NSColor *backColor = [self.gradientColor colorWithAlphaComponent:.75f];
+        CGColorRef backColorRef = [backColor coreGraphicsColorWithAlfa:.75f];
         if (![self wantsLayer])
             [self setWantsLayer:YES];
         
         if (!topMask) {
             topMask = [CALayer layer];
             [topMask setAutoresizingMask:kCALayerWidthSizable];
-            [topMask setBackgroundColor:backColor.CGColor];
+            [topMask setBackgroundColor:backColorRef];
         }
         if (!bottomMask) {
             bottomMask = [CALayer layer];
             [bottomMask setAutoresizingMask:kCALayerWidthSizable];
-            [bottomMask setBackgroundColor:backColor.CGColor];
+            [bottomMask setBackgroundColor:backColorRef];
         }
         
         if (bottomMask && ![[self.layer sublayers] containsObject:bottomMask])
@@ -156,10 +184,10 @@
         if (topMask && ![[self.layer sublayers] containsObject:topMask])
             [[self layer] addSublayer:topMask];
         
-        if (backColor.CGColor != bottomMask.backgroundColor)
-            [bottomMask setBackgroundColor:backColor.CGColor];
-        if (backColor.CGColor != topMask.backgroundColor)
-            [topMask setBackgroundColor:backColor.CGColor];
+        if (backColorRef != bottomMask.backgroundColor)
+            [bottomMask setBackgroundColor:backColorRef];
+        if (backColorRef != topMask.backgroundColor)
+            [topMask setBackgroundColor:backColorRef];
         
         NSRect bottom = [[rects valueForKey:@"bottomMask"] rectValue];
         bottom = [self convertRect:bottom fromView:(NSView*)[[self.window windowController] aTextView]];
@@ -174,6 +202,8 @@
         [bottomMask setFrame:NSRectToCGRect(bottom)];
         [topMask setFrame:NSRectToCGRect(top)];
         [CATransaction commit];
+        
+        CGColorRelease(backColorRef);
     }
 }
 
@@ -238,8 +268,11 @@
             topLayerColorsBackup = topLayer.colors;
         
         NSMutableArray *fakeColors = [NSMutableArray arrayWithCapacity:topLayer.colors.count];
-        for (int i = 0; i < topLayer.colors.count; i++)
-            [fakeColors addObject:(__bridge id)[NSColor clearColor].CGColor];
+        for (int i = 0; i < topLayer.colors.count; i++) {
+            CGColorRef clearColorRef = [[NSColor clearColor] coreGraphicsColorWithAlfa:0];
+            [fakeColors addObject:(__bridge id)clearColorRef];
+            CGColorRelease(clearColorRef);
+        }
         [topLayer setColors:fakeColors];
     }
     else {
@@ -259,7 +292,9 @@
         NSMutableArray *gColorsBottom = [NSMutableArray array];
         for (int j = 10; j > 0; j--) {
             float alpha = (float)j / 10;
-            [gColorsBottom addObject:(__bridge id)[_gradientColor colorWithAlphaComponent:alpha].CGColor];
+            CGColorRef cgAlfaColor = [self.gradientColor coreGraphicsColorWithAlfa:alpha];
+            [gColorsBottom addObject:(__bridge id)cgAlfaColor];
+            CGColorRelease(cgAlfaColor);
         }
         
         [bottomLayer setColors:gColorsBottom];

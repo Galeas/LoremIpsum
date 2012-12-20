@@ -55,6 +55,7 @@
 		8490CA08158094F3004C6DFB /* italic.png in Resources */ = {isa = PBXBuildFile; fileRef = 8490CA02158094F3004C6DFB /* italic.png */; };
 		8490CA09158094F3004C6DFB /* underline.png in Resources */ = {isa = PBXBuildFile; fileRef = 8490CA03158094F3004C6DFB /* underline.png */; };
 		84B13F8C16413929000C022B /* LIGradientOverlayVew.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B13F8B16413929000C022B /* LIGradientOverlayVew.m */; };
+		84B9A86A1681FA1E007B43CD /* NSAttributedString+allAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B9A8691681FA1E007B43CD /* NSAttributedString+allAttributes.m */; };
 		84BBB4CE15B82ABB00BB99E2 /* dark.css in Resources */ = {isa = PBXBuildFile; fileRef = 84BBB4CC15B82ABB00BB99E2 /* dark.css */; };
 		84BBB4CF15B82ABB00BB99E2 /* light.css in Resources */ = {isa = PBXBuildFile; fileRef = 84BBB4CD15B82ABB00BB99E2 /* light.css */; };
 		84C74E2A163E987C00B782C0 /* LISplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84C74E29163E987B00B782C0 /* LISplitView.m */; };
@@ -151,6 +152,8 @@
 		8490CA03158094F3004C6DFB /* underline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = underline.png; path = Support/Graphics/underline.png; sourceTree = "<group>"; };
 		84B13F8A16413929000C022B /* LIGradientOverlayVew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LIGradientOverlayVew.h; path = Classes/LIGradientOverlayVew.h; sourceTree = "<group>"; };
 		84B13F8B16413929000C022B /* LIGradientOverlayVew.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LIGradientOverlayVew.m; path = Classes/LIGradientOverlayVew.m; sourceTree = "<group>"; };
+		84B9A8681681FA1E007B43CD /* NSAttributedString+allAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSAttributedString+allAttributes.h"; path = "Categories/NSAttributedString+allAttributes.h"; sourceTree = "<group>"; };
+		84B9A8691681FA1E007B43CD /* NSAttributedString+allAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSAttributedString+allAttributes.m"; path = "Categories/NSAttributedString+allAttributes.m"; sourceTree = "<group>"; };
 		84BBB4CC15B82ABB00BB99E2 /* dark.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = dark.css; sourceTree = "<group>"; };
 		84BBB4CD15B82ABB00BB99E2 /* light.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = light.css; sourceTree = "<group>"; };
 		84C74E28163E987B00B782C0 /* LISplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LISplitView.h; path = Classes/LISplitView.h; sourceTree = "<group>"; };
@@ -351,6 +354,8 @@
 				84CDE6991588ECDB00EC1A05 /* NSString+Trimming.m */,
 				84CEE0B2165FD79C00465BDB /* NSMenu+ItemByName.h */,
 				84CEE0B3165FD79C00465BDB /* NSMenu+ItemByName.m */,
+				84B9A8681681FA1E007B43CD /* NSAttributedString+allAttributes.h */,
+				84B9A8691681FA1E007B43CD /* NSAttributedString+allAttributes.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -479,6 +484,7 @@
 				84B13F8C16413929000C022B /* LIGradientOverlayVew.m in Sources */,
 				840C57EF1643CC3000557966 /* LISettingsProxy.m in Sources */,
 				84CEE0B4165FD79C00465BDB /* NSMenu+ItemByName.m in Sources */,
+				84B9A86A1681FA1E007B43CD /* NSAttributedString+allAttributes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -516,7 +522,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COPY_PHASE_STRIP = NO;
@@ -546,7 +552,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COPY_PHASE_STRIP = YES;
@@ -568,6 +574,7 @@
 		841B8BDF157C9BE5003247C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = LoremIpsum/LoremIpsum.entitlements;
 				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -589,6 +596,7 @@
 		841B8BE0157C9BE5003247C5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_ENTITLEMENTS = LoremIpsum/LoremIpsum.entitlements;
 				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COMBINE_HIDPI_IMAGES = YES;

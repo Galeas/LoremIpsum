@@ -14,6 +14,8 @@
 #import "LIDocWindowController.h"
 #import "LISettingsProxy.h"
 #import "LIGradientOverlayVew.h"
+
+#import "NSAttributedString+allAttributes.h"
 #import <QuartzCore/QuartzCore.h>
 
 #define UndoManager [[[[self window] windowController] document] undoManager]
@@ -24,16 +26,50 @@
     CATextLayer *selectionOverlay;
     NSTimer *findBarDetectionTimer;
     
+    BOOL mustBeMasked;
+    
 }
 #pragma mark Subclassed Methods
 
 - (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard type:(NSString *)type
 {
     NSData *data;
-    if ([[pboard types] containsObject:NSStringPboardType])
+    if ([type isEqualToString:NSHTMLPboardType]) {
+        if (self.pasteHTML)
+            data = [pboard dataForType:type];
+        else
+            data = [pboard dataForType:NSStringPboardType];
+    }
+    else if ([type isEqualToString:NSRTFDPboardType] || [type isEqualToString:NSRTFPboardType]) {
+        
+        id text = nil;
+        
+        if ([[[self.window.windowController document] docType] isEqualToString:TXT]) {
+            data = [pboard dataForType:NSStringPboardType];
+            if (!data)
+                return NO;
+            
+            text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        }
+        
+        else {
+            data = [pboard dataForType:type];
+            if (!data)
+                return NO;
+            NSDictionary *docAttributes = nil;
+            NSError *error = nil;
+            text = [[NSAttributedString alloc] initWithData:data options:nil documentAttributes:&docAttributes error:&error];
+        }
+        
+        [self insertText:text];
+        return  YES;
+    }
+    else
         data = [pboard dataForType:NSStringPboardType];
-    if ([[pboard types] containsObject:NSHTMLPboardType])
-        data = [pboard dataForType:NSHTMLPboardType];
+    
+    if (!data)
+        return NO;
+    
     [self insertText:[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]];
     return YES;
 }
@@ -112,6 +148,11 @@
         if (!findBarDetectionTimer || !findBarDetectionTimer.isValid) {
             findBarDetectionTimer = [NSTimer scheduledTimerWithTimeInterval:.1f target:self selector:@selector(findPanelClosed) userInfo:nil repeats:YES];
         }
+        if ([self.window.windowController masked]) {
+            mustBeMasked = YES;
+            [self.window.windowController setMasked:NO];
+            [[self.window.windowController gradientView] removeFocus];
+        }
     }
 }
 
@@ -119,8 +160,30 @@
 {
     if (![[self.window.windowController scrollContainer] isFindBarVisible]) {
         [findBarDetectionTimer invalidate];
+        
+        if (mustBeMasked) {
+            mustBeMasked = NO;
+            [self.window.windowController setMasked:YES];
+        }
+        
         [[self.window.windowController gradientView] findActive:NO];
     }
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+    if (menuItem.action == @selector(pasteAsPlainText:)) {
+        if ([[[self.window.windowController document] docType] isEqualToString:TXT]) {
+            [menuItem setHidden:YES];
+            return NO;
+        }
+        else {
+            [menuItem setHidden:NO];
+            return YES;
+        }
+    }
+    
+    return YES;
 }
 
 #pragma mark ---- KeyDown ----
@@ -310,7 +373,7 @@
                         }
                     }
                     
-                    NSString *upString = [NSString string];
+                    NSString *upString;
                     if (upperLevelLastIndex > 0)
                         upString = [NSString stringWithFormat:@"%@%ld. ", [leadingTabs stringByReplacingCharactersInRange:NSMakeRange(leadingTabs.length-1, 1) withString:@""], upperLevelLastIndex+1];
                     else
@@ -863,14 +926,21 @@
 - (NSRect)overlayRectForRange:(NSRange)aRange
 {
     NSRange theTextRange = [[self layoutManager] glyphRangeForCharacterRange:aRange actualCharacterRange:NULL];
-    NSRect layoutRect = [[self layoutManager] boundingRectForGlyphRange:theTextRange inTextContainer:[self textContainer]];
-    NSPoint containerOrigin = [self textContainerOrigin];
-    layoutRect.origin.x += containerOrigin.x;
-    layoutRect.origin.y += containerOrigin.y;
+    NSRect layoutRect;
     
-    layoutRect = [self convertRectToLayer:layoutRect];
-    layoutRect.origin = NSMakePoint([self textContainerOrigin].x, layoutRect.origin.y);
-    layoutRect.size.width = [[self textContainer] containerSize].width;
+    NSRect lRect = [[self layoutManager] boundingRectForGlyphRange:theTextRange inTextContainer:[self textContainer]];
+    
+    layoutRect = [self firstRectForCharacterRange:theTextRange];
+    CGFloat layoutRectHeight = layoutRect.size.height;
+    
+    layoutRect.size.height = lRect.size.height;
+    layoutRect.origin.y -= lRect.size.height - layoutRectHeight;
+    
+    NSRect txtViewBounds = [self convertRectToBacking:[self bounds]];
+    txtViewBounds = [self.window convertRectToScreen:txtViewBounds];
+    
+    layoutRect = [[self superview] convertRect:layoutRect toView:nil];
+    layoutRect = [self.window convertRectToScreen:layoutRect];
     
     return layoutRect;
 }

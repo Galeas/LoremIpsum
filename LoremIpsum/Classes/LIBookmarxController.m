@@ -60,7 +60,7 @@
 {
     self = [LIBookmarxController bookmarxController];
     if (self) {
-        bookmarxDataSource = [[NSMutableArray alloc] init];
+        self->bookmarxDataSource = [[NSMutableArray alloc] init];
     }
     return self;
 }
